@@ -1,0 +1,102 @@
+/* styles/Register.module.css */
+
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: #f0f2f5;
+  }
+  
+  .form {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    padding: 2rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    width: 400px;
+  }
+  
+  .title {
+    text-align: center;
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #1da1f2;
+    margin-bottom: 1rem;
+  }
+  
+  .error {
+    color: #dc3545;
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+  
+  .inputGroup {
+    margin-bottom: 1rem;
+    position: relative;
+  }
+  
+  .input,
+  .textarea {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid #ccc;
+    border-radius: 50px;
+    outline: none;
+    transition: border-color 0.3s ease;
+  }
+  
+  .input:focus,
+  .textarea:focus {
+    border-color: #1da1f2;
+  }
+  
+  .inputError {
+    border-color: #dc3545;
+  }
+  
+  .errorMessage {
+    color: #dc3545;
+    font-size: 0.8rem;
+    position: absolute;
+    bottom: -1.2rem;
+    left: 0;
+  }
+  
+  .textarea {
+    resize: none;
+    height: 100px;
+  }
+  
+  .button {
+    width: 100%;
+    padding: 0.75rem;
+    background-color: #1da1f2;
+    color: #fff;
+    border: none;
+    border-radius: 50px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .button:hover {
+    background-color: #0d95e8;
+  }
+  
+  .switchText {
+    text-align: center;
+    margin-top: 1rem;
+    font-size: 0.9rem;
+  }
+  
+  .link {
+    color: #1da1f2;
+    text-decoration: none;
+  }
+  
+  .link:hover {
+    text-decoration: underline;
+  }
+  

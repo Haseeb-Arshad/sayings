@@ -1,5 +1,6 @@
 import localFont from "next/font/local";
 import "./globals.css";
+import FloatingVoiceButton from "@/component/floatingButton";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -19,9 +20,10 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning={true}>
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         {children}
+        <FloatingVoiceButton />
       </body>
     </html>
   );

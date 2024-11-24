@@ -1,0 +1,146 @@
+/* styles/AudioRecorder.module.css */
+
+.recorderContainer {
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 1.5rem;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+  transition: background 0.3s ease;
+}
+
+.title {
+  text-align: center;
+  font-size: 1.5rem;
+  color: #ffffff;
+  margin-bottom: 1rem;
+}
+
+.visualizerContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100px;
+  margin-bottom: 1rem;
+}
+
+.visualizer {
+  width: 50px;
+  height: 100%;
+  background: #ffffff;
+  border-radius: 25px;
+  transform-origin: bottom;
+  transition: transform 0.1s ease;
+}
+
+.timer {
+  text-align: center;
+  font-size: 1.2rem;
+  color: #ffffff;
+  margin-bottom: 1rem;
+}
+
+.buttonContainer {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.recordButton,
+.stopButton {
+  display: flex;
+  align-items: center;
+  background-color: #ffffff;
+  color: #1da1f2;
+  border: none;
+  border-radius: 50px;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.stopButton {
+  background-color: #ffffff;
+  color: #dc3545;
+}
+
+.recordButton:hover {
+  background-color: #e6e6e6;
+}
+
+.stopButton:hover {
+  background-color: #e6e6e6;
+}
+
+.icon {
+  margin-right: 0.5rem;
+}
+
+.loaderContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.loader {
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #ffffff;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  animation: spin 1s linear infinite;
+}
+
+.loadingText {
+  color: #ffffff;
+  font-size: 0.9rem;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.audioContainer,
+.transcriptContainer,
+.topicsContainer {
+  margin-bottom: 1rem;
+}
+
+.subtitle {
+  font-size: 1.2rem;
+  color: #ffffff;
+  margin-bottom: 0.5rem;
+}
+
+.audioPlayer {
+  width: 100%;
+}
+
+.transcript {
+  background: rgba(255, 255, 255, 0.2);
+  padding: 0.75rem;
+  border-radius: 10px;
+  font-size: 1rem;
+  color: #ffffff;
+}
+
+.topicsList {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.topicItem {
+  background: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  padding: 0.3rem 0.6rem;
+  border-radius: 15px;
+  font-size: 0.8rem;
+}

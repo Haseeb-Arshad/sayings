@@ -1,0 +1,81 @@
+/* components/Navbar.module.css */
+
+.navbar {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  background: #ffffff;
+  z-index: 1000;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.navContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1.5rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #1DA1F2;
+}
+
+.navLinks {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.navLink {
+  font-size: 1rem;
+  color: #14171A;
+  transition: color 0.3s;
+}
+
+.navLink:hover {
+  color: #1DA1F2;
+}
+
+.mobileMenuIcon {
+  display: none;
+  font-size: 1.5rem;
+  color: #14171A;
+  cursor: pointer;
+}
+
+.mobileMenu {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .navLinks {
+    display: none;
+  }
+
+  .mobileMenuIcon {
+    display: block;
+  }
+
+  .mobileMenu {
+    display: flex;
+    flex-direction: column;
+    background: #ffffff;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    padding: 1rem;
+  }
+
+  .mobileNavLink {
+    padding: 0.75rem 0;
+    font-size: 1.1rem;
+    color: #14171A;
+    transition: color 0.3s;
+  }
+
+  .mobileNavLink:hover {
+    color: #1DA1F2;
+  }
+}

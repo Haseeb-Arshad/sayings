@@ -1,0 +1,65 @@
+/* styles/SuggestionsSidebar.module.css */
+
+.sidebar {
+    width: 250px;
+    padding: 1rem;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin-left: 1rem;
+  }
+  
+  .title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 1rem;
+  }
+  
+  .loadingText {
+    font-size: 0.9rem;
+    color: #777;
+  }
+  
+  .error {
+    color: #dc3545;
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+  }
+  
+  .suggestionList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .suggestionItem {
+    margin-bottom: 0.75rem;
+    background: #f9f9f9;
+    border-radius: 8px;
+    padding: 0.75rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+  
+  .suggestionItem:hover {
+    background-color: #f0f0f0;
+  }
+  
+  .suggestionContent {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .suggestionQuestion {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #333;
+  }
+  
+  .suggestionDetails {
+    font-size: 0.85rem;
+    color: #777;
+    margin-top: 0.5rem;
+  }
+  

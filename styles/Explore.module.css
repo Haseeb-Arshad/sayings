@@ -1,0 +1,25 @@
+/* app/explore/page.module.css */
+
+.container {
+  padding-top: 60px; /* Height of Navbar */
+}
+
+.mainContent {
+  display: flex;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.exploreSection {
+  flex: 1;
+  max-width: 600px;
+  margin: 0 1rem;
+}
+
+.loadingText,
+.noPosts {
+  text-align: center;
+  color: #657786;
+  font-size: 1rem;
+  margin-top: 2rem;
+}

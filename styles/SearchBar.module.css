@@ -1,0 +1,68 @@
+/* components/SearchBar.module.css */
+
+.searchContainer {
+  position: relative;
+  width: 250px;
+  margin-left: 1rem;
+}
+
+.searchForm {
+  display: flex;
+  align-items: center;
+}
+
+.searchButton {
+  background: transparent;
+  border: none;
+  color: #657786;
+  font-size: 1rem;
+  cursor: pointer;
+  margin-right: -35px;
+  z-index: 1;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 0.5rem 0.75rem 0.5rem 2rem;
+  border: 1px solid #E1E8ED;
+  border-radius: 50px;
+  outline: none;
+  background: #F5F8FA;
+  color: #14171A;
+  transition: border-color 0.3s ease, background 0.3s ease;
+}
+
+.searchInput:focus {
+  border-color: #1DA1F2;
+  background: #ffffff;
+}
+
+.dropdown {
+  position: absolute;
+  top: 45px;
+  width: 100%;
+  background: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+  max-height: 300px;
+  overflow-y: auto;
+  z-index: 1000;
+}
+
+.resultItem {
+  padding: 0.75rem;
+  border-bottom: 1px solid #E1E8ED;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.resultItem:hover {
+  background: #E8F5FD;
+}
+
+.loadingText,
+.noResults {
+  padding: 0.75rem;
+  color: #657786;
+  font-size: 0.9rem;
+}

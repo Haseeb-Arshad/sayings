@@ -1,0 +1,175 @@
+/* styles/Post.module.css */
+
+.postContainer {
+  background-color: #ffffff;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 15px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  transition: box-shadow 0.3s ease;
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+}
+
+.postContainer:hover {
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.postHeader {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 10px;
+}
+
+.postInfo {
+  display: flex;
+  flex-direction: column;
+}
+
+.username {
+  font-size: 14px;
+  font-weight: bold;
+  color: #14171A;
+}
+
+.timestamp {
+  font-size: 12px;
+  color: #657786;
+}
+
+.contentArea {
+  margin-bottom: 10px;
+}
+
+.summary {
+  font-size: 16px;
+  color: #14171A;
+  line-height: 1.4;
+}
+
+.transcript {
+  font-size: 16px;
+  color: #14171A;
+  line-height: 1.6;
+  word-wrap: break-word;
+}
+
+.word {
+  display: inline-block;
+  transition: background-color 0.3s ease;
+  padding: 0; /* Remove extra padding */
+  cursor: pointer; /* Indicate interactivity */
+}
+
+.word:not(:last-child)::after {
+  content: ' ';
+  white-space: pre;
+}
+
+.highlighted {
+  background-color: rgba(29, 161, 242, 0.3);
+  border-radius: 4px;
+}
+
+.categories {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-bottom: 10px;
+}
+
+.categoryBadge {
+  background-color: #E8F5FD;
+  color: #1DA1F2;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+}
+
+.audioPlayer {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.playButton {
+  background-color: #1DA1F2;
+  color: #ffffff;
+  border: none;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  cursor: pointer;
+  margin-right: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.playButton:hover {
+  background-color: #0d95e8;
+}
+
+.playButton:disabled {
+  background-color: #AAB8C2;
+  cursor: not-allowed;
+}
+
+.waveform {
+  flex-grow: 1;
+  height: 50px;
+}
+
+.time {
+  font-size: 12px;
+  color: #657786;
+  margin-left: 10px;
+  white-space: nowrap;
+}
+
+.toggleTranscript {
+  text-align: right;
+  margin-bottom: 10px;
+}
+
+.toggleTranscript button {
+  background: none;
+  border: none;
+  color: #1DA1F2;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.toggleTranscript button:hover {
+  text-decoration: underline;
+}
+
+.interactions {
+  display: flex;
+  justify-content: space-around;
+  padding-top: 10px;
+  border-top: 1px solid #E1E8ED;
+}
+
+.interactionButton {
+  display: flex;
+  align-items: center;
+  color: #657786;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.interactionButton:hover {
+  color: #1DA1F2;
+}
+
+.interactionButton svg {
+  margin-right: 5px;
+}

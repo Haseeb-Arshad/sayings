@@ -1,0 +1,60 @@
+/* styles/Profile.module.css */
+
+.container {
+  padding-top: 60px; /* Height of Navbar */
+}
+
+.mainContent {
+  display: flex;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.profileSection {
+  flex: 1;
+  max-width: 600px;
+  margin: 0 1rem;
+}
+
+.profileInfo {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(15px);
+  border-radius: 16px;
+  padding: 2rem;
+  text-align: center;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+  margin-bottom: 2rem;
+  color: #ffffff;
+}
+
+.avatar {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 1rem;
+  border: 2px solid #1db954;
+}
+
+.username {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #1db954;
+}
+
+.bio {
+  font-size: 1rem;
+  color: #dddddd;
+}
+
+.postsSection {
+  position: relative;
+}
+
+.loadingText,
+.noPosts {
+  text-align: center;
+  color: #bbbbbb;
+  font-size: 1rem;
+  margin-top: 2rem;
+}

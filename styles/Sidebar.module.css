@@ -1,0 +1,90 @@
+/* styles/Sidebar.module.css */
+
+.sidebar {
+  width: 250px;
+  padding: 1rem;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-right: 1rem;
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 1rem;
+}
+
+.loadingText {
+  font-size: 0.9rem;
+  color: #777;
+}
+
+.error {
+  color: #dc3545;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+}
+
+.topicList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.topicItem {
+  margin-bottom: 0.75rem;
+}
+
+.topicButton {
+  width: 100%;
+  background: #f9f9f9;
+  border: none;
+  padding: 0.75rem;
+  text-align: left;
+  cursor: pointer;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  transition: background-color 0.2s ease;
+}
+
+.topicButton:hover {
+  background-color: #f0f0f0;
+}
+
+.topicContent {
+  display: flex;
+  align-items: center;
+}
+
+.topicIcon {
+  background-color: #1da1f2;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: bold;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 0.75rem;
+}
+
+.topicInfo {
+  display: flex;
+  flex-direction: column;
+}
+
+.topicName {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.topicDescription {
+  font-size: 0.85rem;
+  color: #777;
+}
