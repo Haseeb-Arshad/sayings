@@ -1,95 +1,201 @@
-/* styles/Login.module.css */
+/* General Styles */
+/* @import url('https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@400;600;700&display=swap'); */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inika:wght@400;700&display=swap');
 
+:root {
+  --primary-color: #007aff;
+  --secondary-color: #5856d6;
+  --background-gradient: linear-gradient(135deg, #f0f4f8 0%, #d9e2ec 100%);
+  --input-background: rgba(255, 255, 255, 0.5);
+  --border-color: rgba(0, 0, 0, 0.1);
+  --error-color: #ff3b30;
+}
+
+:global(*) {
+  box-sizing: border-box;
+}
+
+:global(body) {
+  margin: 0;
+  font-family: 'SF Pro Display', sans-serif;
+  background: var(--background-gradient);
+}
+
+/* Container */
 .container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    background: #f0f2f5;
+  display: flex;
+  min-height: 100vh;
+}
+
+/* Left Pane */
+.leftPane {
+  flex: 1;
+  padding: 2rem;
+  padding-top: 1.8rem;
+  padding-bottom: 300px; /* Ensure space for the illustration */
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start; /* Align items to the top */
+  position: relative; /* Enable absolute positioning for child elements */
+  /* background: var(--background-gradient); */
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0rem;
+  z-index: 999;
+}
+
+.brand h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-left: 0.5rem;
+  color: var(--primary-color);
+}
+
+.h4{
+  margin-top: 1rem;
+}
+
+.tagline {
+  margin-top: -0.8rem;
+  margin-left: 0.5rem;
+  font-size: 1.5rem;
+  color: #333;
+  max-width: 400px;
+  margin-bottom: 2rem;
+  z-index: 999;
+}
+
+.illustration {
+  position: absolute;
+  bottom: 0;
+  /* left: 50%; */
+  /* transform: translateX(-50%); */
+  max-width: 120%;
+  height: auto;
+  /* opacity: 0.8; */
+  z-index: 0; /* Ensure it's behind the form */
+  width: 60%; /* Adjust as needed */
+}
+
+/* Right Pane */
+.rightPane {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Form Styles */
+.form {
+  width: 450px;
+  padding: 2rem;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(20px);
+  border-radius: 20px;
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #000;
+  margin-bottom: 1.5rem;
+}
+
+.error {
+  color: var(--error-color);
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.inputGroup {
+  margin-bottom: 1.5rem;
+  position: relative;
+}
+
+.input {
+  width: 100%;
+  padding: 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  background: var(--input-background);
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+.input:focus {
+  border-color: var(--primary-color);
+}
+
+.inputError {
+  border-color: var(--error-color);
+}
+
+.errorMessage {
+  color: var(--error-color);
+  font-size: 0.8rem;
+  position: absolute;
+  top: 100%;
+  left: 1rem;
+  margin-top: 0.25rem;
+}
+
+.button {
+  width: 100%;
+  padding: 1rem;
+  background: var(--primary-color);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.button:hover {
+  background: #005bb5;
+}
+
+.switchText {
+  text-align: center;
+  margin-top: 1.5rem;
+  font-size: 0.9rem;
+}
+
+.link {
+  color: var(--secondary-color);
+  text-decoration: none;
+}
+
+.link:hover {
+  text-decoration: underline;
+}
+
+/* Mobile Styles */
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column;
   }
-  
+
+  .leftPane, .rightPane {
+    flex: none;
+    width: 100%;
+    padding: 1rem;
+  }
+
+  .illustration {
+    position: static;
+    transform: none;
+    width: 100%;
+    margin-top: 2rem;
+  }
+
   .form {
-    background: rgba(255, 255, 255, 0.85);
-    backdrop-filter: blur(10px);
-    border-radius: 15px;
-    padding: 2rem;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-    width: 400px;
-  }
-  
-  .title {
-    text-align: center;
-    font-size: 1.75rem;
-    font-weight: 700;
-    color: #1da1f2;
-    margin-bottom: 1rem;
-  }
-  
-  .error {
-    color: #dc3545;
-    text-align: center;
-    margin-bottom: 1rem;
-  }
-  
-  .inputGroup {
-    margin-bottom: 1rem;
-    position: relative;
-  }
-  
-  .input {
     width: 100%;
-    padding: 0.75rem 1rem;
-    border: 1px solid #ccc;
-    border-radius: 50px;
-    outline: none;
-    transition: border-color 0.3s ease;
   }
-  
-  .input:focus {
-    border-color: #1da1f2;
-  }
-  
-  .inputError {
-    border-color: #dc3545;
-  }
-  
-  .errorMessage {
-    color: #dc3545;
-    font-size: 0.8rem;
-    position: absolute;
-    bottom: -1.2rem;
-    left: 0;
-  }
-  
-  .button {
-    width: 100%;
-    padding: 0.75rem;
-    background-color: #1da1f2;
-    color: #fff;
-    border: none;
-    border-radius: 50px;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
-  
-  .button:hover {
-    background-color: #0d95e8;
-  }
-  
-  .switchText {
-    text-align: center;
-    margin-top: 1rem;
-    font-size: 0.9rem;
-  }
-  
-  .link {
-    color: #1da1f2;
-    text-decoration: none;
-  }
-  
-  .link:hover {
-    text-decoration: underline;
-  }
-  
+}

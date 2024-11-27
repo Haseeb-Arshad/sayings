@@ -1,16 +1,19 @@
-// components/Sidebar.js
-
 'use client';
 
 import { useEffect, useState } from 'react';
 import axios from '../utils/axiosInstance';
-import styles from './../styles/Sidebar.module.css';
+import styles from '../styles/Sidebar.module.css';
+import { useRouter, usePathname } from 'next/navigation';
 import { motion } from 'framer-motion';
 
-const Sidebar = ({ setFilter }) => {
+const Sidebar = ({ setFilter, currentFilter }) => {
   const [topTopics, setTopTopics] = useState([]);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
+  const [showMore, setShowMore] = useState(false);
+
+  const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
     const fetchTopTopics = async () => {
@@ -28,45 +31,67 @@ const Sidebar = ({ setFilter }) => {
   }, []);
 
   const handleTopicClick = (topicName) => {
-    setFilter(`topic:${topicName}`);
+    const newFilter = `topic:${topicName}`;
+    setFilter(newFilter);
+    router.push(`${pathname}?filter=${encodeURIComponent(newFilter)}`);
   };
 
+  const handleRecentClick = () => {
+    const newFilter = 'recent';
+    setFilter(newFilter);
+    router.push(`${pathname}`);
+  };
+
+  const displayedTopics = showMore ? topTopics : topTopics.slice(0, 5);
+
   return (
-    <div className={styles.sidebar}>
-      <h3 className={styles.title}>Top Topics</h3>
-      {loading && <p className={styles.loadingText}>Loading topics...</p>}
-      {error && <p className={styles.error}>{error}</p>}
-      <ul className={styles.topicList}>
-        {!loading &&
-          !error &&
-          topTopics.map((topic) => (
-            <motion.li
-              key={topic._id}
-              className={styles.topicItem}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              <button
-                className={styles.topicButton}
-                onClick={() => handleTopicClick(topic.name)}
-              >
-                <div className={styles.topicContent}>
-                  <div className={styles.topicIcon}>
-                    {/* You can use an icon or an initial here */}
-                    {topic.name.charAt(0).toUpperCase()}
+    <aside className={styles.sidebar}>
+      <div className={styles.sidebarContent}>
+        <h3 className={styles.title}>Trending Topics</h3>
+        <button
+          className={`${styles.topicButton} ${
+            currentFilter === 'recent' ? styles.active : ''
+          }`}
+          onClick={handleRecentClick}
+        >
+          <div className={styles.topicHeader}>
+            <span className={styles.topicCategory}>Recent</span>
+          </div>
+        </button>
+        {loading && <p className={styles.loadingText}>Loading topics...</p>}
+        {error && <p className={styles.error}>{error}</p>}
+        <ul className={styles.topicList}>
+          {!loading &&
+            !error &&
+            displayedTopics.map((topic) => (
+              <li key={topic._id} className={styles.topicItem}>
+                <button
+                  className={`${styles.topicButton} ${
+                    currentFilter === `topic:${topic.name}` ? styles.active : ''
+                  }`}
+                  onClick={() => handleTopicClick(topic.name)}
+                >
+                  <div className={styles.topicHeader}>
+                    <span className={styles.topicCategory}>Trending</span>
                   </div>
-                  <div className={styles.topicInfo}>
-                    <span className={styles.topicName}>{topic.name}</span>
-                    <span className={styles.topicDescription}>
-                      {topic.description || 'Join the conversation'}
-                    </span>
+                  <div className={styles.topicName}>{topic.name}</div>
+                  <div className={styles.postCount}>
+                    {topic.postCount} posts
                   </div>
-                </div>
-              </button>
-            </motion.li>
-          ))}
-      </ul>
-    </div>
+                </button>
+              </li>
+            ))}
+        </ul>
+        {topTopics.length > 5 && (
+          <button
+            className={styles.showMoreButton}
+            onClick={() => setShowMore(!showMore)}
+          >
+            {showMore ? 'Show Less' : 'Show More'}
+          </button>
+        )}
+      </div>
+    </aside>
   );
 };
 

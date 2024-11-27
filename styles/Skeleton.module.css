@@ -1,0 +1,66 @@
+/* styles/SkeletonPost.module.css */
+
+.skeletonContainer {
+    background-color: #ffffff;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    font-family: 'Poppins', sans-serif;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .skeletonHeader {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+  }
+  
+  .skeletonAvatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: #e0e0e0;
+    margin-right: 15px;
+  }
+  
+  .skeletonInfo {
+    flex: 1;
+  }
+  
+  .skeletonLine {
+    width: 100%;
+    height: 10px;
+    background-color: #e0e0e0;
+    border-radius: 4px;
+    margin-bottom: 10px;
+  }
+  
+  .skeletonLineShort {
+    width: 60%;
+    height: 10px;
+    background-color: #e0e0e0;
+    border-radius: 4px;
+  }
+  
+  .skeletonBody {
+    margin-bottom: 15px;
+  }
+  
+  .skeletonBody .skeletonLine {
+    margin-bottom: 10px;
+  }
+  
+  .skeletonFooter {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .skeletonButton {
+    width: 40px;
+    height: 20px;
+    background-color: #e0e0e0;
+    border-radius: 10px;
+  }
+  

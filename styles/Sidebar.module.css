@@ -1,30 +1,50 @@
-/* styles/Sidebar.module.css */
+/* General Styles */
+@import url('https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@400;600&display=swap');
+
+:root {
+  --primary-color: #007aff;
+  --secondary-color: #5856d6;
+  --background-color: #f0f4f8;
+  --border-color: rgba(0, 0, 0, 0.1);
+  --text-color: #1c1c1e;
+  --subtext-color: #8e8e93;
+  --highlight-color: #e5e5ea;
+}
 
 .sidebar {
-  width: 250px;
+  width: 280px;
+  background-color: #fff;
+  border-right: 1px solid var(--border-color);
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  overflow-y: auto;
+  padding-top: 70px; /* Adjust if there's a fixed header */
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
+}
+
+.sidebarContent {
   padding: 1rem;
-  background: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  margin-right: 1rem;
 }
 
 .title {
   font-size: 1.5rem;
-  font-weight: 700;
-  color: #333;
+  font-weight: 600;
+  color: var(--text-color);
+  margin-bottom: 1rem;
+  font-family: 'SF Pro Display', sans-serif;
+}
+
+.loadingText,
+.error {
+  font-size: 0.9rem;
+  color: var(--subtext-color);
   margin-bottom: 1rem;
 }
 
-.loadingText {
-  font-size: 0.9rem;
-  color: #777;
-}
-
 .error {
-  color: #dc3545;
-  font-size: 0.9rem;
-  margin-top: 0.5rem;
+  color: #ff3b30;
 }
 
 .topicList {
@@ -34,57 +54,89 @@
 }
 
 .topicItem {
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.5rem;
 }
 
 .topicButton {
   width: 100%;
-  background: #f9f9f9;
+  background: none;
   border: none;
   padding: 0.75rem;
   text-align: left;
   cursor: pointer;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
   transition: background-color 0.2s ease;
+  border-radius: 12px;
 }
 
 .topicButton:hover {
-  background-color: #f0f0f0;
+  background-color: var(--highlight-color);
 }
 
-.topicContent {
-  display: flex;
-  align-items: center;
+.topicButton.active {
+  background-color: var(--highlight-color);
 }
 
-.topicIcon {
-  background-color: #1da1f2;
-  color: #fff;
-  font-size: 1rem;
-  font-weight: bold;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
+.topicHeader {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-right: 0.75rem;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: var(--subtext-color);
+  margin-bottom: 0.25rem;
 }
 
-.topicInfo {
-  display: flex;
-  flex-direction: column;
+.topicCategory {
+  text-transform: uppercase;
+  font-weight: 500;
 }
 
 .topicName {
   font-size: 1rem;
   font-weight: 600;
-  color: #333;
+  color: var(--text-color);
 }
 
-.topicDescription {
-  font-size: 0.85rem;
-  color: #777;
+.postCount {
+  font-size: 0.8rem;
+  color: var(--subtext-color);
+}
+
+.showMoreButton {
+  background: none;
+  border: none;
+  color: var(--primary-color);
+  font-size: 0.9rem;
+  cursor: pointer;
+  margin-top: 1rem;
+}
+
+.showMoreButton:hover {
+  text-decoration: underline;
+}
+
+/* Scrollbar Styling for Webkit Browsers */
+.sidebar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+  background-color: #c1c1c1;
+  border-radius: 4px;
+  border: 2px solid #f1f1f1;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 1024px) {
+  .sidebar {
+    width: 250px;
+  }
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    display: none; /* Hide sidebar on small screens */
+  }
 }

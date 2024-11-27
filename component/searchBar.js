@@ -2,42 +2,67 @@
 
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import axios from '../utils/axiosInstance';
 import { FaSearch } from 'react-icons/fa';
 import styles from './../styles/SearchBar.module.css';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useRouter } from 'next/navigation';
+import debounce from 'lodash.debounce';
 
 const SearchBar = () => {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
   const dropdownRef = useRef(null);
+  const router = useRouter();
 
-  const handleSearch = async (e) => {
-    e.preventDefault();
-    if (!query.trim()) return;
-    setLoading(true);
-    setIsDropdownOpen(true);
-    try {
-      const response = await axios.get('/search', {
-        params: { q: query },
-      });
-      setResults(response.data.results);
-    } catch (error) {
-      console.error('Error searching:', error);
+  // Debounced search function
+  const debouncedSearch = useCallback(
+    debounce(async (searchTerm) => {
+      if (!searchTerm.trim()) {
+        setResults([]);
+        setLoading(false);
+        setError(null);
+        return;
+      }
+
+      setLoading(true);
+      setError(null);
+
+      try {
+        const response = await axios.get('/search', {
+          params: { q: searchTerm },
+        });
+        setResults(response.data.results);
+      } catch (err) {
+        console.error('Error searching:', err);
+        setError('Failed to fetch results. Please try again.');
+      } finally {
+        setLoading(false);
+      }
+    }, 500),
+    []
+  );
+
+  useEffect(() => {
+    if (query) {
+      debouncedSearch(query);
+      setIsDropdownOpen(true);
+    } else {
+      setResults([]);
+      setIsDropdownOpen(false);
+      setError(null);
     }
-    setLoading(false);
-  };
+  }, [query, debouncedSearch]);
 
-  const closeDropdown = () => {
-    setIsDropdownOpen(false);
-  };
-
+  // Close dropdown when clicking outside
   const handleClickOutside = (e) => {
     if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
-      closeDropdown();
+      setIsDropdownOpen(false);
     }
   };
 
@@ -48,24 +73,47 @@ const SearchBar = () => {
     };
   }, []);
 
+  // Handle navigation on result click
+  const handleResultClick = (result) => {
+    setIsDropdownOpen(false);
+    setQuery('');
+
+    if (result.type === 'user') {
+      router.push(`/profile/${result.username}`);
+    } else if (result.type === 'post') {
+      router.push(`/post/${result.id}`);
+    } else if (result.type === 'topic') {
+      router.push(`/topic/${result.topic}`);
+    }
+  };
+
   return (
     <div className={styles.searchContainer} ref={dropdownRef}>
-      <form onSubmit={handleSearch} className={styles.searchForm}>
+      <form onSubmit={(e) => e.preventDefault()} className={styles.searchForm}>
         <motion.button
           whileTap={{ scale: 0.95 }}
           className={styles.searchButton}
-          type="submit"
+          type="button"
           aria-label="Search"
+          onClick={() => {
+            if (query.trim()) {
+              debouncedSearch(query);
+            }
+          }}
         >
           <FaSearch />
         </motion.button>
         <input
           type="text"
           className={styles.searchInput}
-          placeholder="Search..."
+          placeholder="Search VoiceSocial..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          onFocus={() => setIsDropdownOpen(true)}
+          onFocus={() => {
+            if (query.trim()) {
+              setIsDropdownOpen(true);
+            }
+          }}
         />
       </form>
       <AnimatePresence>
@@ -79,19 +127,32 @@ const SearchBar = () => {
           >
             {loading ? (
               <p className={styles.loadingText}>Searching...</p>
+            ) : error ? (
+              <p className={styles.errorText}>{error}</p>
             ) : results.length > 0 ? (
-              results.map((result, index) => (
+              results.map((result) => (
                 <div
-                  key={index}
+                  key={result.id || result.topic}
                   className={styles.resultItem}
-                  onClick={closeDropdown}
+                  onClick={() => handleResultClick(result)}
                 >
                   {result.type === 'user' ? (
-                    <p>User: {result.username}</p>
+                    <div className={styles.userResult}>
+                      <img
+                        src={result.avatar || '/placeholder-avatar.png'}
+                        alt={`${result.username}'s avatar`}
+                        className={styles.avatar}
+                      />
+                      <span>{result.username}</span>
+                    </div>
                   ) : result.type === 'post' ? (
-                    <p>Post: {result.transcript.slice(0, 50)}...</p>
+                    <div className={styles.postResult}>
+                      <span>{result.transcript.slice(0, 50)}...</span>
+                    </div>
                   ) : (
-                    <p>Topic: {result.topic}</p>
+                    <div className={styles.topicResult}>
+                      <span>#{result.topic}</span>
+                    </div>
                   )}
                 </div>
               ))

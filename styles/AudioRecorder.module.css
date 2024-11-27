@@ -1,102 +1,154 @@
-/* styles/AudioRecorder.module.css */
+/* styles/AnimatedAudioRecorder.module.css */
+/* .container {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  width: 90%;
+  max-width: 400px;
+} */
+
+
+.container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+  padding: 20px;
+  box-sizing: border-box;
+}
 
 .recorderContainer {
-  backdrop-filter: blur(10px);
-  border-radius: 20px;
-  padding: 1.5rem;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
-  margin-bottom: 2rem;
-  transition: background 0.3s ease;
+  backdrop-filter: blur(16px);
+  border-radius: 24px;
+  padding: 24px;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.1),
+    0 2px 8px rgba(0, 0, 0, 0.05),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.1); /* Added background for better visibility */
+  width: 100%;
+  max-width: 400px; /* Fixed max-width */
+  box-sizing: border-box;
 }
 
-.title {
-  text-align: center;
-  font-size: 1.5rem;
-  color: #ffffff;
-  margin-bottom: 1rem;
-}
-
-.visualizerContainer {
+.innerContent {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
-  height: 100px;
-  margin-bottom: 1rem;
+  gap: 20px;
 }
 
 .visualizer {
-  width: 50px;
-  height: 100%;
-  background: #ffffff;
-  border-radius: 25px;
-  transform-origin: bottom;
-  transition: transform 0.1s ease;
+  width: 100%;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.wave {
+  width: 4px;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 2px;
+  margin: 0 2px;
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
 }
 
 .timer {
-  text-align: center;
-  font-size: 1.2rem;
-  color: #ffffff;
-  margin-bottom: 1rem;
-}
-
-.buttonContainer {
-  display: flex;
-  justify-content: center;
-  gap: 1rem;
-  margin-bottom: 1rem;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .recordButton,
 .stopButton {
   display: flex;
   align-items: center;
-  background-color: #ffffff;
-  color: #1da1f2;
-  border: none;
+  gap: 8px;
+  padding: 12px 24px;
   border-radius: 50px;
-  padding: 0.5rem 1rem;
+  border: none;
+  font-size: 1rem;
+  font-weight: 500;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: all 0.3s ease;
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.recordButton {
+  color: #3b82f6;
 }
 
 .stopButton {
-  background-color: #ffffff;
-  color: #dc3545;
+  color: #ef4444;
 }
 
-.recordButton:hover {
-  background-color: #e6e6e6;
-}
-
+.recordButton:hover,
 .stopButton:hover {
-  background-color: #e6e6e6;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-.icon {
-  margin-right: 0.5rem;
-}
-
-.loaderContainer {
+.processingContainer {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  margin-bottom: 1rem;
+  gap: 12px;
+  color: rgba(255, 255, 255, 0.9);
 }
 
-.loader {
-  border: 4px solid #f3f3f3;
-  border-top: 4px solid #ffffff;
+.processingSpinner {
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
   border-radius: 50%;
-  width: 24px;
-  height: 24px;
   animation: spin 1s linear infinite;
 }
 
-.loadingText {
-  color: #ffffff;
+
+.transcriptContainer {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 16px;
+  border-radius: 12px;
+  width: 100%;
+  color: rgba(255, 255, 255, 0.9);
   font-size: 0.9rem;
+  line-height: 1.5;
+  
+  /* New additions for scrollable transcript */
+  max-height: 150px; /* Set your desired max height */
+  overflow-y: auto;  /* Enable vertical scrolling when content overflows */
+  
+  /* Optional: Smooth scrolling */
+  scroll-behavior: smooth;
+  
+  /* Optional: Custom scrollbar styling for WebKit browsers */
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: rgba(255, 255, 255, 0.5) transparent; /* Firefox */
+}
+
+.transcriptContainer::-webkit-scrollbar {
+  width: 6px;
+}
+
+.transcriptContainer::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.transcriptContainer::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.5);
+  border-radius: 3px;
 }
 
 @keyframes spin {
@@ -105,42 +157,45 @@
   }
 }
 
-.audioContainer,
-.transcriptContainer,
-.topicsContainer {
-  margin-bottom: 1rem;
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
 }
 
-.subtitle {
-  font-size: 1.2rem;
-  color: #ffffff;
-  margin-bottom: 0.5rem;
+/* styles/AnimatedAudioRecorder.module.css */
+.closeButton {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: transparent;
+  border: none;
+  font-size: 24px;
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
 }
 
-.audioPlayer {
-  width: 100%;
-}
 
-.transcript {
-  background: rgba(255, 255, 255, 0.2);
-  padding: 0.75rem;
-  border-radius: 10px;
-  font-size: 1rem;
-  color: #ffffff;
-}
 
-.topicsList {
-  list-style: none;
-  padding: 0;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
+@media (max-width: 480px) {
+  .recorderContainer {
+    padding: 16px;
+  }
 
-.topicItem {
-  background: rgba(255, 255, 255, 0.2);
-  color: #ffffff;
-  padding: 0.3rem 0.6rem;
-  border-radius: 15px;
-  font-size: 0.8rem;
+  .timer {
+    font-size: 1.2rem;
+  }
+
+  .recordButton,
+  .stopButton {
+    padding: 10px 20px;
+    font-size: 0.9rem;
+  }
+
+  .transcriptContainer {
+    font-size: 0.8rem;
+  }
 }

@@ -1,23 +1,47 @@
-/* app/home/page.module.css */
+/* styles/Home.module.css */
 
+/* Ensure html and body take full height and enable smooth scrolling */
+html,
+body,
+#__next {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  scroll-behavior: smooth; /* Enables smooth scrolling */
+}
+
+/* Home Container */
 .home {
-  padding-top: 60px; /* Height of Navbar */
+  position: relative;
+  min-height: 100%;
+  background-color: #f0f2f5; /* Optional: Background color for the entire page */
 }
 
-.mainContent {
-  display: flex;
-  justify-content: center;
-  padding: 1rem;
+/* Navbar Styles */
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 60px; /* Adjust as per your Navbar's height */
+  z-index: 1000; /* Ensure it stays above other elements */
+  background-color: #fff; /* Background color for Navbar */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Optional: Add shadow */
 }
 
-.postsSection {
-  flex: 1;
+/* Posts Container */
+.postsContainer {
   max-width: 600px;
-  margin: 0 1rem;
+  margin: 80px auto 0 auto; /* 60px for Navbar + 20px spacing */
+  padding: 1rem;
+  box-sizing: border-box;
+  /* Removed height and overflow-y to use the browser's scrollbar */
 }
 
+/* Infinite Scroll Loader and Messages */
 .loadingText,
-.noPosts {
+.noPosts,
+.endMessage {
   text-align: center;
   color: #657786;
   font-size: 1rem;
@@ -28,4 +52,74 @@
   color: #dc3545;
   text-align: center;
   margin-top: 1rem;
+}
+
+/* Floating Voice Button */
+.floatingButton {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  /* Add other styles for the floating button */
+}
+
+/* Scrollbar Styling for Webkit Browsers */
+.postsContainer::-webkit-scrollbar {
+  width: 8px;
+}
+
+.postsContainer::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.postsContainer::-webkit-scrollbar-thumb {
+  background-color: #c1c1c1;
+  border-radius: 4px;
+  border: 2px solid #f1f1f1;
+}
+
+/* Scrollbar Styling for Firefox */
+.postsContainer {
+  scrollbar-width: thin;
+  scrollbar-color: #c1c1c1 #f1f1f1;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .postsContainer {
+    margin: 80px 150px 0 150px; /* Adjust margins based on sidebar widths */
+  }
+}
+
+@media (max-width: 768px) {
+  .sidebar,
+  .suggestionsSidebar {
+    display: none; /* Hide sidebars on small screens */
+  }
+
+  .postsContainer {
+    margin: 80px 20px 0 20px; /* Reduce side margins */
+    max-width: none;
+  }
+}
+
+/* New Styles for New Posts Notification */
+.newPostsNotification {
+  position: fixed;
+  top: 80px; /* Below the Navbar */
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #1DA1F2;
+  color: #ffffff;
+  padding: 10px 20px;
+  margin-bottom: 10px;
+  border-radius: 20px;
+  text-align: center;
+  cursor: pointer;
+  z-index: 1000;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s ease;
+}
+
+.newPostsNotification:hover {
+  background-color: #0d95e8;
 }

@@ -1,68 +1,114 @@
-/* components/SearchBar.module.css */
+/* styles/SearchBar.module.css */
 
 .searchContainer {
   position: relative;
-  width: 250px;
-  margin-left: 1rem;
+  width: 100%;
+  max-width: 400px;
 }
 
 .searchForm {
   display: flex;
   align-items: center;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 25px;
+  padding: 0.5rem 1rem;
+  transition: background-color 0.3s ease;
+}
+
+.searchForm:hover,
+.searchForm:focus-within {
+  background-color: rgba(255, 255, 255, 0.15);
 }
 
 .searchButton {
   background: transparent;
   border: none;
-  color: #657786;
+  color: #ffffff;
   font-size: 1rem;
   cursor: pointer;
-  margin-right: -35px;
-  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .searchInput {
-  width: 100%;
-  padding: 0.5rem 0.75rem 0.5rem 2rem;
-  border: 1px solid #E1E8ED;
-  border-radius: 50px;
+  flex: 1;
+  background: transparent;
+  border: none;
   outline: none;
-  background: #F5F8FA;
-  color: #14171A;
-  transition: border-color 0.3s ease, background 0.3s ease;
+  margin-left: 0.5rem;
+  color: #ffffff;
+  font-size: 0.95rem;
 }
 
-.searchInput:focus {
-  border-color: #1DA1F2;
-  background: #ffffff;
+.searchInput::placeholder {
+  color: rgba(255, 255, 255, 0.7);
 }
 
 .dropdown {
   position: absolute;
-  top: 45px;
-  width: 100%;
-  background: #ffffff;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background-color: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
   border-radius: 10px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
   max-height: 300px;
   overflow-y: auto;
+  margin-top: 0.5rem;
   z-index: 1000;
 }
 
+.loadingText,
+.errorText,
+.noResults {
+  padding: 1rem;
+  text-align: center;
+  color: #555555;
+}
+
+.errorText {
+  color: #dc3545;
+}
+
 .resultItem {
-  padding: 0.75rem;
-  border-bottom: 1px solid #E1E8ED;
+  padding: 0.75rem 1rem;
   cursor: pointer;
-  transition: background 0.3s ease;
+  transition: background-color 0.2s ease;
+  display: flex;
+  align-items: center;
 }
 
 .resultItem:hover {
-  background: #E8F5FD;
+  background-color: rgba(0, 0, 0, 0.05);
 }
 
-.loadingText,
-.noResults {
-  padding: 0.75rem;
-  color: #657786;
-  font-size: 0.9rem;
+.userResult,
+.postResult,
+.topicResult {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 0.75rem;
+  background-color: #cccccc;
+}
+
+.userResult span,
+.postResult span,
+.topicResult span {
+  color: #333333;
+  font-size: 0.95rem;
+}
+
+.topicResult span {
+  color: #007bff;
+  font-weight: 500;
 }

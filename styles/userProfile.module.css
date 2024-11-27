@@ -1,0 +1,75 @@
+/* styles/Profile.module.css */
+
+.container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+  
+  .mainContent {
+    display: flex;
+    flex: 1;
+  }
+  
+  .sidebar {
+    width: 250px;
+    border-right: 1px solid #e1e8ed;
+    padding: 20px;
+  }
+  
+  .profileSection {
+    flex: 1;
+    padding: 20px;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  
+  .profileInfo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 30px;
+  }
+  
+  .avatar {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid #1DA1F2;
+    margin-bottom: 20px;
+  }
+  
+  .username {
+    font-size: 32px;
+    font-weight: bold;
+    color: #14171A;
+    margin-bottom: 10px;
+  }
+  
+  .bio {
+    font-size: 18px;
+    color: #657786;
+    text-align: center;
+    max-width: 500px;
+  }
+  
+  .postsSection {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .loadingText,
+  .endMessage,
+  .noPosts,
+  .error {
+    text-align: center;
+    font-size: 18px;
+    color: #657786;
+    margin: 20px 0;
+  }
+  
+  .error {
+    color: #ff4d4f;
+  }
+  

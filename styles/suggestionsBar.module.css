@@ -1,12 +1,37 @@
-/* styles/SuggestionsSidebar.module.css */
+/* styles/suggestionsBar.module.css */
 
 .sidebar {
+    position: fixed;
+    top: 80px; /* 60px for Navbar + 20px spacing */
+    right: 2rem; /* Padding from the right edge */
     width: 250px;
     padding: 1rem;
     background: #ffffff;
     border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    margin-left: 1rem;
+    overflow-y: auto; /* Enable vertical scrolling if content overflows */
+    box-sizing: border-box;
+    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1); /* Optional: Add shadow for depth */
+  }
+  
+  /* Scrollbar Styling for Webkit Browsers */
+  .sidebar::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  .sidebar::-webkit-scrollbar-track {
+    background: #f1f1f1;
+  }
+  
+  .sidebar::-webkit-scrollbar-thumb {
+    background-color: #c1c1c1;
+    border-radius: 4px;
+    border: 2px solid #f1f1f1;
+  }
+  
+  /* Scrollbar Styling for Firefox */
+  .sidebar {
+    scrollbar-width: thin;
+    scrollbar-color: #c1c1c1 #f1f1f1;
   }
   
   .title {

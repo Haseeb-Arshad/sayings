@@ -1,68 +1,68 @@
 /* styles/Notifications.module.css */
 
 .notificationsContainer {
-    position: relative;
-    margin-left: 1rem;
-  }
-  
-  .bellButton {
-    background: transparent;
-    border: none;
-    position: relative;
-    cursor: pointer;
-    color: #333;
-  }
-  
-  .badge {
-    position: absolute;
-    top: -5px;
-    right: -5px;
-    background-color: #dc3545;
-    color: #fff;
-    border-radius: 50%;
-    padding: 2px 6px;
-    font-size: 0.75rem;
-  }
-  
-  .dropdown {
-    position: absolute;
-    right: 0;
-    top: 35px;
-    width: 300px;
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    border-radius: 10px;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-    padding: 1rem;
-    z-index: 1000;
-  }
-  
-  .dropdownTitle {
-    font-size: 1rem;
-    font-weight: 600;
-    margin-bottom: 0.75rem;
-    color: #333;
-  }
-  
-  .notificationItem {
-    padding: 0.5rem 0;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-  }
-  
-  .notificationItem:last-child {
-    border-bottom: none;
-  }
-  
-  .notificationTime {
-    display: block;
-    font-size: 0.75rem;
-    color: #777;
-    margin-top: 0.25rem;
-  }
-  
-  .noNotifications {
-    text-align: center;
-    color: #777;
-    font-size: 0.9rem;
-  }
-  
+  position: relative;
+  margin-left: 1rem;
+}
+
+.bellButton {
+  background: transparent;
+  border: none;
+  position: relative;
+  cursor: pointer;
+  color: white;
+  font-size: 1.25rem;
+}
+
+.badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background-color: #dc3545;
+  color: #fff;
+  border-radius: 50%;
+  padding: 2px 6px;
+  font-size: 0.75rem;
+}
+
+.dropdown {
+  position: absolute;
+  right: 0;
+  top: 35px;
+  width: 300px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 10px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  padding: 1rem;
+  z-index: 1000;
+}
+
+.dropdownTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  color: #333;
+}
+
+.notificationItem {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.notificationItem:last-child {
+  border-bottom: none;
+}
+
+.notificationTime {
+  display: block;
+  font-size: 0.75rem;
+  color: #777;
+  margin-top: 0.25rem;
+}
+
+.noNotifications {
+  text-align: center;
+  color: #777;
+  font-size: 0.9rem;
+}

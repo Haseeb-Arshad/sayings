@@ -1,52 +1,43 @@
-// pages/profile.js
+// app/profile/page.jsx
+'use client';
 
 import { useState, useEffect } from 'react';
-import Navbar from '../components/Navbar';
-import Sidebar from '../components/Sidebar';
-import Post from '../components/Post';
-import FloatingVoiceButton from '../components/FloatingVoiceButton';
+import Navbar from '../component/navBar';
+import Sidebar from '../component/sidebar';
+import Post from '../component/post';
+import FloatingVoiceButton from '../component/floatingButton';
 import styles from '../styles/Profile.module.css';
-import axios from 'axios';
+import axios from '../utils/axiosInstance';
+import useCurrentUser from '../hooks/useCurrentUser';
+import { useRouter } from 'next/navigation';
 
 const Profile = () => {
-  const [user, setUser] = useState(null);
+  const { user, loading } = useCurrentUser();
   const [posts, setPosts] = useState([]);
   const [filter, setFilter] = useState('recent');
-  const [loading, setLoading] = useState(false);
+  const [isLoadingPosts, setIsLoadingPosts] = useState(false);
+  const router = useRouter();
 
-  // Fetch user data (assuming authentication is implemented)
   useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const token = localStorage.getItem('token'); // Adjust based on auth implementation
-        const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/me`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        setUser(response.data.user);
-      } catch (error) {
-        console.error('Error fetching user data:', error);
-      }
-    };
+    if (!loading && !user) {
+      // If not loading and user is null, redirect to login
+      router.push('/login');
+    }
+  }, [user, loading, router]);
 
-    fetchUser();
-  }, []);
-
-  // Fetch user posts
   useEffect(() => {
     const fetchUserPosts = async () => {
       if (!user) return;
-      setLoading(true);
+      setIsLoadingPosts(true);
       try {
-        const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/posts/user/${user._id}`, {
+        const response = await axios.get(`/posts/user/${user.id}`, {
           params: { filter },
         });
         setPosts(response.data.posts);
       } catch (error) {
         console.error('Error fetching user posts:', error);
       }
-      setLoading(false);
+      setIsLoadingPosts(false);
     };
 
     fetchUserPosts();
@@ -56,6 +47,10 @@ const Profile = () => {
     setPosts([newPost, ...posts]);
   };
 
+  if (loading) {
+    return <p>Loading...</p>;
+  }
+
   return (
     <div className={styles.container}>
       <Navbar />
@@ -64,17 +59,27 @@ const Profile = () => {
         <div className={styles.profileSection}>
           {user && (
             <div className={styles.profileInfo}>
-              <img src={user.avatar || '/default-avatar.png'} alt="User Avatar" className={styles.avatar} />
+              <img
+                src={user.avatar || '/images/profile/dp.webp'}
+                alt="User Avatar"
+                className={styles.avatar}
+              />
               <h2 className={styles.username}>{user.username}</h2>
               <p className={styles.bio}>{user.bio}</p>
             </div>
           )}
           <div className={styles.postsSection}>
-            <FloatingVoiceButton />
-            {loading ? (
+            <FloatingVoiceButton onNewPost={handleNewPost} />
+            {isLoadingPosts ? (
               <p className={styles.loadingText}>Loading posts...</p>
             ) : posts.length > 0 ? (
-              posts.map((post) => <Post key={post._id} post={post} />)
+              posts.map((post) => (
+                <Post
+                  key={post._id}
+                  post={post}
+                  currentUserId={user.id} // Pass currentUserId
+                />
+              ))
             ) : (
               <p className={styles.noPosts}>No posts available.</p>
             )}

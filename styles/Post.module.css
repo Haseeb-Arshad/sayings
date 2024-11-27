@@ -1,31 +1,42 @@
 /* styles/Post.module.css */
+@import url('https://fonts.googleapis.com/css2?family=Inika:wght@400;700&display=swap');
 
 .postContainer {
   background-color: #ffffff;
-  border-radius: 8px;
-  padding: 15px;
-  margin-bottom: 15px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-  transition: box-shadow 0.3s ease;
-  font-family: 'Helvetica Neue', Arial, sans-serif;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  transition: box-shadow 0.3s ease, opacity 0.5s ease;
+  font-family: 'Poppins', sans-serif;
+
+  /* font-family: 'Helvetica Neue', Arial, sans-serif; */
+  position: relative;
 }
 
 .postContainer:hover {
-  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  box-shadow: 0 8px 16px rgba(0,0,0,0.15);
 }
 
 .postHeader {
   display: flex;
   align-items: center;
-  margin-bottom: 10px;
+  margin-bottom: 15px;
+  justify-content: space-between; /* Space between left and right headers */
+}
+
+.leftHeader {
+  display: flex;
+  align-items: center;
 }
 
 .avatar {
-  width: 40px;
-  height: 40px;
+  width: 50px;
+  height: 50px;
   border-radius: 50%;
   object-fit: cover;
-  margin-right: 10px;
+  margin-right: 15px;
+  border: 2px solid #1DA1F2;
 }
 
 .postInfo {
@@ -34,38 +45,209 @@
 }
 
 .username {
-  font-size: 14px;
+  font-size: 18px;
   font-weight: bold;
   color: #14171A;
+  font-family: 'Inika', serif; /* Apply Inika font */
 }
 
 .timestamp {
-  font-size: 12px;
+  font-size: 14px;
   color: #657786;
 }
 
+/* .rightHeader {
+  display: flex;
+  align-items: center;
+  gap: 10px; 
+} */
+
+.rightHeader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  position: relative; /* To position the menu and emotions properly */
+}
+
+
+.menuContainer {
+  position: relative;
+}
+
+
+
+
+.menuButton {
+  background: none;
+  border: none;
+  color: #657786;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 5px;
+  transition: color 0.3s ease;
+}
+
+.menuButton:hover {
+  color: #1DA1F2;
+}
+
+.emotions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  position: relative;
+  /* Remove max-width to allow emotions to occupy available space */
+  flex-wrap: nowrap;
+  overflow: hidden;
+  /* Add margin-right to prevent overlapping with the menu */
+  margin-right: auto;
+}
+
+
+
+.emotionBadge {
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.overflowBadge {
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  background-color: #1DA1F2;
+  color: #ffffff;
+  cursor: pointer;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.tooltip {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  z-index: 10;
+  white-space: nowrap;
+  margin-top: 6px;
+}
+
+.tooltip::before {
+  content: '';
+  position: absolute;
+  top: -6px;
+  left: 10px;
+  border-width: 6px;
+  border-style: solid;
+  border-color: transparent transparent #e0e0e0 transparent;
+}
+
+.tooltipContent {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.tooltip .emotionBadge {
+  margin-bottom: 4px;
+}
+/* 
+.tooltip {
+  position: absolute;
+  top: 150%;
+  right: 0;
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  z-index: 10;
+  white-space: nowrap;
+} */
+
+
+.menuContainer {
+  position: relative;
+}
+/* 
+.dropdownMenu {
+  position: absolute;
+  top: 100%; 
+  right: 0;
+  transform: translateY(10px);
+} */
+
+.dropdownMenu {
+  position: absolute;
+  top: 100%; 
+  right: 0;
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  z-index: 100;
+  overflow: hidden;
+  transform: translateY(10px);
+
+}
+
+.dropdownItem {
+  display: flex;
+  align-items: center;
+  padding: 12px 20px;
+  width: 180px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  color: #14171A;
+  transition: background-color 0.2s ease;
+}
+
+.dropdownItem:hover {
+  background-color: #f5f5f5;
+}
+
+.dropdownIcon {
+  margin-right: 10px;
+  color: #ff4d4f;
+}
+
 .contentArea {
-  margin-bottom: 10px;
+  margin-bottom: 15px;
 }
 
 .summary {
-  font-size: 16px;
+  font-size: 1rem;
   color: #14171A;
-  line-height: 1.4;
+  line-height: 1.6;
 }
 
 .transcript {
-  font-size: 16px;
+  font-size: 1rem;
   color: #14171A;
-  line-height: 1.6;
+  line-height: 1.2;
   word-wrap: break-word;
 }
 
 .word {
   display: inline-block;
   transition: background-color 0.3s ease;
-  padding: 0; /* Remove extra padding */
-  cursor: pointer; /* Indicate interactivity */
+  padding: 2px 4px;
+  cursor: pointer;
+  border-radius: 4px;
 }
 
 .word:not(:last-child)::after {
@@ -75,28 +257,27 @@
 
 .highlighted {
   background-color: rgba(29, 161, 242, 0.3);
-  border-radius: 4px;
 }
 
 .categories {
   display: flex;
   flex-wrap: wrap;
-  gap: 5px;
-  margin-bottom: 10px;
+  gap: 8px;
+  margin-bottom: 15px;
 }
 
 .categoryBadge {
   background-color: #E8F5FD;
   color: #1DA1F2;
-  padding: 2px 8px;
-  border-radius: 12px;
-  font-size: 12px;
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-size: 14px;
 }
 
 .audioPlayer {
   display: flex;
   align-items: center;
-  margin-bottom: 10px;
+  margin-bottom: 15px;
 }
 
 .playButton {
@@ -104,14 +285,18 @@
   color: #ffffff;
   border: none;
   border-radius: 50%;
-  width: 36px;
-  height: 36px;
+  width: 48px;
+  height: 48px;
   cursor: pointer;
-  margin-right: 10px;
+  margin-right: 15px;
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: background-color 0.3s ease;
 }
+
+
+
 
 .playButton:hover {
   background-color: #0d95e8;
@@ -124,27 +309,30 @@
 
 .waveform {
   flex-grow: 1;
-  height: 50px;
+  height: 60px;
+  border-radius: 8px;
+  overflow: hidden;
 }
 
 .time {
-  font-size: 12px;
+  font-size: 14px;
   color: #657786;
-  margin-left: 10px;
+  margin-left: 15px;
   white-space: nowrap;
 }
 
 .toggleTranscript {
   text-align: right;
-  margin-bottom: 10px;
+  margin-bottom: 15px;
 }
 
 .toggleTranscript button {
   background: none;
   border: none;
   color: #1DA1F2;
-  font-size: 14px;
+  font-size: 16px;
   cursor: pointer;
+  transition: color 0.3s ease;
 }
 
 .toggleTranscript button:hover {
@@ -154,7 +342,7 @@
 .interactions {
   display: flex;
   justify-content: space-around;
-  padding-top: 10px;
+  padding-top: 15px;
   border-top: 1px solid #E1E8ED;
 }
 
@@ -162,8 +350,9 @@
   display: flex;
   align-items: center;
   color: #657786;
-  font-size: 14px;
+  font-size: 16px;
   cursor: pointer;
+  transition: color 0.3s ease;
 }
 
 .interactionButton:hover {
@@ -171,5 +360,144 @@
 }
 
 .interactionButton svg {
-  margin-right: 5px;
+  margin-right: 6px;
+}
+
+/* Confirmation Modal Styles */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.5);
+  z-index: 1000;
+}
+
+.modalContentBack
+{
+  position: absolute;
+  height: 100vh;
+  width: 100vw;
+  /* display: flex;
+  align-items: center;
+  justify-content: center; */
+  z-index: 9999999999999999;
+}
+
+.modalContent {
+  /* position: fixed; */
+  /* top: 50%;
+
+  left: 50%; */
+  position: relative;
+  width: 90%;
+  max-width: 450px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 25px;
+  z-index: 1001;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+  box-sizing: border-box; /* This line centers the modal */
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.modalHeader h2 {
+  margin: 0;
+  font-size: 20px;
+  color: #14171A;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  color: #657786;
+  font-size: 22px;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.closeButton:hover {
+  color: #ff4d4f;
+}
+
+.modalBody {
+  font-size: 16px;
+  color: #14171A;
+  margin-bottom: 25px;
+}
+
+.modalFooter {
+  display: flex;
+  justify-content: flex-end;
+  gap: 15px;
+}
+
+.cancelButton,
+.confirmButton {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.cancelButton {
+  background-color: #e0e0e0;
+  color: #14171A;
+}
+
+.cancelButton:hover {
+  background-color: #d5d5d5;
+}
+
+.confirmButton {
+  background-color: #ff4d4f;
+  color: #ffffff;
+}
+
+.confirmButton:hover {
+  background-color: #ff7875;
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+
+
+
+  .postHeader {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .rightHeader {
+    margin-top: 10px;
+    width: 100%;
+    justify-content: space-between;
+    position: relative;
+  }
+
+  .emotions {
+    max-width: 100%;
+    margin-top: 10px;
+  }
+
+  .tooltip {
+    right: auto;
+    left: 0;
+    top: 110%;
+  }
+
+  .dropdownMenu {
+    right: auto;
+    left: 0;
+  }
 }

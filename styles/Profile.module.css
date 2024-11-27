@@ -1,60 +1,409 @@
 /* styles/Profile.module.css */
 
+@import url('https://fonts.googleapis.com/css2?family=Inika:wght@400;700&display=swap');
+
+:root {
+  --primary-color: #1DA1F2; /* Accent color */
+  --secondary-color: #ffffff; /* White */
+  --background-color: #f0f2f5; /* Light grey background */
+  --text-color: #333333; /* Primary text color */
+  --subtext-color: #777777; /* Secondary text color */
+  --border-color: #e0e0e0; /* Light border color */
+  --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); /* Subtle shadow */
+  --transition-speed: 0.3s; /* Transition speed for hover effects */
+  --font-family: 'Inika', serif; /* Main font */
+  --accent-font-family: 'Poppins', sans-serif; /* Accent font for sections */
+}
+
 .container {
-  padding-top: 60px; /* Height of Navbar */
+  padding-top: 40px; /* Height of Navbar */
+  background-color: var(--background-color);
+  min-height: 100vh;
+  font-family: var(--font-family);
 }
 
 .mainContent {
   display: flex;
   justify-content: center;
-  padding: 1rem;
+  padding: 2rem 1rem;
+  gap: 2rem;
 }
 
 .profileSection {
   flex: 1;
-  max-width: 600px;
-  margin: 0 1rem;
+  max-width: 800px;
+  background: var(--secondary-color);
+  border-radius: 10px;
+  box-shadow: var(--card-shadow);
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
 }
 
 .profileInfo {
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(15px);
-  border-radius: 16px;
-  padding: 2rem;
-  text-align: center;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
-  margin-bottom: 2rem;
-  color: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 1.5rem;
 }
 
 .avatar {
-  width: 100px;
-  height: 100px;
+  width: 150px;
+  height: 150px;
   border-radius: 50%;
   object-fit: cover;
-  margin-bottom: 1rem;
-  border: 2px solid #1db954;
+  border: 4px solid var(--primary-color);
+  transition: transform var(--transition-speed) ease;
+}
+
+.avatar:hover {
+  transform: scale(1.05);
+}
+
+.userDetails {
+  flex: 1;
 }
 
 .username {
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: #1db954;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--text-color);
+  margin: 0;
 }
 
 .bio {
+  font-size: 1.1rem;
+  color: var(--subtext-color);
+  margin: 0.5rem 0 1.5rem;
+}
+
+/* Personality Section */
+
+/* Personality Section */
+
+
+.personalityAndReview {
+  /* margin-top: 2rem; */
+  /* margin-bottom: 2rem; */
+  /* Adjust the layout as needed */
+  /* border: 1px solid var(--border-color); */
+}
+
+/* Personality Traits Section */
+.personalitySection {
+  margin-bottom: 1.5rem;
+}
+
+.sectionTitle {
+  font-size: 1.2rem;
+  font-weight: 600;
+  /* color: var(--primary-color); */
+  margin-bottom: 0.5rem;
+}
+
+.personalityDescriptors {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.descriptorBadge {
+  background-color: var(--primary-color);
+  color: var(--secondary-color);
+  padding: 0.4rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: background-color var(--transition-speed) ease;
+}
+
+.descriptorBadge:hover {
+  background-color: #0d8ddb;
+}
+
+/* Profile Review Section */
+.profileReviewSection {
+  margin-bottom: 1.5rem;
+}
+
+.profileReviewText {
   font-size: 1rem;
-  color: #dddddd;
+  line-height: 1.6;
+  color: var(--text-color);
+  background-color: #f9f9f9;
+  padding: 1rem;
+  border-left: 4px solid var(--primary-color);
+  border-radius: 4px;
+  box-shadow: var(--card-shadow);
+  font-family: var(--font-family);
+}
+
+
+
+
+
+
+
+
+/* .personalitySection {
+  margin-bottom: 2rem;
+} */
+
+.traitBars {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.traitBar {
+  display: flex;
+  flex-direction: column;
+}
+
+.traitLabel {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.3rem;
+  font-weight: 500;
+  color: var(--text-color);
+}
+
+.traitDescriptor {
+  font-style: italic;
+  color: var(--subtext-color);
+}
+
+.progressBar {
+  background-color: #e0e0e0;
+  border-radius: 10px;
+  overflow: hidden;
+  height: 12px;
+}
+
+.progressFill {
+  height: 100%;
+  border-radius: 10px;
+}
+
+/* .profileReviewSection {
+  margin-bottom: 2rem;
+}
+
+.profileReviewText {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--text-color);
+  background-color: #f9f9f9;
+  padding: 1rem;
+  border-left: 4px solid var(--primary-color);
+  border-radius: 4px;
+  box-shadow: var(--card-shadow);
+  font-family: var(--accent-font-family);
+} */
+
+/* Adjusted userStats positioning */
+.userStats {
+  display: flex;
+  gap: 2rem;
+  margin-top: 1rem;
+}
+
+
+
+
+
+
+
+
+
+/* 
+
+
+
+.personalitySection {
+  margin-bottom: 1.5rem;
+} */
+
+/* .sectionTitle {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--primary-color);
+  font-family: var(--accent-font-family);
+  margin-bottom: 0.5rem;
+} */
+
+/* .personalityDescriptors {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+} */
+
+/* .descriptorBadge {
+  background-color: var(--primary-color);
+  color: var(--secondary-color);
+  padding: 0.4rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: background-color var(--transition-speed) ease;
+}
+
+.descriptorBadge:hover {
+  background-color: #0d8ddb;
+} */
+
+/* Profile Review Section */
+.profileReviewSection {
+  margin-bottom: 1.5rem;
+}
+
+.profileReviewText {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--text-color);
+  background-color: #f9f9f9;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: var(--card-shadow);
+  font-family: var(--accent-font-family);
+}
+
+.userStats {
+  display: flex;
+  gap: 2rem;
+  margin-top: 1.5rem;
+}
+
+.statItem {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.statNumber {
+  font-size: 1.05rem;
+  font-weight: 600;
+  margin-right: 0.3rem;
+  color: var(--text-color);
+}
+
+.statLabel {
+  font-size: 0.85rem;
+  color: var(--subtext-color);
 }
 
 .postsSection {
   position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.profileHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0rem;
+}
+
+.profileHeader h2 {
+  font-size: 1.75rem;
+  color: var(--text-color);
+  margin: 0;
+}
+
+.filterOptions {
+  display: flex;
+  gap: 1rem;
+}
+
+.filterButton {
+  padding: 0.6rem 1.2rem;
+  background-color: transparent;
+  color: var(--primary-color);
+  border: 2px solid var(--primary-color);
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all var(--transition-speed) ease;
+}
+
+.filterButton:hover {
+  background-color: var(--primary-color);
+  color: var(--secondary-color);
+}
+
+.filterButton.active {
+  background-color: var(--primary-color);
+  color: var(--secondary-color);
 }
 
 .loadingText,
-.noPosts {
+.noPosts,
+.endMessage,
+.error {
   text-align: center;
-  color: #bbbbbb;
+  color: var(--subtext-color);
   font-size: 1rem;
   margin-top: 2rem;
+}
+
+.error {
+  color: #ff4d4f; /* Red color for errors */
+}
+
+.postCard {
+  background: var(--secondary-color);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 0rem;
+  transition: transform var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
+}
+
+.postCard:hover {
+  transform: translateY(-5px);
+}
+
+@media (max-width: 1024px) {
+  .mainContent {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .profileSection {
+    width: 100%;
+    max-width: 700px;
+  }
+}
+
+@media (max-width: 768px) {
+  .profileInfo {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .userStats {
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .filterOptions {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .avatar {
+    width: 90px;
+    height: 90px;
+  }
+
+  .username {
+    font-size: 1.5rem;
+  }
+
+  .bio {
+    font-size: 1rem;
+  }
 }
