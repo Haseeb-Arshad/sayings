@@ -1,7 +1,7 @@
 /* General Styles */
 @import url('https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@400;600&display=swap');
-
-:root {
+/* 
+:global(:root) {
   --primary-color: #007aff;
   --secondary-color: #5856d6;
   --background-color: #f0f4f8;
@@ -9,9 +9,19 @@
   --text-color: #1c1c1e;
   --subtext-color: #8e8e93;
   --highlight-color: #e5e5ea;
-}
+} */
 
 .sidebar {
+
+  --primary-color: #007aff;
+  --secondary-color: #5856d6;
+  --background-color: #f0f4f8;
+  --border-color: rgba(0, 0, 0, 0.1);
+  --text-color: #1c1c1e;
+  --subtext-color: #8e8e93;
+  --highlight-color: #e5e5ea;
+
+
   width: 280px;
   background-color: #fff;
   border-right: 1px solid var(--border-color);

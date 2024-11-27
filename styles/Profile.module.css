@@ -2,7 +2,21 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Inika:wght@400;700&display=swap');
 
-:root {
+/* :global(:root) {
+  --primary-color: #1DA1F2;
+  --secondary-color: #ffffff;
+  --background-color: #f0f2f5;
+  --text-color: #333333; 
+  --subtext-color: #777777; 
+  --border-color: #e0e0e0; 
+  --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); 
+  --transition-speed: 0.3s; 
+  --font-family: 'Inika', serif; 
+  --accent-font-family: 'Poppins', sans-serif; 
+} */
+
+.container {
+
   --primary-color: #1DA1F2; /* Accent color */
   --secondary-color: #ffffff; /* White */
   --background-color: #f0f2f5; /* Light grey background */
@@ -12,10 +26,9 @@
   --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); /* Subtle shadow */
   --transition-speed: 0.3s; /* Transition speed for hover effects */
   --font-family: 'Inika', serif; /* Main font */
-  --accent-font-family: 'Poppins', sans-serif; /* Accent font for sections */
-}
+  --accent-font-family: 'Poppins', sans-serif; 
 
-.container {
+
   padding-top: 40px; /* Height of Navbar */
   background-color: var(--background-color);
   min-height: 100vh;

@@ -1,17 +1,12 @@
 /* styles/Home.module.css */
 
 /* Ensure html and body take full height and enable smooth scrolling */
-html,
-body,
-#__next {
-  height: 100%;
-  margin: 0;
-  padding: 0;
-  scroll-behavior: smooth; /* Enables smooth scrolling */
-}
+
 
 /* Home Container */
 .home {
+
+  height: 100%;
   position: relative;
   min-height: 100%;
   background-color: #f0f2f5; /* Optional: Background color for the entire page */

@@ -151,7 +151,7 @@ const Login = () => {
             Login
           </motion.button>
           <p className={styles.switchText}>
-            Don't have an account?{' '}
+            Don&apos;t have an account?{' '}
             <Link href="/register" className={styles.link}>
               Register here
             </Link>

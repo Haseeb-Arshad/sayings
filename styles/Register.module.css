@@ -3,7 +3,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Inika:wght@400;700&display=swap');
 
-:root {
+/* :global(:root) {
   --primary-color: #007aff;
   --secondary-color: #5856d6;
   --background-gradient: linear-gradient(135deg, #f0f4f8 0%, #d9e2ec 100%);
@@ -20,10 +20,23 @@
   margin: 0;
   font-family: 'SF Pro Display', sans-serif;
   background: var(--background-gradient);
-}
+} */
 
 /* Container */
 .container {
+
+  --primary-color: #007aff;
+  --secondary-color: #5856d6;
+  --background-gradient: linear-gradient(135deg, #f0f4f8 0%, #d9e2ec 100%);
+  --input-background: rgba(255, 255, 255, 0.5);
+  --border-color: rgba(0, 0, 0, 0.1);
+  --error-color: #ff3b30;
+  box-sizing: border-box;
+
+  margin: 0;
+  font-family: 'SF Pro Display', sans-serif;
+  background: var(--background-gradient);
+
   display: flex;
   min-height: 100vh;
 }

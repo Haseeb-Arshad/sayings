@@ -11,6 +11,10 @@ body {
   font-family: 'Poppins', sans-serif;
   background: #f0f2f5;
   color: #333;
+  height: 100%;
+
+  scroll-behavior: smooth; /* Enables smooth scrolling */
+
 }
 
 a {
