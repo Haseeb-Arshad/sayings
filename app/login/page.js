@@ -52,7 +52,7 @@ const Login = () => {
 
     try {
       const response = await axios.post('/auth/login', formData);
-      console.log('Login response:', response);
+      // console.log('Login response:', response);
       // Update Auth Context
       setUser(response.data.user);
       // Redirect to profile after login

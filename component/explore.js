@@ -80,10 +80,10 @@ const Explore = () => {
       fetchedPosts = sortPostsDescending(fetchedPosts);
 
       // Log fetched _id's for debugging
-      console.log(
-        'Fetched Explore Posts IDs:',
-        fetchedPosts.map((post) => post._id)
-      );
+      // console.log(
+      //   'Fetched Explore Posts IDs:',
+      //   fetchedPosts.map((post) => post._id)
+      // );
 
       // Remove duplicates before updating state
       setPosts((prevPosts) => {

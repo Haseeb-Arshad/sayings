@@ -46,7 +46,7 @@ const Profile = () => {
         const response = await axios.get(`/posts/user/${user._id}`, {
           params: { filter, page, limit: 10 },
         });
-        console.log('Response:', response);
+        // console.log('Response:', response);
 
         const fetchedPosts = response.data.posts || [];
 

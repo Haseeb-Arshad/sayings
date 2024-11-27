@@ -53,7 +53,7 @@ const FloatingVoiceButton = ({ onNewPost }) => { // Accept onNewPost as a prop
       {isOpen && user && ( // Ensure the recorder only opens if user is authenticated
         <AnimatedAudioRecorder
           onNewPost={(post) => {
-            console.log('New Post:', post);
+            // console.log('New Post:', post);
             if (onNewPost) onNewPost(post); // Invoke the onNewPost callback
           }}
           onClose={() => setIsOpen(false)}

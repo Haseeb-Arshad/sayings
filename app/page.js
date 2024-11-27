@@ -172,7 +172,7 @@ const Home = () => {
         let fetchedPosts = response.data.posts || [];
 
         // Log fetched _id's for debugging
-        console.log('Fetched Posts IDs:', fetchedPosts.map((post) => post._id));
+        // console.log('Fetched Posts IDs:', fetchedPosts.map((post) => post._id));
 
         // Sort posts based on filter
         fetchedPosts = sortPosts(fetchedPosts);
@@ -198,7 +198,7 @@ const Home = () => {
         }
       } catch (err) {
         if (err.name === 'CanceledError') {
-          console.log('Request canceled:', err.message);
+          // console.log('Request canceled:', err.message);
         } else if (err.response && err.response.status === 429) {
           console.error('Too many requests:', err);
           setError('You are sending requests too quickly. Please slow down.');
