@@ -2,7 +2,7 @@
 
 'use client';
 
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import {
   FaBars,
@@ -10,21 +10,19 @@ import {
   FaHome,
   FaCompass,
   FaUser,
-  FaSearch,
-  FaBell,
 } from 'react-icons/fa';
 import { motion, AnimatePresence } from 'framer-motion';
 import styles from '../styles/Navbar.module.css';
 import { useRouter } from 'next/navigation';
 import SearchBar from './searchBar';
 import Notifications from './notifications';
-import { useAuth } from '../context/useAuth'; // Import the Auth Context
+import { useAuth } from '../context/useAuth';
 import axiosInstance from '@/utils/axiosInstance';
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const router = useRouter();
-  const { user, logout } = useAuth(); // Consume the Auth Context
+  const { user, logout } = useAuth();
 
   const navItems = [
     { id: 'home', label: 'Home', path: '/', icon: <FaHome /> },
@@ -36,22 +34,42 @@ const Navbar = () => {
 
   const handleNavClick = (path) => {
     if (isActive(path)) {
-      // If already on the current page, trigger a refresh (if applicable)
-      // For example, you can implement a refreshPosts function in your context
-      // refreshPosts();
+      // Optional: Refresh functionality
     }
-    setIsMobileMenuOpen(false); // Close mobile menu on navigation
+    setIsMobileMenuOpen(false);
   };
 
   const handleLogout = async () => {
     try {
-      await axiosInstance.post('/auth/logout'); // Ensure axios is imported or use the instance
-      logout(); // Update Auth Context
-      router.push('/login'); // Redirect to login page
+      await axiosInstance.post('/auth/logout');
+      logout();
+      router.push('/login');
     } catch (error) {
       console.error('Logout failed:', error);
       // Optionally, display an error message to the user
     }
+  };
+
+  // Framer Motion Variants for Mobile Menu
+  const overlayVariants = {
+    hidden: { opacity: 0 },
+    visible: { opacity: 0.5 },
+    exit: { opacity: 0 },
+  };
+
+  const drawerVariants = {
+    hidden: { x: '100%' },
+    visible: { x: '0%' },
+    exit: { x: '100%' },
+  };
+
+  const menuItemVariants = {
+    hidden: { opacity: 0, x: 20 },
+    visible: (i) => ({
+      opacity: 1,
+      x: 0,
+      transition: { delay: i * 0.05 },
+    }),
   };
 
   return (
@@ -105,7 +123,6 @@ const Navbar = () => {
         <div className={styles.rightSection}>
           <Notifications />
 
-          {/* Conditionally render Login/Signup or Logout buttons */}
           {user ? (
             <motion.button
               className={styles.authButton}
@@ -151,38 +168,101 @@ const Navbar = () => {
 
       <AnimatePresence>
         {isMobileMenuOpen && (
-          <motion.div
-            className={`${styles.mobileMenu} ${
-              isMobileMenuOpen ? styles.open : styles.closed
-            }`}
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-          >
-            <SearchBar isMobile={true} />
-            {navItems.map((item) => (
-              <Link
-                href={item.path}
-                key={item.id}
-                className={styles.mobileNavLink}
-                onClick={() => handleNavClick(item.path)}
-              >
-                <motion.div
-                  className={styles.mobileNavItem}
-                  whileHover={{ x: 4 }}
-                  whileTap={{ scale: 0.98 }}
+          <>
+            {/* Overlay */}
+            <motion.div
+              className={styles.overlay}
+              variants={overlayVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+              onClick={() => setIsMobileMenuOpen(false)}
+              transition={{ duration: 0.3 }}
+            />
+
+            {/* Sliding Drawer */}
+            <motion.div
+              className={styles.mobileDrawer}
+              variants={drawerVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+              transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+            >
+              <div className={styles.mobileHeader}>
+                <Link href="/" className={styles.mobileLogo} onClick={() => handleNavClick('/')}>
+                  Sayings.
+                </Link>
+                <button
+                  className={styles.closeButton}
+                  onClick={() => setIsMobileMenuOpen(false)}
                 >
-                  <span className={styles.icon}>{item.icon}</span>
-                  <span>{item.label}</span>
-                </motion.div>
-              </Link>
-            ))}
-          </motion.div>
+                  <FaTimes />
+                </button>
+              </div>
+
+              <motion.ul
+                className={styles.mobileNavList}
+                initial="hidden"
+                animate="visible"
+                exit="hidden"
+              >
+                {navItems.map((item, index) => (
+                  <motion.li
+                    key={item.id}
+                    custom={index}
+                    variants={menuItemVariants}
+                    className={styles.mobileNavItem}
+                    onClick={() => handleNavClick(item.path)}
+                  >
+                    <Link href={item.path} className={styles.mobileNavLink}>
+                      <span className={styles.icon}>{item.icon}</span>
+                      <span>{item.label}</span>
+                    </Link>
+                  </motion.li>
+                ))}
+              </motion.ul>
+
+              {/* Authentication Links */}
+              <div className={styles.mobileAuth}>
+                {user ? (
+                  <motion.button
+                    className={styles.authButton}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={handleLogout}
+                  >
+                    Logout
+                  </motion.button>
+                ) : (
+                  <div className={styles.authButtons}>
+                    <Link href="/login">
+                      <motion.button
+                        className={styles.authButton}
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        Login
+                      </motion.button>
+                    </Link>
+                    <Link href="/register">
+                      <motion.button
+                        className={`${styles.authButton} ${styles.signupButton}`}
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        Signup
+                      </motion.button>
+                    </Link>
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          </>
         )}
       </AnimatePresence>
     </motion.nav>
   );
 };
 
-export default React.memo(Navbar); // Use React.memo to prevent unnecessary re-renders
+export default React.memo(Navbar);
