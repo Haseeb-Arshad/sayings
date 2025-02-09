@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const axiosInstance = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_BACKEND_URL || 'https://sayings-backend.onrender.com/api', // Now includes /api at the end
+  baseURL: process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000//api', // Now includes /api at the end
   withCredentials: true,
 });
 
