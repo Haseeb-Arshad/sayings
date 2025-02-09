@@ -28,6 +28,7 @@ const Navbar = () => {
     { id: 'home', label: 'Home', path: '/', icon: <FaHome /> },
     { id: 'explore', label: 'Explore', path: '/explore', icon: <FaCompass /> },
     { id: 'profile', label: 'Profile', path: '/profile', icon: <FaUser /> },
+    { id: 'settings', label: 'Settings', path: '/settings', icon: <FaUser /> },
   ];
 
   const isActive = (path) => router.pathname === path;

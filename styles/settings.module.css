@@ -1,0 +1,166 @@
+/* Container & Overall Page */
+.container {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #f0f2f5, #d9e2ec);
+    padding: 2rem 0;
+  }
+  
+  .wrapper {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+  
+  .pageTitle {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 2rem;
+    color: #333;
+  }
+  
+  /* Grid Layout */
+  .grid {
+    display: grid;
+    grid-template-columns: 250px 1fr;
+    gap: 1.5rem;
+  }
+  
+  @media (max-width: 768px) {
+    .grid {
+      grid-template-columns: 1fr;
+    }
+  }
+  
+  /* Sidebar Navigation */
+  .sidebar {
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 1rem;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+  }
+  
+  .navButton {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+    padding: 0.75rem;
+    border: none;
+    border-radius: 6px;
+    background-color: transparent;
+    color: #555;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    text-align: left;
+  }
+  
+  .navButton:hover {
+    background-color: #f2f2f2;
+  }
+  
+  .active {
+    background-color: #e3f2fd;
+    color: #0288d1;
+  }
+  
+  /* Content Area */
+  .content {
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 2rem;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Sections & Typography */
+  .section {
+    margin-bottom: 1.5rem;
+  }
+  
+  .sectionTitle {
+    font-size: 1.75rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: #222;
+  }
+  
+  /* Form Elements */
+  .formGroup {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1.25rem;
+  }
+  
+  .formLabel {
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #666;
+  }
+  
+  .formInput,
+  .formTextarea,
+  .formSelect {
+    padding: 0.75rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem;
+    color: #333;
+  }
+  
+  .formInput:focus,
+  .formTextarea:focus,
+  .formSelect:focus {
+    outline: none;
+    border-color: #0288d1;
+    box-shadow: 0 0 0 2px rgba(2, 136, 209, 0.2);
+  }
+  
+  /* Profile image & upload button */
+  .profileImage {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background-color: #eee;
+  }
+  
+  .uploadButton {
+    padding: 0.5rem 1rem;
+    background-color: #0288d1;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background-color 0.2s ease-in-out;
+  }
+  
+  .uploadButton:hover {
+    background-color: #0277bd;
+  }
+  
+  .fullWidth {
+    width: 100%;
+    text-align: left;
+    margin-bottom: 0.75rem;
+  }
+  
+  /* Toggle elements */
+  .toggleWrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #e0e0e0;
+  }
+  
+  .toggleWrapper:last-child {
+    border-bottom: none;
+  }
+  
+  /* Utility for flex row layout */
+  .flexRow {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
