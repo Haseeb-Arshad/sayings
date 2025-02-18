@@ -17,6 +17,11 @@ const Sidebar = ({ setFilter, currentFilter }) => {
 
   useEffect(() => {
     const fetchTopTopics = async () => {
+      if (!navigator.onLine) {
+        setError("Not connected to the internet. Please check your network.");
+        setLoading(false);
+        return;
+      }
       try {
         const response = await axios.get('/topics/top');
         setTopTopics(response.data.topics);
@@ -28,6 +33,18 @@ const Sidebar = ({ setFilter, currentFilter }) => {
     };
 
     fetchTopTopics();
+
+    // Optionally, re-fetch when the client comes back online
+    const handleOnline = () => {
+      setError('');
+      setLoading(true);
+      fetchTopTopics();
+    };
+
+    window.addEventListener('online', handleOnline);
+    return () => {
+      window.removeEventListener('online', handleOnline);
+    };
   }, []);
 
   const handleTopicClick = (topicName) => {

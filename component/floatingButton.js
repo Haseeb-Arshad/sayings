@@ -24,6 +24,10 @@ const FloatingVoiceButton = ({ onNewPost }) => { // Accept onNewPost as a prop
   }, []);
 
   const handleButtonClick = () => {
+    if (!navigator.onLine) {
+      alert("Not connected to the internet. Please check your connection.");
+      return;
+    }
     if (loading) return; // Optionally, handle loading state (e.g., show a spinner)
     if (user) {
       setIsOpen(!isOpen); // Toggle the audio recorder if authenticated

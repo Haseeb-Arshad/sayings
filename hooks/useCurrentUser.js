@@ -6,23 +6,48 @@ import axios from '../utils/axiosInstance';
 const useCurrentUser = () => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  // offline: true if navigator reports no connectivity
+  const [offline, setOffline] = useState(!navigator.onLine);
+
+  const fetchUser = async () => {
+    if (!navigator.onLine) {
+      setOffline(true);
+      setLoading(false);
+      return;
+    }
+    try {
+      const response = await axios.get('/auth/me');
+      setUser(response.data.user);
+    } catch (error) {
+      console.error('Error fetching user:', error);
+      setUser(null);
+    }
+    setLoading(false);
+  };
 
   useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const response = await axios.get('/auth/me');
-        setUser(response.data.user);
-      } catch (error) {
-        console.error('Error fetching user:', error);
-        setUser(null);
-      }
-      setLoading(false);
+    fetchUser();
+
+    const handleOnline = () => {
+      setOffline(false);
+      setLoading(true);
+      fetchUser();
+    };
+    const handleOffline = () => {
+      setOffline(true);
     };
 
-    fetchUser();
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  return { user, loading };
+  return { user, loading, offline };
 };
 
 export default useCurrentUser;

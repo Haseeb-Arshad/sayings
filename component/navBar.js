@@ -2,7 +2,7 @@
 
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import {
   FaBars,
@@ -21,6 +21,7 @@ import axiosInstance from '@/utils/axiosInstance';
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [offline, setOffline] = useState(!navigator.onLine);
   const router = useRouter();
   const { user, logout } = useAuth();
 
@@ -41,6 +42,10 @@ const Navbar = () => {
   };
 
   const handleLogout = async () => {
+    if (!navigator.onLine) {
+      alert("Cannot logout while offline.");
+      return;
+    }
     try {
       await axiosInstance.post('/auth/logout');
       logout();
@@ -50,6 +55,19 @@ const Navbar = () => {
       // Optionally, display an error message to the user
     }
   };
+
+  useEffect(() => {
+    const handleOnline = () => setOffline(false);
+    const handleOffline = () => setOffline(true);
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
 
   // Framer Motion Variants for Mobile Menu
   const overlayVariants = {
@@ -80,6 +98,13 @@ const Navbar = () => {
       animate={{ y: 0 }}
       transition={{ type: 'spring', stiffness: 100, damping: 20 }}
     >
+      {/* Offline Message */}
+      {offline && (
+        <div className={styles.offlineMessage}>
+          You are offline.&nbsp;Some features may be unavailable.
+        </div>
+      )}
+
       <div className={styles.navContainer}>
         <div className={styles.leftSection}>
           <motion.div

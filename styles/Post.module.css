@@ -1,503 +1,275 @@
-/* styles/Post.module.css */
-@import url('https://fonts.googleapis.com/css2?family=Inika:wght@400;700&display=swap');
-
 .postContainer {
-  background-color: #ffffff;
+  background: #ffffff; /* White background */
   border-radius: 12px;
   padding: 20px;
-  margin-bottom: 20px;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-  transition: box-shadow 0.3s ease, opacity 0.5s ease;
-  font-family: 'Poppins', sans-serif;
-
-  /* font-family: 'Helvetica Neue', Arial, sans-serif; */
-  position: relative;
+  margin: 20px 0;
+  /* Removed box-shadow and borders to eliminate grayish effects */
 }
 
-.postContainer:hover {
-  box-shadow: 0 8px 16px rgba(0,0,0,0.15);
-}
-
-.postHeader {
+/* Header */
+.header {
   display: flex;
+  justify-content: space-between;
   align-items: center;
   margin-bottom: 15px;
-  justify-content: space-between; /* Space between left and right headers */
 }
 
-.leftHeader {
+.userInfo {
   display: flex;
   align-items: center;
 }
 
 .avatar {
-  width: 50px;
-  height: 50px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
   object-fit: cover;
-  margin-right: 15px;
-  border: 2px solid #1DA1F2;
+  margin-right: 10px;
+  border: 2px solid #1da1f2;
 }
 
-.postInfo {
+.userDetails {
   display: flex;
   flex-direction: column;
 }
 
 .username {
-  font-size: 18px;
+  font-size: 16px;
   font-weight: bold;
-  color: #14171A;
-  font-family: 'Inika', serif; /* Apply Inika font */
+  color: #333;
 }
 
 .timestamp {
-  font-size: 14px;
-  color: #657786;
+  font-size: 12px;
+  color: #777;
 }
 
-/* .rightHeader {
-  display: flex;
-  align-items: center;
-  gap: 10px; 
-} */
-
-.rightHeader {
+/* Actions & Emotions */
+.actions {
   display: flex;
   align-items: center;
   gap: 10px;
-  position: relative; /* To position the menu and emotions properly */
 }
-
-
-.menuContainer {
-  position: relative;
-}
-
-
-
-
-.menuButton {
-  background: none;
-  border: none;
-  color: #657786;
-  font-size: 20px;
-  cursor: pointer;
-  padding: 5px;
-  transition: color 0.3s ease;
-}
-
-.menuButton:hover {
-  color: #1DA1F2;
-}
-
-.emotions {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  position: relative;
-  /* Remove max-width to allow emotions to occupy available space */
-  flex-wrap: nowrap;
-  overflow: hidden;
-  /* Add margin-right to prevent overlapping with the menu */
-  margin-right: auto;
-}
-
-
 
 .emotionBadge {
   padding: 4px 8px;
   border-radius: 12px;
   font-size: 12px;
   font-weight: 500;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  white-space: nowrap;
-  flex-shrink: 0;
 }
 
-.overflowBadge {
-  padding: 4px 8px;
-  border-radius: 12px;
-  font-size: 12px;
-  font-weight: 500;
-  background-color: #1DA1F2;
-  color: #ffffff;
+.menuButton {
+  background: none;
+  border: none;
+  font-size: 18px;
   cursor: pointer;
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
+  color: #777;
 }
-
-.tooltip {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  background-color: #ffffff;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  padding: 8px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-  z-index: 10;
-  white-space: nowrap;
-  margin-top: 6px;
-}
-
-.tooltip::before {
-  content: '';
-  position: absolute;
-  top: -6px;
-  left: 10px;
-  border-width: 6px;
-  border-style: solid;
-  border-color: transparent transparent #e0e0e0 transparent;
-}
-
-.tooltipContent {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-
-.tooltip .emotionBadge {
-  margin-bottom: 4px;
-}
-/* 
-.tooltip {
-  position: absolute;
-  top: 150%;
-  right: 0;
-  background-color: #ffffff;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  padding: 8px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-  z-index: 10;
-  white-space: nowrap;
-} */
-
-
-.menuContainer {
-  position: relative;
-}
-/* 
-.dropdownMenu {
-  position: absolute;
-  top: 100%; 
-  right: 0;
-  transform: translateY(10px);
-} */
 
 .dropdownMenu {
   position: absolute;
-  top: 100%; 
-  right: 0;
-  background-color: #ffffff;
-  border: 1px solid #e0e0e0;
+  top: 50px;
+  right: 20px;
+  background: #fff;
+  border: 1px solid #eee;
   border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-  z-index: 100;
-  overflow: hidden;
-  transform: translateY(10px);
-
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 10px;
+  z-index: 10;
 }
 
 .dropdownItem {
-  display: flex;
-  align-items: center;
-  padding: 12px 20px;
-  width: 180px;
   background: none;
   border: none;
+  font-size: 14px;
+  padding: 8px;
+  width: 100%;
+  text-align: left;
   cursor: pointer;
-  font-size: 16px;
-  color: #14171A;
-  transition: background-color 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
-.dropdownItem:hover {
-  background-color: #f5f5f5;
-}
-
-.dropdownIcon {
-  margin-right: 10px;
-  color: #ff4d4f;
-}
-
-.contentArea {
+/* Content */
+.content {
   margin-bottom: 15px;
 }
 
 .summary {
-  font-size: 1rem;
-  color: #14171A;
-  line-height: 1.6;
+  font-size: 14px;
+  color: #444;
+  line-height: 1.5;
+  margin-bottom: 10px;
 }
 
 .transcript {
-  font-size: 1rem;
-  color: #14171A;
-  line-height: 1.2;
-  word-wrap: break-word;
+  font-size: 14px;
+  color: #555;
+  background: #f9f9f9;
+  padding: 10px;
+  border-radius: 8px;
+  max-height: 150px;
+  overflow-y: auto;
 }
 
 .word {
-  display: inline-block;
-  transition: background-color 0.3s ease;
-  padding: 2px 4px;
   cursor: pointer;
-  border-radius: 4px;
+  transition: background 0.3s ease;
 }
 
-.word:not(:last-child)::after {
-  content: ' ';
-  white-space: pre;
+.word:hover {
+  background: rgba(29, 161, 242, 0.2);
 }
 
 .highlighted {
-  background-color: rgba(29, 161, 242, 0.3);
+  background: rgba(29, 161, 242, 0.3);
 }
 
-.categories {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 15px;
-}
-
-.categoryBadge {
-  background-color: #E8F5FD;
-  color: #1DA1F2;
-  padding: 4px 12px;
-  border-radius: 16px;
+.toggleTranscript {
+  background: none;
+  border: none;
+  color: #1da1f2;
+  cursor: pointer;
   font-size: 14px;
+  padding: 0;
+  margin-top: 5px;
 }
 
+/* Audio Player */
 .audioPlayer {
   display: flex;
   align-items: center;
+  gap: 15px;
   margin-bottom: 15px;
 }
 
 .playButton {
-  background-color: #1DA1F2;
-  color: #ffffff;
+  background: #1da1f2;
   border: none;
   border-radius: 50%;
   width: 48px;
   height: 48px;
-  cursor: pointer;
-  margin-right: 15px;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background-color 0.3s ease;
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.3s ease;
 }
-
-
-
 
 .playButton:hover {
-  background-color: #0d95e8;
+  background: #1590d9;
 }
 
-.playButton:disabled {
-  background-color: #AAB8C2;
-  cursor: not-allowed;
-}
-
-.waveform {
-  flex-grow: 1;
-  height: 60px;
+.waveformContainer {
+  flex: 1;
+  height: 50px;
+  /* Removed background color so it blends with the white post */
   border-radius: 8px;
-  overflow: hidden;
 }
 
 .time {
-  font-size: 14px;
-  color: #657786;
-  margin-left: 15px;
-  white-space: nowrap;
+  font-size: 12px;
+  color: #777;
 }
 
-.toggleTranscript {
-  text-align: right;
-  margin-bottom: 15px;
-}
-
-.toggleTranscript button {
-  background: none;
-  border: none;
-  color: #1DA1F2;
-  font-size: 16px;
-  cursor: pointer;
-  transition: color 0.3s ease;
-}
-
-.toggleTranscript button:hover {
-  text-decoration: underline;
-}
-
+/* Interactions */
 .interactions {
   display: flex;
   justify-content: space-around;
-  padding-top: 15px;
-  border-top: 1px solid #E1E8ED;
+  border-top: 1px solid #eee;
+  padding-top: 10px;
 }
 
-.interactionButton {
+.interaction {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  color: #777;
   display: flex;
   align-items: center;
-  color: #657786;
-  font-size: 16px;
-  cursor: pointer;
-  transition: color 0.3s ease;
+  gap: 6px;
 }
 
-.interactionButton:hover {
-  color: #1DA1F2;
+.interaction:hover {
+  color: #1da1f2;
 }
 
-.interactionButton svg {
-  margin-right: 6px;
-}
-
-/* Confirmation Modal Styles */
+/* Modal */
 .modalOverlay {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0,0,0,0.5);
-  z-index: 1000;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 100;
 }
 
-.modalContentBack
-{
-  position: absolute;
-  height: 100vh;
-  width: 100vw;
-  /* display: flex;
-  align-items: center;
-  justify-content: center; */
-  z-index: 9999999999999999;
-}
-
-.modalContent {
-  /* position: fixed; */
-  /* top: 50%;
-
-  left: 50%; */
-  position: relative;
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
   width: 90%;
-  max-width: 450px;
-  background-color: #ffffff;
+  max-width: 400px;
+  background: #fff;
   border-radius: 12px;
-  padding: 25px;
-  z-index: 1001;
+  padding: 20px;
   transform: translate(-50%, -50%);
-  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-  box-sizing: border-box; /* This line centers the modal */
+  z-index: 101;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 .modalHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 15px;
 }
 
-.modalHeader h2 {
+.modalHeader h3 {
   margin: 0;
-  font-size: 20px;
-  color: #14171A;
+  font-size: 16px;
+  color: #333;
 }
 
-.closeButton {
+.closeModal {
   background: none;
   border: none;
-  color: #657786;
-  font-size: 22px;
+  font-size: 18px;
   cursor: pointer;
-  transition: color 0.3s ease;
-}
-
-.closeButton:hover {
-  color: #ff4d4f;
+  color: #777;
 }
 
 .modalBody {
-  font-size: 16px;
-  color: #14171A;
-  margin-bottom: 25px;
+  font-size: 14px;
+  color: #555;
+  margin-bottom: 15px;
 }
 
 .modalFooter {
   display: flex;
   justify-content: flex-end;
-  gap: 15px;
+  gap: 10px;
 }
 
 .cancelButton,
 .confirmButton {
-  padding: 10px 20px;
+  padding: 8px 16px;
   border: none;
   border-radius: 8px;
-  font-size: 16px;
   cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease;
+  font-size: 14px;
 }
 
 .cancelButton {
-  background-color: #e0e0e0;
-  color: #14171A;
-}
-
-.cancelButton:hover {
-  background-color: #d5d5d5;
+  background: #eee;
+  color: #333;
 }
 
 .confirmButton {
-  background-color: #ff4d4f;
-  color: #ffffff;
-}
-
-.confirmButton:hover {
-  background-color: #ff7875;
-}
-
-/* Responsive Design */
-@media (max-width: 600px) {
-
-
-
-  .postHeader {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .rightHeader {
-    margin-top: 10px;
-    width: 100%;
-    justify-content: space-between;
-    position: relative;
-  }
-
-  .emotions {
-    max-width: 100%;
-    margin-top: 10px;
-  }
-
-  .tooltip {
-    right: auto;
-    left: 0;
-    top: 110%;
-  }
-
-  .dropdownMenu {
-    right: auto;
-    left: 0;
-  }
+  background: #ff4d4f;
+  color: #fff;
 }

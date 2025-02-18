@@ -69,9 +69,10 @@ const Explore = () => {
         params: {
           filter,
           page: currentPage,
-          limit: 20, // Increased limit to reduce number of requests
+          limit: 20,
         },
-        signal: controller.signal, // Use AbortController's signal
+        signal: controller.signal,
+        silent: true, // This will prevent the interceptor from logging errors for these requests.
       });
 
       let fetchedPosts = response.data.posts || [];

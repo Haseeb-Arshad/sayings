@@ -14,6 +14,8 @@ import useCurrentUser from '../hooks/useCurrentUser';
 import { AnimatePresence, motion } from 'framer-motion';
 import RefreshContext from '../context/RefreshContext'; // Import the context
 
+const POSTS_PER_PAGE = 5; // Number of posts to load per page
+
 const Home = () => {
   const [posts, setPosts] = useState([]);
   const [error, setError] = useState('');
@@ -23,7 +25,6 @@ const Home = () => {
   const [page, setPage] = useState(1); // Current page
   const [hasMore, setHasMore] = useState(true); // Indicates if more posts are available
   const [isFetching, setIsFetching] = useState(false); // Prevents duplicate fetches
-  const [abortController, setAbortController] = useState(null); // For request cancellation
 
   const { user: currentUser, loading: userLoading } = useCurrentUser(); // Get current user
 
@@ -138,46 +139,42 @@ const Home = () => {
 
   // Define the refresh function to fetch new posts
   const refreshPosts = useCallback(() => {
-    fetchNewPosts();
+    // Only try to refresh if the browser indicates you're online
+    if (navigator.onLine) {
+      fetchNewPosts();
+    }
   }, [fetchNewPosts]);
+
+  // Instead of state, use a ref for the AbortController.
+  const abortControllerRef = useRef(null);
 
   const fetchHomePosts = useCallback(
     async (currentPage) => {
-      if (isFetching) return; // Prevent duplicate fetches
+      if (isFetching) return;
       setIsFetching(true);
       setLoading(true);
       setError('');
 
-      // Cancel previous request if exists
-      if (abortController) {
-        abortController.abort();
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
       }
-
+      
       const controller = new AbortController();
-      setAbortController(controller);
-
-      // Set limit based on page
-      const limit = currentPage === 1 ? 5 : 20;
+      abortControllerRef.current = controller;
 
       try {
         const response = await axios.get('/posts', {
           params: {
             filter,
             page: currentPage,
-            limit,
+            limit: POSTS_PER_PAGE,
           },
-          signal: controller.signal, // Use AbortController's signal
+          signal: controller.signal,
         });
 
         let fetchedPosts = response.data.posts || [];
-
-        // Log fetched _id's for debugging
-        // console.log('Fetched Posts IDs:', fetchedPosts.map((post) => post._id));
-
-        // Sort posts based on filter
         fetchedPosts = sortPosts(fetchedPosts);
 
-        // Remove duplicates before updating state
         setPosts((prevPosts) => {
           if (currentPage === 1) {
             return fetchedPosts;
@@ -190,28 +187,24 @@ const Home = () => {
           }
         });
 
-        // Determine if more posts are available
         const totalPosts = response.data.totalPosts;
-        const totalPages = Math.ceil(totalPosts / limit);
-        if (currentPage >= totalPages) {
-          setHasMore(false);
-        }
+        setHasMore(currentPage * POSTS_PER_PAGE < totalPosts);
       } catch (err) {
-        if (err.name === 'CanceledError') {
-          // console.log('Request canceled:', err.message);
-        } else if (err.response && err.response.status === 429) {
-          console.error('Too many requests:', err);
+        if (err.name === 'AbortError') {
+          return; // Ignore abort errors
+        }
+        if (err.response?.status === 429) {
           setError('You are sending requests too quickly. Please slow down.');
         } else {
-          console.error('Error fetching home posts:', err);
-          setError(err.response?.data?.error || 'Failed to fetch posts.');
+          setError('Failed to fetch posts.');
         }
+        console.error('Error fetching posts:', err);
       } finally {
         setLoading(false);
         setIsFetching(false);
       }
     },
-    [abortController, filter, isFetching, sortPosts]
+    [filter, isFetching, sortPosts]
   );
 
   const fetchMoreData = () => {
@@ -236,8 +229,8 @@ const Home = () => {
   // Cleanup on unmount
   useEffect(() => {
     return () => {
-      if (abortController) {
-        abortController.abort();
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -305,63 +298,77 @@ const Home = () => {
                   );
                   setNewPostsAvailable(false);
                   setNewPosts([]);
-                  if (postsContainerRef.current) {
-                    postsContainerRef.current.scrollTo({
-                      top: 0,
-                      behavior: 'smooth',
-                    });
-                  }
+                  postsContainerRef.current?.scrollTo({
+                    top: 0,
+                    behavior: 'smooth',
+                  });
                 }}
               >
-                New posts available. Click to view.
+                New posts available
               </motion.div>
             )}
           </AnimatePresence>
 
           <FloatingVoiceButton onNewPost={handleNewPost} /> {/* Pass the handler */}
-          {error && <p className={styles.error}>{error}</p>}
+          {error && (
+            <motion.div 
+              className={styles.error}
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+            >
+              {error}
+            </motion.div>
+          )}
           <InfiniteScroll
             dataLength={posts.length}
             next={fetchMoreData}
             hasMore={hasMore}
-            loader={<p className={styles.loadingText}>Loading more posts...</p>}
+            loader={<div className={styles.loadingSkeleton} />}
             endMessage={
-              <p className={styles.endMessage}>
-                <b>You have seen all the posts.</b>
-              </p>
+              posts.length > 0 && (
+                <p className={styles.endMessage}>
+                  You've seen all posts
+                </p>
+              )
             }
             scrollableTarget="scrollableDiv"
+            scrollThreshold={0.8}
           >
-            <AnimatePresence>
-              {posts.length === 0 && !loading && !error && (
+            <AnimatePresence mode="popLayout">
+              {posts.length === 0 && !loading && !error ? (
                 <motion.p
                   className={styles.noPosts}
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                 >
-                  No posts available.
+                  No posts available
                 </motion.p>
-              )}
-              {Array.isArray(posts) &&
-                posts.map((post) => {
-                  if (!post._id) {
-                    console.warn('Post missing _id:', post);
-                    return null;
-                  }
-                  return (
+              ) : (
+                posts.map((post, index) => (
+                  <motion.div
+                    key={post._id}
+                    className={styles.postWrapper}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                    transition={{ delay: index * 0.1 }}
+                    layout
+                  >
                     <Post
-                      key={post._id}
                       post={post}
-                      currentUserId={currentUser?._id} // Pass currentUserId
-                      onDelete={handleDeletePost} // Pass onDelete handler
+                      currentUserId={currentUser?._id}
+                      onDelete={handleDeletePost}
+                      priority={index < 2} // Priority loading for first 2 posts
                     />
-                  );
-                })}
+                  </motion.div>
+                ))
+              )}
             </AnimatePresence>
           </InfiniteScroll>
           {loading && posts.length === 0 && (
-            <p className={styles.loadingText}>Loading posts...</p>
+            <div className={styles.loadingSkeleton} />
           )}
         </div>
       </div>
