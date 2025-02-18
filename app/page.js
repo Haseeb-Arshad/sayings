@@ -328,7 +328,7 @@ const Home = () => {
             endMessage={
               posts.length > 0 && (
                 <p className={styles.endMessage}>
-                  You've seen all posts
+                  You&apos;ve seen all posts
                 </p>
               )
             }
