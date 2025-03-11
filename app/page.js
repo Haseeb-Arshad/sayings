@@ -1,18 +1,18 @@
 'use client';
 
 import { useEffect, useState, useCallback, useRef } from 'react';
-import axios from '@/utils/axiosInstance';
-import Post from '@/component/Post';
-import Navbar from '@/component/NavBar';
-import Sidebar from '@/component/Sidebar';
-// import SuggestionsSidebar from '../components/SuggestionsBar';
-import FloatingVoiceButton from '@/component/FloatingButton';
+import axios from '../utils/axiosInstance';
+import Post from '../component/post';
+import Navbar from '../component/navBar';
+import Sidebar from '../component/sidebar';
+// import SuggestionsSidebar from '../component/SuggestionsBar';
+import FloatingVoiceButton from '../component/floatingButton';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import debounce from 'lodash.debounce';
-import styles from '@/styles/Home.module.css';
-import useCurrentUser from '@/hooks/useCurrentUser';
+import styles from '../styles/Home.module.css';
+import useCurrentUser from '../hooks/useCurrentUser';
 import { AnimatePresence, motion } from 'framer-motion';
-import RefreshContext from '@/context/RefreshContext';
+import RefreshContext from '../context/RefreshContext';
 
 const Home = () => {
   const [posts, setPosts] = useState([]);
