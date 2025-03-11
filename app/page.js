@@ -1,20 +1,18 @@
 'use client';
 
 import { useEffect, useState, useCallback, useRef } from 'react';
-import axios from '../utils/axiosInstance';
-import Post from '../component/post';
-import Navbar from '../component/navBar';
-import Sidebar from '../component/sidebar';
-import SuggestionsSidebar from '@/component/suggestionsBar';
-import FloatingVoiceButton from '@/component/floatingButton';
+import axios from '@/utils/axiosInstance';
+import Post from '@/component/Post';
+import Navbar from '@/component/NavBar';
+import Sidebar from '@/component/Sidebar';
+// import SuggestionsSidebar from '../components/SuggestionsBar';
+import FloatingVoiceButton from '@/component/FloatingButton';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import debounce from 'lodash.debounce';
-import styles from './../styles/Home.module.css';
-import useCurrentUser from '../hooks/useCurrentUser';
+import styles from '@/styles/Home.module.css';
+import useCurrentUser from '@/hooks/useCurrentUser';
 import { AnimatePresence, motion } from 'framer-motion';
-import RefreshContext from '../context/RefreshContext'; // Import the context
-
-const POSTS_PER_PAGE = 5; // Number of posts to load per page
+import RefreshContext from '@/context/RefreshContext';
 
 const Home = () => {
   const [posts, setPosts] = useState([]);
@@ -25,6 +23,7 @@ const Home = () => {
   const [page, setPage] = useState(1); // Current page
   const [hasMore, setHasMore] = useState(true); // Indicates if more posts are available
   const [isFetching, setIsFetching] = useState(false); // Prevents duplicate fetches
+  const [abortController, setAbortController] = useState(null); // For request cancellation
 
   const { user: currentUser, loading: userLoading } = useCurrentUser(); // Get current user
 
@@ -41,7 +40,7 @@ const Home = () => {
       setPage(1);
       setPosts([]);
       setHasMore(true);
-    }, 300), // 300ms delay
+    }, 300),
     []
   );
 
@@ -55,7 +54,6 @@ const Home = () => {
   const sortPosts = useCallback(
     (postsArray) => {
       if (filter === 'recent') {
-        // Sort by timestamp descendingly
         return postsArray.sort(
           (a, b) => new Date(b.timestamp) - new Date(a.timestamp)
         );
@@ -66,13 +64,11 @@ const Home = () => {
           const bConfidence = getTopicConfidence(b, topicName);
 
           if (bConfidence !== aConfidence) {
-            return bConfidence - aConfidence; // Higher confidence first
+            return bConfidence - aConfidence;
           }
-          // If confidence is equal, sort by timestamp descendingly
           return new Date(b.timestamp) - new Date(a.timestamp);
         });
       }
-      // Default to timestamp descendingly if filter is unrecognized
       return postsArray.sort(
         (a, b) => new Date(b.timestamp) - new Date(a.timestamp)
       );
@@ -102,20 +98,19 @@ const Home = () => {
     if (isFetching) return;
     setIsFetching(true);
 
-    // Determine the 'since' parameter based on latest post
     const latestTimestamp = posts.length > 0 ? posts[0].timestamp : null;
     try {
       const response = await axios.get('/posts', {
         params: {
           filter,
           page: 1,
-          limit: 5, // Fetch latest 5 posts
-          since: latestTimestamp, // Assuming backend supports this
+          limit: 5,
+          since: latestTimestamp,
         },
       });
+
       const fetchedPosts = response.data.posts || [];
 
-      // Filter out duplicates
       const existingIds = new Set(posts.map((post) => post._id));
       const uniqueNewPosts = fetchedPosts.filter(
         (post) => !existingIds.has(post._id)
@@ -124,7 +119,6 @@ const Home = () => {
       if (uniqueNewPosts.length > 0) {
         if (isUserAtTop) {
           setPosts((prevPosts) => sortPosts([...uniqueNewPosts, ...prevPosts]));
-          // Optionally, you can add a slide-down animation here
         } else {
           setNewPosts(uniqueNewPosts);
           setNewPostsAvailable(true);
@@ -139,14 +133,8 @@ const Home = () => {
 
   // Define the refresh function to fetch new posts
   const refreshPosts = useCallback(() => {
-    // Only try to refresh if the browser indicates you're online
-    if (navigator.onLine) {
-      fetchNewPosts();
-    }
+    fetchNewPosts();
   }, [fetchNewPosts]);
-
-  // Instead of state, use a ref for the AbortController.
-  const abortControllerRef = useRef(null);
 
   const fetchHomePosts = useCallback(
     async (currentPage) => {
@@ -155,24 +143,27 @@ const Home = () => {
       setLoading(true);
       setError('');
 
-      if (abortControllerRef.current) {
-        abortControllerRef.current.abort();
+      if (abortController) {
+        abortController.abort();
       }
-      
+
       const controller = new AbortController();
-      abortControllerRef.current = controller;
+      setAbortController(controller);
+
+      const limit = 5; // Always load 5 posts per page
 
       try {
         const response = await axios.get('/posts', {
           params: {
             filter,
             page: currentPage,
-            limit: POSTS_PER_PAGE,
+            limit,
           },
           signal: controller.signal,
         });
 
         let fetchedPosts = response.data.posts || [];
+
         fetchedPosts = sortPosts(fetchedPosts);
 
         setPosts((prevPosts) => {
@@ -188,23 +179,26 @@ const Home = () => {
         });
 
         const totalPosts = response.data.totalPosts;
-        setHasMore(currentPage * POSTS_PER_PAGE < totalPosts);
-      } catch (err) {
-        if (err.name === 'AbortError') {
-          return; // Ignore abort errors
+        const totalPages = Math.ceil(totalPosts / limit);
+        if (currentPage >= totalPages) {
+          setHasMore(false);
         }
-        if (err.response?.status === 429) {
+      } catch (err) {
+        if (err.name === 'CanceledError') {
+          console.log('Request canceled:', err.message);
+        } else if (err.response && err.response.status === 429) {
+          console.error('Too many requests:', err);
           setError('You are sending requests too quickly. Please slow down.');
         } else {
-          setError('Failed to fetch posts.');
+          console.error('Error fetching home posts:', err);
+          setError(err.response?.data?.error || 'Failed to fetch posts.');
         }
-        console.error('Error fetching posts:', err);
       } finally {
         setLoading(false);
         setIsFetching(false);
       }
     },
-    [filter, isFetching, sortPosts]
+    [abortController, filter, isFetching, sortPosts]
   );
 
   const fetchMoreData = () => {
@@ -216,7 +210,6 @@ const Home = () => {
   const handleNewPost = (newPost) => {
     setPosts((prevPosts) => {
       const updatedPosts = [newPost, ...prevPosts];
-      // Sort posts based on current filter
       return sortPosts(updatedPosts);
     });
   };
@@ -229,18 +222,17 @@ const Home = () => {
   // Cleanup on unmount
   useEffect(() => {
     return () => {
-      if (abortControllerRef.current) {
-        abortControllerRef.current.abort();
+      if (abortController) {
+        abortController.abort();
       }
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [abortController]);
 
   // Implement periodic refresh every 60 seconds
   useEffect(() => {
     const interval = setInterval(() => {
       refreshPosts();
-    }, 60000); // 60,000ms = 60 seconds
+    }, 60000);
 
     return () => clearInterval(interval);
   }, [refreshPosts]);
@@ -250,13 +242,12 @@ const Home = () => {
     const handleScroll = () => {
       if (!postsContainerRef.current) return;
       const { scrollTop } = postsContainerRef.current;
-      setIsUserAtTop(scrollTop < 100); // Threshold of 100px
+      setIsUserAtTop(scrollTop < 100);
     };
 
     const container = postsContainerRef.current;
     if (container) {
       container.addEventListener('scroll', handleScroll);
-      // Initialize the state
       handleScroll();
     }
 
@@ -283,7 +274,6 @@ const Home = () => {
           ref={postsContainerRef}
           id="scrollableDiv"
         >
-          {/* Notification for New Posts */}
           <AnimatePresence>
             {newPostsAvailable && (
               <motion.div
@@ -298,77 +288,63 @@ const Home = () => {
                   );
                   setNewPostsAvailable(false);
                   setNewPosts([]);
-                  postsContainerRef.current?.scrollTo({
-                    top: 0,
-                    behavior: 'smooth',
-                  });
+                  if (postsContainerRef.current) {
+                    postsContainerRef.current.scrollTo({
+                      top: 0,
+                      behavior: 'smooth',
+                    });
+                  }
                 }}
               >
-                New posts available
+                New posts available. Click to view.
               </motion.div>
             )}
           </AnimatePresence>
 
-          <FloatingVoiceButton onNewPost={handleNewPost} /> {/* Pass the handler */}
-          {error && (
-            <motion.div 
-              className={styles.error}
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-            >
-              {error}
-            </motion.div>
-          )}
+          <FloatingVoiceButton onNewPost={handleNewPost} />
+          {error && <p className={styles.error}>{error}</p>}
           <InfiniteScroll
             dataLength={posts.length}
             next={fetchMoreData}
             hasMore={hasMore}
-            loader={<div className={styles.loadingSkeleton} />}
+            loader={<p className={styles.loadingText}>Loading more posts...</p>}
             endMessage={
-              posts.length > 0 && (
-                <p className={styles.endMessage}>
-                  You&apos;ve seen all posts
-                </p>
-              )
+              <p className={styles.endMessage}>
+                <b>You have seen all the posts.</b>
+              </p>
             }
             scrollableTarget="scrollableDiv"
-            scrollThreshold={0.8}
           >
-            <AnimatePresence mode="popLayout">
-              {posts.length === 0 && !loading && !error ? (
+            <AnimatePresence>
+              {posts.length === 0 && !loading && !error && (
                 <motion.p
                   className={styles.noPosts}
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                 >
-                  No posts available
+                  No posts available.
                 </motion.p>
-              ) : (
-                posts.map((post, index) => (
-                  <motion.div
-                    key={post._id}
-                    className={styles.postWrapper}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -20 }}
-                    transition={{ delay: index * 0.1 }}
-                    layout
-                  >
+              )}
+              {Array.isArray(posts) &&
+                posts.map((post) => {
+                  if (!post._id) {
+                    console.warn('Post missing _id:', post);
+                    return null;
+                  }
+                  return (
                     <Post
+                      key={post._id}
                       post={post}
                       currentUserId={currentUser?._id}
                       onDelete={handleDeletePost}
-                      priority={index < 2} // Priority loading for first 2 posts
                     />
-                  </motion.div>
-                ))
-              )}
+                  );
+                })}
             </AnimatePresence>
           </InfiniteScroll>
           {loading && posts.length === 0 && (
-            <div className={styles.loadingSkeleton} />
+            <p className={styles.loadingText}>Loading posts...</p>
           )}
         </div>
       </div>

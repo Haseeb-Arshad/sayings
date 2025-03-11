@@ -1,14 +1,20 @@
 /* styles/Home.module.css */
 
 /* Ensure html and body take full height and enable smooth scrolling */
-
+html,
+body,
+#__next {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  scroll-behavior: smooth; /* Enables smooth scrolling */
+}
 
 /* Home Container */
 .home {
-  min-height: 100vh;
-  background: linear-gradient(135deg, #E8F5FE 0%, #F0F7FF 100%);
   position: relative;
-  overflow-x: hidden;
+  min-height: 100%;
+  background-color: #f0f2f5; /* Optional: Background color for the entire page */
 }
 
 /* Navbar Styles */
@@ -23,199 +29,97 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Optional: Add shadow */
 }
 
-/* Posts Container - Main content area */
+/* Posts Container */
 .postsContainer {
-  max-width: 800px;
-  margin: 80px auto 0 auto;
-  padding: 2rem;
+  max-width: 600px;
+  margin: 80px auto 0 auto; /* 60px for Navbar + 20px spacing */
+  padding: 1rem;
   box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  gap: 25px;
-  position: relative;
-  z-index: 1;
-  height: calc(100vh - 80px);
-  overflow-y: auto;
-  scroll-behavior: smooth;
+  /* Removed height and overflow-y to use the browser's scrollbar */
 }
 
-/* Subtle background gradient */
-.postsContainer::before {
-  content: '';
+/* Infinite Scroll Loader and Messages */
+.loadingText,
+.noPosts,
+.endMessage {
+  text-align: center;
+  color: #657786;
+  font-size: 1rem;
+  margin-top: 2rem;
+}
+
+.error {
+  color: #dc3545;
+  text-align: center;
+  margin-top: 1rem;
+}
+
+/* Floating Voice Button */
+.floatingButton {
   position: fixed;
-  top: 0;
-  right: 0;
-  width: 100%;
-  height: 100%;
-  /* background: radial-gradient(circle at top right, 
-    rgba(29, 161, 242, 0.08) 0%, 
-    rgba(255, 255, 255, 0) 60%); */
-  z-index: -1;
-  pointer-events: none;
+  bottom: 20px;
+  right: 20px;
+  /* Add other styles for the floating button */
 }
 
-/* Enhanced scrollbar styling */
+/* Scrollbar Styling for Webkit Browsers */
 .postsContainer::-webkit-scrollbar {
   width: 8px;
 }
 
 .postsContainer::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.4);
-  border-radius: 8px;
+  background: #f1f1f1;
 }
 
 .postsContainer::-webkit-scrollbar-thumb {
-  background: rgba(29, 161, 242, 0.3);
-  border-radius: 8px;
-  border: 2px solid rgba(255, 255, 255, 0.5);
-  transition: background 0.3s ease;
+  background-color: #c1c1c1;
+  border-radius: 4px;
+  border: 2px solid #f1f1f1;
 }
 
-.postsContainer::-webkit-scrollbar-thumb:hover {
-  background: rgba(29, 161, 242, 0.5);
-}
-
-/* Post wrapper - removed double effect */
-.postWrapper {
-  background: rgba(255, 255, 255, 0.9);
-  backdrop-filter: blur(8px);
-  border-radius: 16px;
-  /* border: 1px solid rgba(255, 255, 255, 0.3); */
-  /* box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05); */
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  overflow: hidden;
-  margin-bottom: 20px;
-  opacity: 0;
-  animation: fadeInPost 0.3s ease forwards;
-}
-
-@keyframes fadeInPost {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.postWrapper:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
-}
-
-/* Loading skeleton */
-.loadingSkeleton {
-  height: 200px;
-  background: linear-gradient(
-    90deg,
-    rgba(255, 255, 255, 0) 0%,
-    rgba(255, 255, 255, 0.5) 50%,
-    rgba(255, 255, 255, 0) 100%
-  );
-  background-size: 200% 100%;
-  animation: shimmer 1.5s infinite;
-  border-radius: 16px;
-  margin: 10px 0;
-}
-
-@keyframes shimmer {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
-}
-
-/* Status messages */
-.noPosts,
-.endMessage {
-  text-align: center;
-  color: #4a5568;
-  font-size: 1rem;
-  padding: 1rem;
-  background: rgba(255, 255, 255, 0.8);
-  border-radius: 12px;
-  margin: 1rem 0;
-}
-
-/* Error message */
-.error {
-  color: #e53e3e;
-  background: rgba(254, 215, 215, 0.9);
-  border-radius: 12px;
-  padding: 1rem;
-  margin: 1rem 0;
-  text-align: center;
-  animation: slideIn 0.3s ease;
-}
-
-@keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* New posts notification */
-.newPostsNotification {
-  position: fixed;
-  top: 80px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: linear-gradient(135deg, #1DA1F2 0%, #1a91da 100%);
-  color: white;
-  padding: 10px 20px;
-  border-radius: 20px;
-  font-weight: 500;
-  cursor: pointer;
-  box-shadow: 0 4px 15px rgba(29, 161, 242, 0.2);
-  transition: all 0.2s ease;
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.newPostsNotification:hover {
-  transform: translateX(-50%) translateY(-2px);
-  box-shadow: 0 6px 20px rgba(29, 161, 242, 0.3);
+/* Scrollbar Styling for Firefox */
+.postsContainer {
+  scrollbar-width: thin;
+  scrollbar-color: #c1c1c1 #f1f1f1;
 }
 
 /* Responsive Design */
 @media (max-width: 1024px) {
   .postsContainer {
-    max-width: 90%;
-    padding: 1.5rem;
+    margin: 80px 150px 0 150px; /* Adjust margins based on sidebar widths */
   }
 }
 
 @media (max-width: 768px) {
-  .postsContainer {
-    padding: 1rem;
-    max-width: 95%;
+  .sidebar,
+  .suggestionsSidebar {
+    display: none; /* Hide sidebars on small screens */
   }
-  
-  .newPostsNotification {
-    width: 90%;
-    max-width: 300px;
+
+  .postsContainer {
+    margin: 80px 20px 0 20px; /* Reduce side margins */
+    max-width: none;
   }
 }
 
-/* Dark mode support */
-@media (prefers-color-scheme: dark) {
-  .home {
-    background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
-  }
+/* New Styles for New Posts Notification */
+.newPostsNotification {
+  position: fixed;
+  top: 80px; /* Below the Navbar */
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #1DA1F2;
+  color: #ffffff;
+  padding: 10px 20px;
+  margin-bottom: 10px;
+  border-radius: 20px;
+  text-align: center;
+  cursor: pointer;
+  z-index: 1000;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s ease;
+}
 
-  .postsContainer::-webkit-scrollbar-track {
-    background: rgba(45, 55, 72, 0.4);
-  }
-
-  .postsContainer::-webkit-scrollbar-thumb {
-    background: linear-gradient(45deg, #2d3748, #4a5568);
-    border: 2px solid rgba(45, 55, 72, 0.5);
-  }
+.newPostsNotification:hover {
+  background-color: #0d95e8;
 }
