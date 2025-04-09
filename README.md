@@ -1,6 +1,8 @@
 # Sayings: Bringing Social Media to Life Through Voice
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) <!-- Optional: Add other badges if applicable -->
+[![Status: Under Development](https://img.shields.io/badge/Status-Under%20Development-orange.svg)](.)
+
 
 **Sayings is a social media application designed to make online interactions more personal and expressive by centering around voice messages instead of text.**
 
