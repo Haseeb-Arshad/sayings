@@ -1,5 +1,24 @@
 /* styles/Home.module.css */
 
+/* CSS Variables for Dark Theme */
+:root {
+  --bg-dark: #121214;
+  --bg-card: #1e1e24;
+  --bg-input: rgba(255, 255, 255, 0.08);
+  --text-primary: #f5f5f7;
+  --text-secondary: #a0a0a5;
+  --text-tertiary: #666668;
+  --accent-primary: linear-gradient(135deg, #8e2de2, #4a00e0);
+  --accent-secondary: linear-gradient(135deg, #4776E6, #8E54E9);
+  --accent-tertiary: linear-gradient(135deg, #00c6ff, #0072ff);
+  --shadow-sm: 0 4px 6px rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 8px 15px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 12px 28px rgba(0, 0, 0, 0.4);
+  --border-radius-sm: 8px;
+  --border-radius-md: 12px;
+  --border-radius-lg: 20px;
+}
+
 /* Ensure html and body take full height and enable smooth scrolling */
 html,
 body,
@@ -14,28 +33,28 @@ body,
 .home {
   position: relative;
   min-height: 100%;
-  background-color: #f0f2f5; /* Optional: Background color for the entire page */
+  background-color: var(--bg-dark);
+  color: var(--text-primary);
+  font-family: 'Poppins', sans-serif;
 }
 
-/* Navbar Styles */
+/* Note: Navbar styles moved to Navbar.module.css */
+/* Only keep this as a placeholder to prevent breaking styles */
 .navbar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 60px; /* Adjust as per your Navbar's height */
-  z-index: 1000; /* Ensure it stays above other elements */
-  background-color: #fff; /* Background color for Navbar */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Optional: Add shadow */
+  display: none;
 }
 
 /* Posts Container */
 .postsContainer {
-  max-width: 600px;
-  margin: 80px auto 0 auto; /* 60px for Navbar + 20px spacing */
-  padding: 1rem;
+  max-width: 800px;
+  margin: 0 auto 0 calc(280px + 2rem); /* Adjust for sidebar width + spacing */
+  padding: 2rem 1rem;
   box-sizing: border-box;
-  /* Removed height and overflow-y to use the browser's scrollbar */
+  overflow-y: auto;
+  height: 100vh;
+  scrollbar-width: thin;
+  scrollbar-color: var(--text-tertiary) var(--bg-dark);
+  transition: margin-left 0.3s ease;
 }
 
 /* Infinite Scroll Loader and Messages */
@@ -43,50 +62,120 @@ body,
 .noPosts,
 .endMessage {
   text-align: center;
-  color: #657786;
+  color: var(--text-secondary);
   font-size: 1rem;
   margin-top: 2rem;
+  font-weight: 300;
+  letter-spacing: 0.5px;
 }
 
 .error {
-  color: #dc3545;
+  color: var(--text-primary);
+  background: rgba(30, 30, 36, 0.8);
+  border: 1px solid rgba(255, 71, 87, 0.3);
   text-align: center;
-  margin-top: 1rem;
+  margin: 1.5rem auto;
+  padding: 16px;
+  border-radius: var(--border-radius-md);
+  box-shadow: var(--shadow-md);
+  max-width: 90%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+}
+
+.error p {
+  margin: 0.5rem 0;
+  font-weight: 400;
+  color: var(--text-primary);
+}
+
+.errorIcon {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.retryButton {
+  margin-top: 0.75rem;
+  padding: 8px 20px;
+  background: var(--accent-primary);
+  color: var(--text-primary);
+  border: none;
+  border-radius: var(--border-radius-sm);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
 /* Floating Voice Button */
 .floatingButton {
   position: fixed;
-  bottom: 20px;
-  right: 20px;
-  /* Add other styles for the floating button */
+  bottom: 30px;
+  right: 30px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: var(--accent-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-primary);
+  font-size: 24px;
+  box-shadow: var(--shadow-lg);
+  border: none;
+  outline: none;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  z-index: 999;
+}
+
+.floatingButton:hover {
+  transform: translateY(-5px) scale(1.05);
+  box-shadow: 0 15px 25px rgba(0, 0, 0, 0.5);
+}
+
+.floatingButton:active {
+  transform: scale(0.95);
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.4);
 }
 
 /* Scrollbar Styling for Webkit Browsers */
 .postsContainer::-webkit-scrollbar {
-  width: 8px;
+  width: 6px;
 }
 
 .postsContainer::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: var(--bg-dark);
 }
 
 .postsContainer::-webkit-scrollbar-thumb {
-  background-color: #c1c1c1;
-  border-radius: 4px;
-  border: 2px solid #f1f1f1;
+  background: var(--text-tertiary);
+  border-radius: 10px;
 }
 
-/* Scrollbar Styling for Firefox */
-.postsContainer {
-  scrollbar-width: thin;
-  scrollbar-color: #c1c1c1 #f1f1f1;
+.postsContainer::-webkit-scrollbar-thumb:hover {
+  background: var(--text-secondary);
 }
 
 /* Responsive Design */
+@media (max-width: 1200px) {
+  .postsContainer {
+    max-width: calc(100% - 280px - 4rem);
+    margin-left: calc(280px + 2rem);
+  }
+}
+
 @media (max-width: 1024px) {
   .postsContainer {
-    margin: 80px 150px 0 150px; /* Adjust margins based on sidebar widths */
+    margin-left: calc(250px + 1rem); /* Adjust for smaller sidebar on tablets */
+    margin-right: 1rem;
+    max-width: 700px;
+  }
+
+  .errorContainer {
+    width: 90%;
   }
 }
 
@@ -97,29 +186,45 @@ body,
   }
 
   .postsContainer {
-    margin: 80px 20px 0 20px; /* Reduce side margins */
+    margin: 84px 15px 0 15px; /* navbar height + spacing */
     max-width: none;
+    padding: 0.5rem;
+  }
+  
+  .floatingButton {
+    bottom: 20px;
+    right: 20px;
+    width: 55px;
+    height: 55px;
   }
 }
 
-/* New Styles for New Posts Notification */
+/* New Posts Notification */
 .newPostsNotification {
   position: fixed;
-  top: 80px; /* Below the Navbar */
+  top: 90px; /* Below the Navbar */
   left: 50%;
   transform: translateX(-50%);
-  background-color: #1DA1F2;
-  color: #ffffff;
-  padding: 10px 20px;
+  background: var(--accent-secondary);
+  color: var(--text-primary);
+  padding: 12px 25px;
   margin-bottom: 10px;
-  border-radius: 20px;
+  border-radius: var(--border-radius-lg);
   text-align: center;
   cursor: pointer;
   z-index: 1000;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  transition: background-color 0.3s ease;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  box-shadow: var(--shadow-md);
+  transition: all 0.3s ease;
 }
 
 .newPostsNotification:hover {
-  background-color: #0d95e8;
+  transform: translateX(-50%) translateY(-3px);
+  box-shadow: var(--shadow-lg);
+}
+
+.newPostsNotification:active {
+  transform: translateX(-50%) translateY(0);
+  box-shadow: var(--shadow-sm);
 }

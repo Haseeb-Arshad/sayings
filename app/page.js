@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState, useCallback, useRef } from 'react';
-import axios from '../utils/axiosInstance';
+import axios, { isNetworkOffline } from '../utils/axiosInstance';
 import Post from '../component/post';
 import Navbar from '../component/navBar';
 import Sidebar from '../component/sidebar';
@@ -95,7 +95,7 @@ const Home = () => {
 
   // Function to fetch new posts without disrupting existing posts
   const fetchNewPosts = useCallback(async () => {
-    if (isFetching) return;
+    if (isFetching || isNetworkOffline()) return;
     setIsFetching(true);
 
     const latestTimestamp = posts.length > 0 ? posts[0].timestamp : null;
@@ -125,7 +125,11 @@ const Home = () => {
         }
       }
     } catch (error) {
-      console.error('Error fetching new posts:', error);
+      // Only show errors when they're not related to being offline
+      if (!error.isOffline) {
+        console.error('Error fetching new posts:', error);
+      }
+      // We don't set the error state for background fetches to avoid disrupting the UI
     } finally {
       setIsFetching(false);
     }
@@ -138,7 +142,15 @@ const Home = () => {
 
   const fetchHomePosts = useCallback(
     async (currentPage) => {
-      if (isFetching) return;
+      // Don't fetch if already fetching or offline on initial load (page 1)
+      if (isFetching || (currentPage === 1 && isNetworkOffline())) {
+        if (currentPage === 1 && isNetworkOffline()) {
+          setError('You are currently offline. Please check your connection to view posts.');
+          setLoading(false);
+        }
+        return;
+      }
+      
       setIsFetching(true);
       setLoading(true);
       setError('');
@@ -183,22 +195,37 @@ const Home = () => {
         if (currentPage >= totalPages) {
           setHasMore(false);
         }
+        
+        // Clear any previous errors on successful fetch
+        setError('');
       } catch (err) {
-        if (err.name === 'CanceledError') {
+        if (err.name === 'CanceledError' || err.code === 'ERR_CANCELED') {
           console.log('Request canceled:', err.message);
         } else if (err.response && err.response.status === 429) {
           console.error('Too many requests:', err);
           setError('You are sending requests too quickly. Please slow down.');
+        } else if (err.isOffline) {
+          console.log('Offline error when fetching posts');
+          setError('You appear to be offline. Connect to the internet to view new posts.');
+          // If we have existing posts, don't clear them - just show the offline message
+          if (currentPage === 1 && posts.length === 0) {
+            // Only set loading to false if we're on the first page and have no posts
+            setLoading(false);
+          }
         } else {
           console.error('Error fetching home posts:', err);
-          setError(err.response?.data?.error || 'Failed to fetch posts.');
+          setError(
+            err.response?.data?.error ||
+            err.message ||
+            'Failed to fetch posts. Please try again later.'
+          );
         }
       } finally {
         setLoading(false);
         setIsFetching(false);
       }
     },
-    [abortController, filter, isFetching, sortPosts]
+    [abortController, filter, isFetching, sortPosts, posts.length]
   );
 
   const fetchMoreData = () => {
@@ -228,10 +255,12 @@ const Home = () => {
     };
   }, [abortController]);
 
-  // Implement periodic refresh every 60 seconds
+  // Implement periodic refresh every 60 seconds, but only when online
   useEffect(() => {
     const interval = setInterval(() => {
-      refreshPosts();
+      if (!isNetworkOffline()) {
+        refreshPosts();
+      }
     }, 60000);
 
     return () => clearInterval(interval);
@@ -266,7 +295,6 @@ const Home = () => {
   return (
     <RefreshContext.Provider value={refreshPosts}>
       <div className={styles.home}>
-        <Navbar />
         <Sidebar setFilter={handleFilterChange} currentFilter={filter} />
         {/* <SuggestionsSidebar /> */}
         <div
@@ -302,7 +330,29 @@ const Home = () => {
           </AnimatePresence>
 
           <FloatingVoiceButton onNewPost={handleNewPost} />
-          {error && <p className={styles.error}>{error}</p>}
+          {error && (
+            <motion.div 
+              className={styles.error}
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              <div className={styles.errorIcon}>
+                {error.includes('offline') ? '📶' : '⚠️'}
+              </div>
+              <p>{error}</p>
+              {error.includes('offline') && (
+                <motion.button 
+                  className={styles.retryButton}
+                  onClick={() => fetchHomePosts(1)}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  Retry
+                </motion.button>
+              )}
+            </motion.div>
+          )}
           <InfiniteScroll
             dataLength={posts.length}
             next={fetchMoreData}

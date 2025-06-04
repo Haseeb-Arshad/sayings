@@ -20,9 +20,11 @@ import { RefreshContext } from '../context/RefreshContext';
 
 // Define expression colors with a blue-centric palette
 export const expressionColors = {
-  happy: '#1DA1F2',
+  happy: '#8a56ff',
   sad: '#FF4D4F',
   angry: '#F59E0B',
+  calm: '#56ccf2',
+  excited: '#ff6584',
   // Add more emotions as needed
 };
 
@@ -352,27 +354,21 @@ const Post = React.memo(({ post, currentUserId, onDelete }) => {
       <AnimatePresence>
         {!isDeleting && (
           <motion.div
-            className={styles.postContainer}
-            whileHover={{ boxShadow: '0px 5px 15px rgba(0,0,0,0.1)' }}
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.5 }}
-            layout
+            className={styles.post}
+            animate={isDeleting ? { opacity: 0, y: -20 } : { opacity: 1, y: 0 }}
+            transition={{
+              duration: isDeleting ? 0.5 : 0.3,
+              ease: 'easeInOut',
+            }}
             ref={postRef}
           >
             {/* Post Header */}
             <div className={styles.postHeader}>
-              {/* Left Side: Avatar and Post Info */}
-              <div className={styles.leftHeader}>
-                <img
-                  src={avatarUrl}
-                  alt={`${username}'s avatar`}
-                  className={styles.avatar}
-                />
-                <div className={styles.postInfo}>
-                  <span className={styles.username}>{username}</span>
-                  <span className={styles.timestamp}>{timestamp}</span>
+              <div className={styles.userInfo}>
+                <img src={avatarUrl} alt={username} className={styles.avatar} />
+                <div>
+                  <div className={styles.username}>{username}</div>
+                  <div className={styles.timestamp}>{timestamp}</div>
                 </div>
               </div>
 
@@ -523,17 +519,23 @@ const Post = React.memo(({ post, currentUserId, onDelete }) => {
 
             {/* Audio Player */}
             <div className={styles.audioPlayer}>
-              <button
-                className={styles.playButton}
+              <motion.button
+                className={styles.playPauseButton}
                 onClick={togglePlay}
-                disabled={playbackLock.current}
+                disabled={!post.audioPinataURL}
+                aria-label={isPlaying ? 'Pause' : 'Play'}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
               >
-                {isPlaying ? <FaPause /> : <FaPlay />}
-              </button>
-              <div className={styles.waveform} ref={waveformRef}></div>
-              <div className={styles.time}>
-                {formatTime(currentTime)} / {formatTime(duration)}
+                {isPlaying ? <FaPause size={20} /> : <FaPlay size={20} />}
+              </motion.button>
+              <div className={styles.progressBarContainer}>
+                <div className={styles.waveform} ref={waveformRef}></div>
               </div>
+            </div>
+            <div className={styles.timeInfo}>
+              <span>{formatTime(currentTime)}</span>
+              <span>{formatTime(duration)}</span>
             </div>
 
             {/* Toggle Transcript Button */}
@@ -546,16 +548,45 @@ const Post = React.memo(({ post, currentUserId, onDelete }) => {
             )}
 
             {/* Interactions */}
-            <div className={styles.interactions}>
-              <div className={styles.interactionButton} onClick={handleLike}>
-                <FaHeart color={hasLiked ? 'red' : 'inherit'} /> {likes}
+            <div className={styles.postFooter}>
+              <div className={styles.reactions}>
+                <motion.button
+                  className={`${styles.iconButton} ${hasLiked ? styles.likedButton : ''}`}
+                  onClick={handleLike}
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                >
+                  {hasLiked ? <FaHeart color="var(--secondary)" /> : <FaHeart />}
+                  <span>{likes}</span>
+                </motion.button>
+                <motion.button
+                  className={styles.iconButton}
+                  onClick={() => router.push(`/post/${post._id}`)}
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                >
+                  <FaComment />
+                  <span>{post.comments ? post.comments.length : 0}</span>
+                </motion.button>
+                <motion.button
+                  className={styles.iconButton}
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                >
+                  <FaShareAlt />
+                  <span>Share</span>
+                </motion.button>
               </div>
-              <div className={styles.interactionButton}>
-                <FaComment /> {post.comments || 0}
-              </div>
-              <div className={styles.interactionButton}>
-                <FaShareAlt /> Share
-              </div>
+
+              <motion.button
+                className={styles.listenAlongButton}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={togglePlay}
+              >
+                <FaHeadphones />
+                <span>Listen Along</span>
+              </motion.button>
             </div>
 
             {/* Confirmation Modal */}

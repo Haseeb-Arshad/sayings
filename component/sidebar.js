@@ -1,112 +1,114 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import axios from '../utils/axiosInstance';
 import styles from '../styles/Sidebar.module.css';
-import { useRouter, usePathname } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
+import Link from 'next/link';
+import { FaHome, FaBell, FaUser, FaPlus, FaComment, FaEllipsisH } from 'react-icons/fa';
 
-const Sidebar = ({ setFilter, currentFilter }) => {
-  const [topTopics, setTopTopics] = useState([]);
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(true);
-  const [showMore, setShowMore] = useState(false);
-
+const Sidebar = () => {
   const router = useRouter();
-  const pathname = usePathname();
-
-  useEffect(() => {
-    const fetchTopTopics = async () => {
-      if (!navigator.onLine) {
-        setError("Not connected to the internet. Please check your network.");
-        setLoading(false);
-        return;
-      }
-      try {
-        const response = await axios.get('/topics/top');
-        setTopTopics(response.data.topics);
-      } catch (err) {
-        console.error('Error fetching top topics:', err);
-        setError(err.response?.data?.error || 'Failed to fetch top topics.');
-      }
-      setLoading(false);
-    };
-
-    fetchTopTopics();
-
-    // Optionally, re-fetch when the client comes back online
-    const handleOnline = () => {
-      setError('');
-      setLoading(true);
-      fetchTopTopics();
-    };
-
-    window.addEventListener('online', handleOnline);
-    return () => {
-      window.removeEventListener('online', handleOnline);
-    };
-  }, []);
-
-  const handleTopicClick = (topicName) => {
-    const newFilter = `topic:${topicName}`;
-    setFilter(newFilter);
-    router.push(`${pathname}?filter=${encodeURIComponent(newFilter)}`);
+  
+  const handleNavClick = (path) => {
+    router.push(path);
   };
 
-  const handleRecentClick = () => {
-    const newFilter = 'recent';
-    setFilter(newFilter);
-    router.push(`${pathname}`);
+  const handleCreatePost = () => {
+    router.push('/create');
   };
-
-  const displayedTopics = showMore ? topTopics : topTopics.slice(0, 5);
 
   return (
     <aside className={styles.sidebar}>
-      <div className={styles.sidebarContent}>
-        <h3 className={styles.title}>Trending Topics</h3>
-        <button
-          className={`${styles.topicButton} ${
-            currentFilter === 'recent' ? styles.active : ''
-          }`}
-          onClick={handleRecentClick}
-        >
-          <div className={styles.topicHeader}>
-            <span className={styles.topicCategory}>Recent</span>
+      {/* Left sidebar navigation */}
+      <nav className={styles.sidebarNav}>
+        <div className={styles.avatarContainer}>
+          <div className={styles.profileAvatar}>
+            <img src="/avatar-placeholder.png" alt="Profile" />
           </div>
-        </button>
-        {loading && <p className={styles.loadingText}>Loading topics...</p>}
-        {error && <p className={styles.error}>{error}</p>}
-        <ul className={styles.topicList}>
-          {!loading &&
-            !error &&
-            displayedTopics.map((topic) => (
-              <li key={topic._id} className={styles.topicItem}>
-                <button
-                  className={`${styles.topicButton} ${
-                    currentFilter === `topic:${topic.name}` ? styles.active : ''
-                  }`}
-                  onClick={() => handleTopicClick(topic.name)}
-                >
-                  <div className={styles.topicHeader}>
-                    <span className={styles.topicCategory}>Trending</span>
-                  </div>
-                  <div className={styles.topicName}>{topic.name}</div>
-                  <div className={styles.postCount}>
-                    {topic.postCount} posts
-                  </div>
-                </button>
-              </li>
-            ))}
-        </ul>
-        {topTopics.length > 5 && (
-          <button
-            className={styles.showMoreButton}
-            onClick={() => setShowMore(!showMore)}
+        </div>
+        
+        <div className={styles.navItem} onClick={() => handleNavClick('/')}>
+          <FaHome size={24} />
+        </div>
+        
+        <div className={styles.navItem}>
+          <FaBell size={22} />
+          <div className={styles.notificationDot}></div>
+        </div>
+        
+        <div className={styles.navItem}>
+          <FaUser size={22} />
+        </div>
+        
+        <div className={styles.createButtonContainer}>
+          <motion.div 
+            className={styles.createButton}
+            onClick={handleCreatePost}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
           >
-            {showMore ? 'Show Less' : 'Show More'}
+            <FaPlus />
+          </motion.div>
+        </div>
+      </nav>
+      
+      {/* User profile section */}
+      <div className={styles.userProfile}>
+        <div className={styles.userHeader}>
+          <div className={styles.userName}>
+            <span className={styles.name}>tom</span>
+            <span className={styles.pronouns}>he/him</span>
+          </div>
+          
+          <div className={styles.userStatus}>Now</div>
+        </div>
+        
+        <div className={styles.songReference}>
+          <div className={styles.songTitle}>
+            <span className={styles.songName}>I Love You Jesus</span>
+            <span className={styles.artistName}> — Trisha Patyas</span>
+          </div>
+          <div className={styles.duration}>-0:24</div>
+        </div>
+        
+        <div className={styles.listenButtonContainer}>
+          <button className={styles.listenButton}>
+            <FaComment size={14} /> Listen Along
           </button>
-        )}
+        </div>
+        
+        <div className={styles.aboutSection}>About</div>
+        
+        <div className={styles.bioText}>design that feels alive.</div>
+        
+        <div className={styles.bioDetails}>
+          cat parent & dad of 2! 🐱❤️ i regularly abuse & neglect my children.
+        </div>
+        
+        <div className={styles.prideText}>OUT & PROUD! 🌈</div>
+        
+        <div className={styles.additionalInfo}>
+          <div>m/he hobny brown STAN!</div>
+          <div>46 elder millenia! 🌟</div>
+        </div>
+        
+        <div className={styles.locationInfo}>
+          <div className={styles.timeWidget}>
+            <div className={styles.time}>10:04 <span>AM</span></div>
+            <div className={styles.timeZone}>CET—Today <span className={styles.timeOffset}>+7hrs</span></div>
+          </div>
+          
+          <div className={styles.location}>
+            <span>Fr, Marseille</span>
+          </div>
+        </div>
+        
+        <div className={styles.chatButtonContainer}>
+          <button className={styles.chatButton}>
+            Chat
+            <div className={styles.chatButtonIcon}><FaEllipsisH size={12} /></div>
+          </button>
+        </div>
       </div>
     </aside>
   );

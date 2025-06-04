@@ -1,13 +1,74 @@
 /* Navbar.module.css */
 
 .navbar {
+  background-color: rgba(26, 29, 35, 0.95); /* Dark theme background with transparency */
+  padding: 0.75rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   position: fixed;
   top: 0;
-  width: 100%;
-  z-index: 1000;
-  background: #1DA1F2; /* Theme color */
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  left: 280px; /* Width of sidebar */
+  right: 0;
+  height: 64px;
+  z-index: 100;
+  border-bottom: 1px solid #333; /* Dark theme border */
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5); /* Dark theme shadow */
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  padding: 0 1.5rem;
+  z-index: 90; /* Lower than sidebar */
+  transition: left 0.3s ease;
   font-family: 'Poppins', sans-serif; /* Default font */
+}
+
+/* Responsive adjustments for tablet and mobile */
+@media (max-width: 1024px) {
+  .navbar {
+    left: 250px; /* Smaller sidebar on tablets */
+  }
+
+  .centerSection {
+    gap: 0.75rem;
+  }
+
+  .navItem {
+    padding: 0.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .navbar {
+    left: 0; /* Full width on mobile */
+    padding: 0 1rem;
+  }
+
+  .leftSection {
+    max-width: 150px;
+  }
+
+  .pageName {
+    font-size: 1rem;
+  }
+
+  .centerSection {
+    display: none; /* Hide center navigation on mobile */
+  }
+
+  .rightSection {
+    max-width: 100%;
+  }
+
+  .searchContainer {
+    max-width: 150px;
+  }
+
+  .recordButton span {
+    display: none;
+  }
 }
 
 .navContainer {
@@ -25,21 +86,37 @@
   align-items: center;
   gap: 1.5rem;
   flex: 1;
-  max-width: 600px;
+  max-width: 300px;
 }
 
-.logoWrapper {
+.pageIndicator {
   display: flex;
   align-items: center;
+  gap: 0.75rem;
+  color: #fff;
+  font-weight: 600;
+  font-size: 1.2rem;
+}
+
+.pageIcon {
+  font-size: 1.25rem;
+  background: linear-gradient(135deg, #8a56ff, #56ccf2);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.pageName {
+  font-family: 'Poppins', sans-serif;
+}
+
+/* Moved logoWrapper styles to sidebar component as the logo now lives there */
+.logoWrapper {
+  display: none;
 }
 
 .logo {
-  font-size: 1.75rem;
-  font-weight: 700;
-  text-decoration: none;
-  color: white;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  font-family: 'Inika', serif; /* Use Inika for logo */
+  display: none;
 }
 
 .centerSection {
@@ -53,25 +130,25 @@
 }
 
 .navItem {
-  position: relative;
+  display: flex;
+  align-items: center;
   padding: 0.5rem 1rem;
   border-radius: 8px;
   cursor: pointer;
+  position: relative;
   transition: all 0.2s ease;
-  height: 100%;
-  display: flex;
-  align-items: center;
+  margin: 0 3px;
 }
 
 .navItem:hover {
-  background-color: rgba(29, 161, 242, 0.1); /* Slight hover effect */
+  background-color: rgba(255, 255, 255, 0.1); /* Slight hover effect */
 }
 
 .navLink {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  color: rgba(255, 255, 255, 0.9);
+  color: rgba(255, 255, 255, 0.9); /* White text */
   text-decoration: none;
   font-weight: 500;
   font-size: 0.9375rem;
@@ -104,6 +181,7 @@
   display: flex;
   align-items: center;
   gap: 1rem;
+  transition: all 0.3s ease;
   flex: 1;
   justify-content: flex-end;
   max-width: 600px;
@@ -114,22 +192,39 @@
   position: relative;
   flex: 1;
   max-width: 400px;
+  margin: 0 2rem;
+  position: relative;
+  flex: 1;
+  max-width: 400px;
 }
 
 .searchInput {
+  width: 100%;
+  padding: 0.6rem 1rem 0.6rem 2.5rem;
+  border-radius: 20px;
+  border: none;
+  background-color: rgba(255, 255, 255, 0.07);
+  color: #fff; /* White text */
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+  outline: none;
+  border: 1px solid #333; /* Dark theme border */
   width: 100%;
   padding: 0.75rem 1rem;
   padding-left: 2.75rem;
   border-radius: 8px;
   border: 1px solid rgba(255, 255, 255, 0.2);
   background: rgba(255, 255, 255, 0.1);
-  color: white;
+  color: #fff; /* White text */
   font-size: 0.9375rem;
   transition: all 0.2s ease;
   font-family: 'Poppins', sans-serif; /* Poppins for text fields */
 }
 
 .searchInput:focus {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-color: #60a5fa;
+  box-shadow: 0 0 0 2px rgba(138, 86, 255, 0.2);
   outline: none;
   border-color: #60a5fa;
   background: rgba(255, 255, 255, 0.15);
@@ -170,7 +265,7 @@
   display: none;
   background: transparent;
   border: none;
-  color: white;
+  color: #fff; /* White text */
   font-size: 1.5rem;
   cursor: pointer;
   padding: 0.5rem;
@@ -179,7 +274,7 @@
 
 .mobileMenu {
   display: none;
-  background: #1DA1F2;
+  background: #1A1D23; /* Dark theme background */
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   padding: 1rem;
 }
@@ -191,6 +286,7 @@
 }
 
 .mobileNavItem:hover {
+  color: var(--gradient-end);
   background: rgba(255, 255, 255, 0.1);
   transform: translateX(4px);
 } */
@@ -207,6 +303,9 @@
 
 .authButtons {
   display: flex;
+  gap: 1rem;
+  align-items: center;
+  display: flex;
   align-items: center;
   gap: 0.5rem;
 }
@@ -214,7 +313,7 @@
 /* Base styles for auth buttons */
 .authButton {
   background-color: rgba(255, 255, 255, 0.2);
-  color: white;
+  color: #fff; /* White text */
   border: none;
   padding: 0.5rem 1rem;
   border-radius: 9999px; /* Pill-shaped */
@@ -238,18 +337,30 @@
 
 /* Specific styles for Signup button */
 .signupButton {
+  background: linear-gradient(45deg, var(--gradient-start), var(--gradient-end));
+  border: none;
+  border-radius: 20px;
+  padding: 0.5rem 1.2rem;
+  color: #fff; /* White text */
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 10px rgba(138, 86, 255, 0.3);
   background-color: #fff; /* White background */
   color: #1DA1F2; /* Theme blue text */
 }
 
 .signupButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(138, 86, 255, 0.4);
   background-color: rgba(255, 255, 255, 0.4);
 }
 
 /* Specific styles for Logout button */
 .logoutButton {
   background-color: rgba(255, 255, 255, 0.2);
-  color: white;
+  color: #fff; /* White text */
 }
 
 /* Adjust mobileMenuButton position if necessary */
@@ -264,35 +375,77 @@
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
   z-index: 999;
 }
 
 /* Mobile Drawer Styles */
-.mobileDrawer {
+.mobileNav {
   position: fixed;
   top: 0;
   right: 0;
-  width: 80%; /* Adjust as needed */
-  max-width: 300px;
-  height: 100%;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  box-shadow: -2px 0 8px rgba(0, 0, 0, 0.2);
-  z-index: 1000;
+  height: 100vh;
+  width: 300px;
+  background-color: #171a21;
+  z-index: 1001;
+  padding: 1.5rem;
+  box-shadow: -5px 0 15px rgba(0, 0, 0, 0.5);
   display: flex;
   flex-direction: column;
-  padding: 1.5rem 1rem;
+  border-left: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.offlineIndicator {
+  background-color: rgba(255, 107, 107, 0.9);
+  color: white;
+  text-align: center;
+  padding: 0.5rem;
+  width: calc(100% - 280px);
+  right: 0;
+  font-size: 0.9rem;
+  position: absolute;
+  top: 64px;
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  z-index: 95;
+}
+
+@media (max-width: 1024px) {
+  .offlineIndicator {
+    width: calc(100% - 250px);
+  }
+}
+
+@media (max-width: 768px) {
+  .offlineIndicator {
+    width: 100%;
+  }
 }
 
 /* Mobile Header */
-.mobileHeader {
+.mobileNavHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  position: relative;
+}
+
+.mobileNavHeader::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 50%;
+  height: 2px;
+  background: linear-gradient(90deg, #8a56ff, transparent);
 }
 
 .mobileLogo {
@@ -326,6 +479,34 @@
 
 .mobileNavItem {
   margin-bottom: 1.5rem;
+}
+
+.mobileNavItem {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.mobileNavItem::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 0;
+  background: linear-gradient(90deg, rgba(138, 86, 255, 0.15), transparent);
+  transition: width 0.3s ease;
+}
+
+.mobileNavItem:hover::before {
+  width: 100%;
 }
 
 .mobileNavLink {

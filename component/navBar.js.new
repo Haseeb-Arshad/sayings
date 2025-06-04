@@ -1,0 +1,308 @@
+'use client';
+
+import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
+import {
+  FaBars,
+  FaTimes,
+  FaHome,
+  FaCompass,
+  FaUser,
+  FaMicrophone,
+  FaBell,
+  FaSearch,
+  FaHeadphones
+} from 'react-icons/fa';
+import { motion, AnimatePresence } from 'framer-motion';
+import styles from '../styles/Navbar.module.css';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '../context/useAuth';
+import axiosInstance from '@/utils/axiosInstance';
+
+const Navbar = () => {
+  const { user, logout } = useAuth();
+  const [isOffline, setIsOffline] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [notifications, setNotifications] = useState(3); // Example notification count
+  const router = useRouter();
+
+  // Function to check if a link is active
+  const isActive = (path) => router.pathname === path;
+
+  const handleLogout = async () => {
+    if (!navigator.onLine) {
+      alert("Cannot logout while offline.");
+      return;
+    }
+    try {
+      await axiosInstance.post('/auth/logout');
+      logout();
+      router.push('/login');
+    } catch (error) {
+      console.error('Logout failed:', error);
+    }
+  };
+
+  // Check for online/offline status
+  useEffect(() => {
+    const handleOnlineStatus = () => setIsOffline(!navigator.onLine);
+    
+    window.addEventListener('online', handleOnlineStatus);
+    window.addEventListener('offline', handleOnlineStatus);
+    
+    // Set initial status
+    setIsOffline(!navigator.onLine);
+    
+    return () => {
+      window.removeEventListener('online', handleOnlineStatus);
+      window.removeEventListener('offline', handleOnlineStatus);
+    };
+  }, []);
+
+  return (
+    <motion.nav 
+      className={styles.navbar}
+      initial={{ y: -50 }}
+      animate={{ y: 0 }}
+      transition={{ type: 'spring', stiffness: 120, damping: 20 }}
+    >
+      {/* Offline indicator */}
+      {isOffline && (
+        <div className={styles.offlineIndicator}>
+          You are offline. Some features may be unavailable.
+        </div>
+      )}
+      
+      <div className={styles.navContainer}>
+        {/* Left section: Logo */}
+        <Link href="/" className={styles.logo}>
+          <motion.div
+            className={styles.logoIcon}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <FaMicrophone />
+          </motion.div>
+          <span className={styles.logoText}>Sayings</span>
+        </Link>
+
+        {/* Center section: Search */}
+        <div className={styles.searchContainer}>
+          <FaSearch className={styles.searchIcon} />
+          <input
+            type="text"
+            placeholder="Search for voices..."
+            className={styles.searchInput}
+          />
+        </div>
+
+        {/* Right section: Actions and Profile */}
+        <div className={styles.actions}>
+          {user ? (
+            <>
+              {/* Notification Bell */}
+              <motion.div
+                className={styles.notification}
+                whileHover={{ scale: 1.1 }}
+              >
+                <motion.button className={styles.actionButton}>
+                  <FaBell />
+                </motion.button>
+                {notifications > 0 && (
+                  <span className={styles.notificationBadge}>
+                    {notifications}
+                  </span>
+                )}
+              </motion.div>
+
+              {/* Record Button */}
+              <motion.button
+                className={styles.recordButton}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <FaMicrophone size={20} />
+              </motion.button>
+
+              {/* User Avatar */}
+              <motion.img
+                src={user.avatar || "/images/profile/dp.webp"}
+                alt="Profile"
+                className={styles.userAvatar}
+                whileHover={{ scale: 1.05 }}
+              />
+            </>
+          ) : (
+            <div className={styles.authButtons}>
+              <motion.button
+                className={styles.loginButton}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => window.location.href = '/login'}
+              >
+                Log In
+              </motion.button>
+              <motion.button
+                className={styles.signupButton}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => window.location.href = '/register'}
+              >
+                Sign Up
+              </motion.button>
+            </div>
+          )}
+        </div>
+
+        {/* Mobile Menu Button */}
+        <motion.button
+          className={styles.mobileMenuButton}
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          aria-label="Toggle mobile menu"
+          whileTap={{ scale: 0.95 }}
+        >
+          <FaBars />
+        </motion.button>
+      </div>
+
+      {/* Mobile Menu (Off Canvas) */}
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <>
+            {/* Overlay */}
+            <motion.div
+              className={styles.overlay}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              onClick={() => setIsMobileMenuOpen(false)}
+            ></motion.div>
+
+            {/* Mobile Drawer */}
+            <motion.div
+              className={styles.mobileNav}
+              initial={{ x: '100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '100%' }}
+              transition={{ type: 'tween', duration: 0.3 }}
+            >
+              <div className={styles.mobileNavHeader}>
+                <Link href="/" className={styles.mobileLogo} onClick={() => setIsMobileMenuOpen(false)}>
+                  <div className={styles.logoIcon}>
+                    <FaMicrophone />
+                  </div>
+                  <span>Sayings</span>
+                </Link>
+                <motion.button
+                  className={styles.closeButton}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  aria-label="Close menu"
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                >
+                  <FaTimes />
+                </motion.button>
+              </div>
+
+              <div className={styles.mobileNavItems}>
+                <motion.div
+                  whileHover={{ x: 5 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <Link href="/" className={styles.mobileNavItem} onClick={() => setIsMobileMenuOpen(false)}>
+                    <FaHome size={20} />
+                    <span>Home</span>
+                  </Link>
+                </motion.div>
+                
+                <motion.div
+                  whileHover={{ x: 5 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <Link href="/explore" className={styles.mobileNavItem} onClick={() => setIsMobileMenuOpen(false)}>
+                    <FaCompass size={20} />
+                    <span>Explore</span>
+                  </Link>
+                </motion.div>
+                
+                <motion.div
+                  whileHover={{ x: 5 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <Link href="/profile" className={styles.mobileNavItem} onClick={() => setIsMobileMenuOpen(false)}>
+                    <FaUser size={20} />
+                    <span>Profile</span>
+                  </Link>
+                </motion.div>
+
+                {user && (
+                  <motion.div
+                    whileHover={{ x: 5 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <Link href="/listen" className={styles.mobileNavItem} onClick={() => setIsMobileMenuOpen(false)}>
+                      <FaHeadphones size={20} />
+                      <span>Listen Along</span>
+                    </Link>
+                  </motion.div>
+                )}
+              </div>
+
+              {/* Mobile Search */}
+              <div className={styles.mobileSearchContainer}>
+                <FaSearch className={styles.searchIcon} />
+                <input
+                  type="text"
+                  placeholder="Search for voices..."
+                  className={styles.searchInput}
+                />
+              </div>
+
+              {/* Authentication Links */}
+              <div className={styles.mobileAuth}>
+                {user ? (
+                  <motion.button
+                    className={styles.signupButton}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={handleLogout}
+                  >
+                    Logout
+                  </motion.button>
+                ) : (
+                  <div className={styles.authButtons}>
+                    <motion.button
+                      className={styles.loginButton}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => {
+                        window.location.href = '/login';
+                        setIsMobileMenuOpen(false);
+                      }}
+                    >
+                      Log In
+                    </motion.button>
+                    <motion.button
+                      className={styles.signupButton}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => {
+                        window.location.href = '/register';
+                        setIsMobileMenuOpen(false);
+                      }}
+                    >
+                      Sign Up
+                    </motion.button>
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+    </motion.nav>
+  );
+};
+
+export default React.memo(Navbar);

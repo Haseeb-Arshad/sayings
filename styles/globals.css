@@ -1,0 +1,124 @@
+/* Theme variables */
+:root {
+  /* Common variables for both themes */
+  --danger: #ff4d4d;
+  --success: #4caf50;
+  --warning: #ffc107;
+  --border-radius-sm: 4px;
+  --border-radius-md: 8px;
+  --border-radius-lg: 12px;
+  --border-radius-xl: 16px;
+  --border-radius-full: 9999px;
+  --transition-fast: 0.2s;
+  --transition-default: 0.3s;
+  --transition-slow: 0.5s;
+  --easing-default: cubic-bezier(0.25, 0.8, 0.25, 1);
+  --easing-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+  
+  /* Dark theme (default) */
+  --background: #0f0f0f;
+  --card-bg: #1a1a1a;
+  --primary: #8a56ff;
+  --secondary: #ff6584;
+  --accent: #56ccf2;
+  --accent-blue: #1d9bf0;
+  --text-primary: #ffffff;
+  --text-secondary: #d1d1d1;
+  --text-tertiary: #a0a0a0;
+  --text-muted: #808080;
+  --border-color: #2a2a2a;
+  --gradient-start: #8a56ff;
+  --gradient-end: #56ccf2;
+  --button-gradient: linear-gradient(45deg, var(--gradient-start), var(--gradient-end));
+  
+  /* Charcoal palette */
+  --charcoal-dark: #12151a;
+  --charcoal-base: #1a1d24;
+  --charcoal-lighter: #22252d;
+  --charcoal-light: #2c303a;
+  --charcoal-accent: #353945;
+  
+  /* Light theme */
+  --light-background: #f5f5f5;
+  --light-card-bg: #ffffff;
+  --light-sidebar-bg: #fafafa;
+  --light-icon-strip-bg: #eeeeee;
+  --light-primary: #8a56ff;
+  --light-secondary: #ff6584;
+  --light-accent: #56ccf2;
+  --light-accent-blue: #1d9bf0;
+  --light-text-primary: #121212;
+  --light-text-secondary: #575757;
+  --light-text-tertiary: #717171;
+  --light-text-muted: #a0a0a0;
+  --light-border-color: #e0e0e0;
+  --light-time-widget-bg: #1d9bf0;
+  --light-chat-button-start: #c0964e;
+  --light-chat-button-end: #e5c38d;
+  --light-hover-bg: #f0f0f0;
+  --light-active-bg: #e5e5e5;
+}
+
+/* Apply light theme when .light-theme class is set on html element */
+html.light-theme {
+  --background: var(--light-background);
+  --card-bg: var(--light-card-bg);
+  --primary: var(--light-primary);
+  --secondary: var(--light-secondary);
+  --accent: var(--light-accent);
+  --accent-blue: var(--light-accent-blue);
+  --text-primary: var(--light-text-primary);
+  --text-secondary: var(--light-text-secondary);
+  --text-tertiary: var(--light-text-tertiary);
+  --text-muted: var(--light-text-muted);
+  --border-color: var(--light-border-color);
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--text-primary);
+  overflow-x: hidden;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+.gradient-text {
+  background: var(--button-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.rounded-full {
+  border-radius: 9999px;
+}
+
+.rounded-lg {
+  border-radius: 12px;
+}
+
+/* Animation for transitions */
+.fade-in {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}

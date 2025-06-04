@@ -100,144 +100,147 @@ const Navbar = () => {
   };
 
   return (
-    <>
-      <motion.nav 
-        className={styles.navbar}
-        initial={{ y: -50 }}
-        animate={{ y: 0 }}
-        transition={{ type: 'spring', stiffness: 120 }}
-      >
-        {isOffline && (
-          <div className={styles.offlineIndicator}>You are offline. Some features may be unavailable.</div>
-        )}
+    <motion.nav 
+      className={styles.navbar}
+      initial={{ y: -50 }}
+      animate={{ y: 0 }}
+      transition={{ type: 'spring', stiffness: 120 }}
+    >
+      {/* Offline indicator */}
+      {isOffline && (
+        <div className={styles.offlineIndicator}>You are offline. Some features may be unavailable.</div>
+      )}
 
-        <div className={styles.navContainer}>
-          {/* Left section with page indicator instead of logo */}
-          <div className={styles.leftSection}>
+      {/* Desktop Navigation */}
+      <nav className={styles.desktopNav}>
+        <div className={styles.navSection}>
+          {/* Logo */}
+          <Link href="/" className={styles.logo} onClick={() => handleNavClick('/')}>
             <motion.div 
-              className={styles.pageIndicator}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
+              className={styles.logoIcon}
+              whileHover={{ scale: 1.1, rotate: 5 }}
+              whileTap={{ scale: 0.9 }}
+            >
+              <FaMicrophone />
+            </motion.div>
+            <motion.span 
+              className={styles.logoText}
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.2 }}
             >
-              <FaMicrophone className={styles.pageIcon} />
-              <span className={styles.pageName}>
-                {isActive('/') && 'Home'}
-                {isActive('/explore') && 'Explore'}
-                {isActive('/profile') && 'Profile'}
-                {isActive('/listen') && 'Listen'}
-                {!isActive('/') && !isActive('/explore') && !isActive('/profile') && !isActive('/listen') && 'Sayings'}
-              </span>
-            </motion.div>
-          </div>
+              Sayings
+            </motion.span>
+          </Link>
 
-          {/* Center section with icons */}
-          <div className={styles.centerSection}>
-            {navItems.map((item) => (
-              <motion.div 
+          {/* Desktop Nav Items */}
+          <div className={styles.navItems}>
+            {navItems.map((item, i) => (
+              <motion.div
                 key={item.id}
-                className={`${styles.navItem} ${isActive(item.path) ? styles.active : ''}`} 
-                onClick={() => handleNavClick(item.path)}
-                whileHover={{ scale: 1.1 }}
+                custom={i}
+                variants={navVariants}
+                initial="hidden"
+                animate="visible"
+                whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
+                className={`${styles.navItem} ${isActive(item.path) ? styles.active : ''}`}
+                onClick={() => handleNavClick(item.path)}
               >
-                <span className={styles.navLink}>
-                  <span className={styles.icon}>{item.icon}</span>
-                </span>
-                {isActive(item.path) && <div className={styles.activeIndicator} />}
+                <div className={styles.navIcon}>{item.icon}</div>
+                <span className={styles.navLabel}>{item.label}</span>
               </motion.div>
             ))}
           </div>
+        </div>
 
-          {/* Right section with search and user actions */}
-          <div className={styles.rightSection}>
-            {/* Search Bar */}
-            <div className={styles.searchContainer}>
-              <FaSearch className={styles.searchIcon} />
-              <input
-                type="text"
-                placeholder="Search..."
-                className={styles.searchInput}
-              />
-            </div>
+        <div className={styles.navSection}>
+          {/* Search Bar */}
+          <div className={styles.searchContainer}>
+            <FaSearch className={styles.searchIcon} />
+            <input
+              type="text"
+              placeholder="Search..."
+              className={styles.searchInput}
+            />
+          </div>
 
-            {/* User Actions */}
-            <div className={styles.userActions}>
-              {user ? (
-                <>
-                  {/* Notification Button */}
-                  <motion.button
-                    className={styles.iconButton}
+          {/* User Actions */}
+          <div className={styles.userActions}>
+            {user ? (
+              <>
+                {/* Notification Button */}
+                <motion.button
+                  className={styles.iconButton}
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                >
+                  <FaBell />
+                  <span className={styles.notificationBadge}>3</span>
+                </motion.button>
+
+                {/* Record Button */}
+                <Link href="/record" className={styles.recordButton}>
+                  <motion.div
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                    className={styles.recordButtonInner}
+                  >
+                    <FaMicrophone />
+                    <span>Record</span>
+                  </motion.div>
+                </Link>
+
+                {/* User Avatar / Profile */}
+                <Link href="/profile">
+                  <motion.div
+                    className={styles.avatar}
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
                   >
-                    <FaBell />
-                    <span className={styles.notificationBadge}>3</span>
-                  </motion.button>
-
-                  {/* Record Button */}
-                  <Link href="/record" className={styles.recordButton}>
-                    <motion.div
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.9 }}
-                      className={styles.recordButtonInner}
-                    >
-                      <FaMicrophone />
-                      <span>Record</span>
-                    </motion.div>
-                  </Link>
-
-                  {/* User Avatar / Profile */}
-                  <Link href="/profile">
-                    <motion.div
-                      className={styles.avatar}
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.9 }}
-                    >
-                      {user.avatar ? (
-                        <img src={user.avatar} alt="Profile" />
-                      ) : (
-                        <div className={styles.defaultAvatar}>
-                          {user.name ? user.name.charAt(0) : 'U'}
-                        </div>
-                      )}
-                    </motion.div>
-                  </Link>
-                </>
-              ) : (
-                <div className={styles.authButtons}>
-                  <motion.button
-                    className={styles.loginButton}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={() => push('/login')}
-                  >
-                    Log In
-                  </motion.button>
-                  <motion.button
-                    className={styles.signupButton}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={() => push('/register')}
-                  >
-                    Sign Up
-                  </motion.button>
-                </div>
-              )}
-            </div>
-
-            {/* Mobile Menu Toggle */}
-            <motion.button
-              className={styles.mobileMenuToggle}
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              aria-label="Toggle mobile menu"
-              whileTap={{ scale: 0.95 }}
-            >
-              <FaBars />
-            </motion.button>
+                    {user.avatar ? (
+                      <img src={user.avatar} alt="Profile" />
+                    ) : (
+                      <div className={styles.defaultAvatar}>
+                        {user.name ? user.name.charAt(0) : 'U'}
+                      </div>
+                    )}
+                  </motion.div>
+                </Link>
+              </>
+            ) : (
+              <div className={styles.authButtons}>
+                <motion.button
+                  className={styles.loginButton}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => push('/login')}
+                >
+                  Log In
+                </motion.button>
+                <motion.button
+                  className={styles.signupButton}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => push('/register')}
+                >
+                  Sign Up
+                </motion.button>
+              </div>
+            )}
           </div>
+
+          {/* Mobile Menu Toggle */}
+          <motion.button
+            className={styles.mobileMenuToggle}
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            aria-label="Toggle mobile menu"
+            whileTap={{ scale: 0.95 }}
+          >
+            <FaBars />
+          </motion.button>
         </div>
-      </motion.nav>
+      </nav>
 
       {/* Mobile Menu (Off Canvas) */}
       <AnimatePresence>
@@ -375,7 +378,7 @@ const Navbar = () => {
           </>
         )}
       </AnimatePresence>
-    </>
+    </motion.nav>
   );
 };
 

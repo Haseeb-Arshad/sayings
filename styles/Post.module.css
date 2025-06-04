@@ -2,15 +2,13 @@
 @import url('https://fonts.googleapis.com/css2?family=Inika:wght@400;700&display=swap');
 
 .postContainer {
-  background-color: #ffffff;
+  background-color: #14171A;
   border-radius: 12px;
   padding: 20px;
   margin-bottom: 20px;
   box-shadow: 0 4px 6px rgba(0,0,0,0.1);
   transition: box-shadow 0.3s ease, opacity 0.5s ease;
   font-family: 'Poppins', sans-serif;
-
-  /* font-family: 'Helvetica Neue', Arial, sans-serif; */
   position: relative;
 }
 
@@ -22,7 +20,7 @@
   display: flex;
   align-items: center;
   margin-bottom: 15px;
-  justify-content: space-between; /* Space between left and right headers */
+  justify-content: space-between;
 }
 
 .leftHeader {
@@ -31,6 +29,13 @@
 }
 
 .avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  margin-right: 0.75rem;
+  object-fit: cover;
+  border: 2px solid #1DA1F2;
+  background-color: #14171A;
   width: 50px;
   height: 50px;
   border-radius: 50%;
@@ -45,39 +50,45 @@
 }
 
 .username {
+  font-weight: 600;
+  color: #ffffff;
+  font-size: 1rem;
+  margin-bottom: 0.25rem;
+  display: flex;
+  align-items: center;
   font-size: 18px;
   font-weight: bold;
-  color: #14171A;
-  font-family: 'Inika', serif; /* Apply Inika font */
+  color: #ffffff;
+  font-family: 'Inika', serif;
 }
 
 .timestamp {
+  font-size: 0.8rem;
+  color: #657786;
+  display: block;
   font-size: 14px;
   color: #657786;
 }
-
-/* .rightHeader {
-  display: flex;
-  align-items: center;
-  gap: 10px; 
-} */
 
 .rightHeader {
   display: flex;
   align-items: center;
   gap: 10px;
-  position: relative; /* To position the menu and emotions properly */
+  position: relative;
 }
-
 
 .menuContainer {
   position: relative;
 }
 
-
-
-
 .menuButton {
+  background: none;
+  border: none;
+  color: #657786;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 50%;
+  transition: all 0.2s ease;
   background: none;
   border: none;
   color: #657786;
@@ -88,6 +99,7 @@
 }
 
 .menuButton:hover {
+  background-color: rgba(255, 255, 255, 0.05);
   color: #1DA1F2;
 }
 
@@ -96,14 +108,10 @@
   align-items: center;
   gap: 6px;
   position: relative;
-  /* Remove max-width to allow emotions to occupy available space */
   flex-wrap: nowrap;
   overflow: hidden;
-  /* Add margin-right to prevent overlapping with the menu */
   margin-right: auto;
 }
-
-
 
 .emotionBadge {
   padding: 4px 8px;
@@ -134,7 +142,7 @@
   position: absolute;
   top: 100%;
   left: 0;
-  background-color: #ffffff;
+  background-color: #14171A;
   border: 1px solid #e0e0e0;
   border-radius: 8px;
   padding: 8px;
@@ -163,44 +171,18 @@
 .tooltip .emotionBadge {
   margin-bottom: 4px;
 }
-/* 
-.tooltip {
-  position: absolute;
-  top: 150%;
-  right: 0;
-  background-color: #ffffff;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  padding: 8px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-  z-index: 10;
-  white-space: nowrap;
-} */
-
-
-.menuContainer {
-  position: relative;
-}
-/* 
-.dropdownMenu {
-  position: absolute;
-  top: 100%; 
-  right: 0;
-  transform: translateY(10px);
-} */
 
 .dropdownMenu {
   position: absolute;
-  top: 100%; 
+  top: 100%;
   right: 0;
-  background-color: #ffffff;
+  background-color: #14171A;
   border: 1px solid #e0e0e0;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0,0,0,0.1);
   z-index: 100;
   overflow: hidden;
   transform: translateY(10px);
-
 }
 
 .dropdownItem {
@@ -212,7 +194,7 @@
   border: none;
   cursor: pointer;
   font-size: 16px;
-  color: #14171A;
+  color: #ffffff;
   transition: background-color 0.2s ease;
 }
 
@@ -231,18 +213,34 @@
 
 .summary {
   font-size: 1rem;
-  color: #14171A;
+  color: #ffffff;
   line-height: 1.6;
 }
 
 .transcript {
+  margin: 1rem 0;
+  padding: 1rem;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  color: #ffffff;
+  line-height: 1.5;
+  max-height: 150px;
+  overflow-y: auto;
+  transition: all 0.2s ease;
+  font-size: 0.95rem;
   font-size: 1rem;
-  color: #14171A;
+  color: #ffffff;
   line-height: 1.2;
   word-wrap: break-word;
 }
 
 .word {
+  display: inline-block;
+  padding: 0 2px;
+  margin: 0 1px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  cursor: pointer;
   display: inline-block;
   transition: background-color 0.3s ease;
   padding: 2px 4px;
@@ -256,6 +254,9 @@
 }
 
 .highlighted {
+  background: linear-gradient(45deg, var(--gradient-start), var(--gradient-end));
+  color: white;
+  font-weight: 500;
   background-color: rgba(29, 161, 242, 0.3);
 }
 
@@ -275,6 +276,11 @@
 }
 
 .audioPlayer {
+  margin: 1rem 0;
+  border-radius: 12px;
+  overflow: hidden;
+  background-color: rgba(26, 26, 26, 0.7);
+  padding: 1rem;
   display: flex;
   align-items: center;
   margin-bottom: 15px;
@@ -294,9 +300,6 @@
   justify-content: center;
   transition: background-color 0.3s ease;
 }
-
-
-
 
 .playButton:hover {
   background-color: #0d95e8;
@@ -379,27 +382,20 @@
   position: absolute;
   height: 100vh;
   width: 100vw;
-  /* display: flex;
-  align-items: center;
-  justify-content: center; */
   z-index: 9999999999999999;
 }
 
 .modalContent {
-  /* position: fixed; */
-  /* top: 50%;
-
-  left: 50%; */
   position: relative;
   width: 90%;
   max-width: 450px;
-  background-color: #ffffff;
+  background-color: #14171A;
   border-radius: 12px;
   padding: 25px;
   z-index: 1001;
   transform: translate(-50%, -50%);
   box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-  box-sizing: border-box; /* This line centers the modal */
+  box-sizing: border-box;
 }
 
 .modalHeader {
@@ -412,7 +408,7 @@
 .modalHeader h2 {
   margin: 0;
   font-size: 20px;
-  color: #14171A;
+  color: #ffffff;
 }
 
 .closeButton {
