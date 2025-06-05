@@ -1,122 +1,279 @@
-/* General Styles */
-@import url('https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@400;600;700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Inika:wght@400;700&display=swap');
-
-/* :global(:root) {
-  --primary-color: #007aff;
-  --secondary-color: #5856d6;
-  --background-gradient: linear-gradient(135deg, #f0f4f8 0%, #d9e2ec 100%);
-  --input-background: rgba(255, 255, 255, 0.5);
-  --border-color: rgba(0, 0, 0, 0.1);
-  --error-color: #ff3b30;
-}
-
-:global(*) {
-  box-sizing: border-box;
-}
-
-:global(body) {
-  margin: 0;
-  font-family: 'SF Pro Display', sans-serif;
-  background: var(--background-gradient);
-} */
+/* Register Styles */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 
 /* Container */
 .container {
-
-  --primary-color: #007aff;
-  --secondary-color: #5856d6;
-  --background-gradient: linear-gradient(135deg, #f0f4f8 0%, #d9e2ec 100%);
-  --input-background: rgba(255, 255, 255, 0.5);
-  --border-color: rgba(0, 0, 0, 0.1);
-  --error-color: #ff3b30;
-  box-sizing: border-box;
-
-  margin: 0;
-  font-family: 'SF Pro Display', sans-serif;
-  background: var(--background-gradient);
-
   display: flex;
   min-height: 100vh;
+  width: 100%;
+  font-family: 'Poppins', sans-serif;
+  background-color: var(--background); /* Now #121214 */
+  color: var(--text-primary); /* Now #f5f5f7 */
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Light theme styles */
+:global(html.light-theme) .container {
+  background-color: var(--light-background);
+  color: var(--light-text-primary);
+}
+
+/* Color Variables */
+:root {
+  /* Theme alignment with Home.module.css */
+  --bg-dark: #121214;
+  --bg-card: #1e1e24;
+  --text-primary: #f5f5f7;
+  --text-secondary: #a0a0a5;
+  /* Minimalistic Charcoal/Grey Accents from Home.module.css */
+  --solid-accent-primary: #787880;            /* Mid-light grey for links, focus */
+  --solid-accent-primary-rgb: 120, 120, 128; /* For shadows, glows */
+  --solid-accent-secondary: #505055;          /* Darker grey for hover/less prominent */
+  --button-background-gradient: linear-gradient(135deg, #3a3a40, #2c2c30); /* Subtle dark grey gradient for buttons */
+
+  /* Mapping to existing variable names used in this file for smoother transition */
+  --accent-primary-gradient: var(--button-background-gradient);
+  --solid-primary-accent: var(--solid-accent-primary);
+  /* Note: --solid-secondary-accent is defined above and used by --accent below. */
+
+  --primary: var(--solid-accent-primary); /* Main interactive color - now grey */
+  --accent: var(--solid-accent-secondary); /* Secondary interactive color - now darker grey */
+  --background: var(--bg-dark);
+  --card-bg: var(--bg-card);
+  
+  --error-color: #FF4D4F; /* Retained */
+  
+  /* Radii from Home.module.css */
+  --border-radius-sm: 8px;
+  --border-radius-md: 12px;
+  --border-radius-lg: 20px;
+
+  /* Input specific colors, pre-calculated */
+  --input-border-color: rgba(160, 160, 165, 0.2);       /* from #a0a0a5 (text-secondary) */
+  --input-focus-border-color: rgba(var(--solid-accent-primary-rgb), 0.8);  /* from new grey --solid-accent-primary-rgb */
+  --input-background-color: rgba(30, 30, 36, 0.4);       /* from #1e1e24 (card-bg) */
+  --input-focus-background-color: rgba(30, 30, 36, 0.6);/* from #1e1e24 (card-bg) */
+  --input-hover-background-color: rgba(30, 30, 36, 0.5); /* from #1e1e24 (card-bg) */
+  
+  /* For subtle-glow keyframe, using new grey primary accent */
+  --glow-primary-color-rgba-a: rgba(var(--solid-accent-primary-rgb), 0.1);
+  --glow-primary-color-rgba-b: rgba(var(--solid-accent-primary-rgb), 0.2);
+
+  /* Light Theme Colors (review recommended if light theme is a priority) */
+  --light-background: #F2F3F5;
+  --light-card-bg: #FFFFFF;
+  --light-text-primary: #313338;
+  --light-text-secondary: #6D6F78;
 }
 
 /* Left Pane */
 .leftPane {
   flex: 1;
-  padding: 2rem;
-  padding-bottom: 300px; /* Ensure space for the illustration */
+  padding: 3rem;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start; /* Align items to the top */
-  position: relative; /* Enable absolute positioning for child elements */
-  /* background: var(--background-gradient); */
+  justify-content: flex-start;
+  position: relative;
+  background: var(--card-bg); /* Now #1e1e24 */
+  /* Updated radial gradients to use new primary accent #8e2de2 */
+  background-image: radial-gradient(circle at top left, rgba(142, 45, 226, 0.1), transparent 70%),
+                    radial-gradient(circle at bottom right, rgba(74, 0, 224, 0.07), transparent 70%);
+  overflow: hidden;
+}
+
+:global(html.light-theme) .leftPane {
+  background: var(--light-card-bg);
+  background-image: radial-gradient(circle at top left, rgba(88, 101, 242, 0.08), transparent 70%),
+                    radial-gradient(circle at bottom right, rgba(110, 122, 233, 0.05), transparent 70%);
 }
 
 .brand {
   display: flex;
   align-items: center;
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
+  z-index: 5;
 }
 
 .brand h1 {
-  font-size: 2rem;
+  font-size: 2.8rem;
   font-weight: 700;
   margin-left: 0.5rem;
-  color: var(--primary-color);
+  background: linear-gradient(90deg, var(--text-primary), var(--text-secondary)); /* Uses new #f5f5f7 and #a0a0a5 */
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: -0.5px;
+  text-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Slightly stronger shadow for dark theme */
+}
+
+:global(html.light-theme) .brand h1 {
+  background: linear-gradient(90deg, var(--primary), var(--accent));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 2px 5px rgba(88, 101, 242, 0.15);
+}
+
+.brand div {
+  font-size: 0.9rem;
+  opacity: 0.8;
+  margin-left: 0.5rem;
+  margin-top: 0.5rem;
+  color: var(--text-secondary); /* Now #a0a0a5 */
+  letter-spacing: 0.5px;
+}
+
+:global(html.light-theme) .brand div {
+  color: var(--light-text-secondary);
 }
 
 .tagline {
   font-size: 1.5rem;
-  color: #333;
-  max-width: 400px;
-  margin-bottom: 2rem;
+  color: var(--text-primary); /* Now #f5f5f7 */
+  max-width: 450px;
+  margin-bottom: 3rem;
+  z-index: 5;
+  line-height: 1.4;
+  font-weight: 500;
+}
+
+:global(html.light-theme) .tagline {
+  color: var(--light-text-primary);
 }
 
 .illustration {
   position: absolute;
   bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
+  left: 0;
   max-width: 100%;
   height: auto;
-  width: 80%; /* Adjust as needed */
-  
-  /* Enhance the shape using clip-path */
-  clip-path: polygon(0 0, 100% 0, 100% 85%, 50% 100%, 0 85%);
-  
-  /* Optional: Add a subtle box-shadow for depth */
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  opacity: 0.9;
+  z-index: 1;
+  width: 85%;
+  filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.15));
+  transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+:global(html.light-theme) .illustration {
+  opacity: 0.85;
+  filter: drop-shadow(0 10px 15px rgba(0, 0, 0, 0.1));
+}
+
+/* Decorative elements */
+.decorCircle1, .decorCircle2 {
+  position: absolute;
+  border-radius: 50%;
+  z-index: 0;
+}
+
+.decorCircle1 {
+  width: 250px;
+  height: 250px;
+  background: radial-gradient(circle, rgba(86, 204, 242, 0.2), transparent);
+  top: -50px;
+  left: -50px;
+  filter: blur(40px);
+}
+
+.decorCircle2 {
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, rgba(138, 86, 255, 0.15), transparent);
+  bottom: -100px;
+  right: -100px;
+  filter: blur(50px);
 }
 
 /* Right Pane */
 .rightPane {
   flex: 1;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
+  background-color: var(--background); /* Now #121214 */
+  position: relative;
+  overflow: hidden;
+  padding: 2rem;
+}
+
+:global(html.light-theme) .rightPane {
+  background-color: var(--light-background);
 }
 
 /* Form Styles */
 .form {
+  background: var(--card-bg); /* Now #1e1e24, more opaque */
+  backdrop-filter: blur(10px); /* Adjusted blur */
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: var(--border-radius-md); /* Using 12px from Home.module.css */
+  padding: 2.5rem;
   width: 450px;
-  padding: 2rem;
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(20px);
-  border-radius: 20px;
+  max-width: 90%;
+  /* Assuming --shadow-md would be defined in Home.module.css or globally, e.g., 0 8px 15px rgba(0, 0, 0, 0.3) */
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(var(--solid-primary-accent-rgb), 0.1); /* Border using new primary accent's RGB */
+  transition: all 0.3s ease;
+  position: relative;
+  z-index: 5;
+  animation: formAppear 1s ease;
+}
+
+.form::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 40px;
+  /* Gradient using a subtle shade of the new primary accent */
+  background: linear-gradient(to bottom, rgba(var(--solid-primary-accent-rgb), 0.05), transparent);
+  border-radius: var(--border-radius-md) var(--border-radius-md) 0 0; /* Match form's border-radius */
+  pointer-events: none;
+}
+
+:global(html.light-theme) .form {
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 8px 24px rgba(49, 51, 56, 0.1), 0 0 0 1px rgba(88, 101, 242, 0.05);
+  border: 1px solid rgba(88, 101, 242, 0.1);
 }
 
 .title {
-  font-size: 2rem;
+  font-size: 2rem; /* Adjusted from Login.module.css's 2.2rem for variety or can be unified */
   font-weight: 700;
-  color: #000;
   margin-bottom: 1.5rem;
+  /* Gradient using new text primary and secondary */
+  background: linear-gradient(90deg, var(--text-primary), var(--text-secondary));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: -0.5px;
+  text-align: center;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+}
+
+:global(html.light-theme) .title {
+  background: linear-gradient(90deg, var(--primary), var(--accent));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 1px 3px rgba(88, 101, 242, 0.12);
 }
 
 .error {
   color: var(--error-color);
   text-align: center;
-  margin-bottom: 1rem;
+  margin-bottom: 1.25rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  background-color: rgba(255, 77, 79, 0.1);
+  font-size: 0.9rem;
+}
+
+:global(html.light-theme) .error {
+  background-color: rgba(255, 77, 79, 0.05);
 }
 
 .inputGroup {
@@ -124,25 +281,142 @@
   position: relative;
 }
 
+.inputContainer {
+  position: relative;
+  width: 100%;
+  margin-bottom: 1.75rem; /* Default spacing */
+  /* Using the new pre-calculated variables from :root */
+  --input-border: var(--input-border-color);
+  --input-focus-border: var(--input-focus-border-color);
+  --input-bg: var(--input-background-color);
+  --input-focus-bg: var(--input-focus-background-color);
+  --input-hover-bg: var(--input-hover-background-color);
+}
+
 .input,
 .textarea {
   width: 100%;
-  padding: 1rem;
-  border: 1px solid var(--border-color);
-  border-radius: 12px;
-  background: var(--input-background);
-  font-size: 1rem;
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--input-border);
+  border-radius: var(--border-radius-sm); /* Using 8px */
+  background-color: var(--input-bg);
+  color: var(--text-primary); /* Now #f5f5f7 */
+  font-size: 0.95rem;
+  font-weight: 400;
   outline: none;
-  transition: border-color 0.3s ease;
+  transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
+  letter-spacing: 0.3px;
+  position: relative;
+  z-index: 1;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.input:hover,
+.textarea:hover {
+  background-color: var(--input-hover-bg);
+  border-color: rgba(var(--rgb-text-secondary), 0.3);
+}
+
+.textarea {
+  min-height: 100px;
+  resize: vertical;
+  padding-top: 0.9rem; /* Ensure consistent padding */
+  line-height: 1.5;
+}
+
+.inputLabel {
+  position: absolute;
+  left: 1rem;
+  top: 0.9rem;
+  font-size: 0.95rem;
+  color: var(--text-secondary); /* Now #a0a0a5 */
+  opacity: 0.65;
+  pointer-events: none;
+  transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
+  z-index: 2;
+  transform-origin: left top;
+  background: transparent;
+}
+
+.input:focus + .inputLabel,
+.inputFilled + .inputLabel,
+.textarea:focus + .inputLabel,
+.textareaFilled + .inputLabel {
+  transform: translateY(-1.7rem) scale(0.8);
+  color: var(--primary); /* Now #8e2de2 */
+  opacity: 1;
+  font-weight: 500;
+  left: 0.9rem;
+}
+
+:global(html.light-theme) .input:focus + .inputLabel,
+:global(html.light-theme) .inputFilled + .inputLabel,
+:global(html.light-theme) .textarea:focus + .inputLabel,
+:global(html.light-theme) .textareaFilled + .inputLabel {
+  color: var(--primary);
+}
+
+:global(html.light-theme) .input,
+:global(html.light-theme) .textarea {
+  background-color: rgba(255, 255, 255, 0.95);
+  border: 1px solid var(--input-border);
+  color: var(--light-text-primary);
 }
 
 .input:focus,
 .textarea:focus {
-  border-color: var(--primary-color);
+  border-color: var(--input-focus-border);
+  background-color: var(--input-focus-bg);
+  outline: none;
+  /* The subtle-glow animation will handle the box-shadow */
+}
+
+.input::after,
+.textarea::after { /* Animated underline */
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 2px;
+  background: var(--primary); /* Now #8e2de2 */
+  transition: width 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  border-radius: 1px;
+}
+
+.input:focus::after,
+.textarea:focus::after {
+  width: 100%;
+}
+
+:global(html.light-theme) .input:focus,
+:global(html.light-theme) .textarea:focus {
+  border-color: var(--primary);
+  background-color: #FFFFFF;
+}
+
+@keyframes subtle-glow {
+  0% {
+    box-shadow: 0 0 0 0px var(--glow-primary-color-rgba-a), 0 0 0 1px var(--input-focus-border);
+  }
+  50% {
+    box-shadow: 0 0 8px 2px var(--glow-primary-color-rgba-b), 0 0 0 1px var(--input-focus-border);
+  }
+  100% {
+    box-shadow: 0 0 0 0px var(--glow-primary-color-rgba-a), 0 0 0 1px var(--input-focus-border);
+  }
+}
+
+.input:focus,
+.textarea:focus {
+  animation: subtle-glow 1.8s ease-in-out infinite;
 }
 
 .inputError {
-  border-color: var(--error-color);
+  border-color: var(--error-color) !important;
+  box-shadow: 0 0 0 2px rgba(255, 77, 79, 0.2) !important;
 }
 
 .errorMessage {
@@ -150,45 +424,94 @@
   font-size: 0.8rem;
   position: absolute;
   top: 100%;
-  left: 1rem;
+  left: 0.5rem;
   margin-top: 0.25rem;
 }
 
 .textarea {
   resize: none;
-  height: 100px;
+  height: 120px;
+  line-height: 1.5;
+  font-family: 'Poppins', sans-serif;
 }
 
 .button {
   width: 100%;
-  padding: 1rem;
-  background: var(--primary-color);
-  color: #fff;
+  padding: 0.9rem 1.5rem; /* Adjusted padding */
+  background: var(--accent-primary-gradient);
+  color: var(--text-primary); /* Using theme text primary */
   border: none;
-  border-radius: 12px;
+  border-radius: var(--border-radius-md); /* Using 12px */
   font-size: 1rem;
-  font-weight: 600;
+  font-weight: 600; /* Slightly bolder */
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 10px rgba(var(--solid-primary-accent-rgb), 0.25); /* Shadow using new primary accent */
+  position: relative;
+  overflow: hidden;
+  letter-spacing: 0.5px;
+  text-shadow: none; /* Removed text-shadow for cleaner look with gradient */
+}
+
+/* .button::before removed as it's not ideal with the new gradient background */
+
+:global(html.light-theme) .button {
+  background: var(--primary);
+  box-shadow: 0 2px 8px rgba(88, 101, 242, 0.25);
+  text-shadow: none;
 }
 
 .button:hover {
-  background: #005bb5;
+  filter: brightness(1.15);
+  transform: translateY(-2px); /* Slightly more lift */
+  box-shadow: 0 6px 12px rgba(var(--solid-primary-accent-rgb), 0.35);
+}
+
+:global(html.light-theme) .button:hover {
+  background: var(--solid-primary-accent); /* Keep solid color for light theme hover */
+  filter: brightness(0.95);
+  box-shadow: 0 4px 10px rgba(var(--solid-primary-accent-rgb), 0.3);
+}
+
+.button:active {
+  filter: brightness(0.9);
+  transform: translateY(0px);
+  box-shadow: 0 2px 8px rgba(var(--solid-primary-accent-rgb), 0.2);
 }
 
 .switchText {
   text-align: center;
-  margin-top: 1.5rem;
+  margin-top: 1.75rem;
   font-size: 0.9rem;
+  color: var(--text-secondary); /* Now #a0a0a5 */
+}
+
+:global(html.light-theme) .switchText {
+  color: var(--light-text-secondary);
 }
 
 .link {
-  color: var(--secondary-color);
+  color: var(--primary); /* Now #8e2de2 */
   text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s ease, filter 0.2s ease;
+  padding-bottom: 1px; /* Retained for spacing if needed, or remove */
+  border-bottom: none; /* Removed underline */
+}
+
+:global(html.light-theme) .link {
+  color: var(--primary);
+  border-bottom: 1px dotted rgba(138, 86, 255, 0.5);
 }
 
 .link:hover {
-  text-decoration: underline;
+  border-bottom: 1px solid var(--primary);
+  color: var(--accent);
+}
+
+:global(html.light-theme) .link:hover {
+  color: var(--solid-secondary-accent); /* Darker purple from gradient: #4a00e0 */
+  /* Alternatively, use brightness: filter: brightness(1.2); */
 }
 
 /* Mobile Styles */

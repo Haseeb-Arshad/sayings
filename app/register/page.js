@@ -1,12 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import axios from '../../utils/axiosInstance';
 import { useRouter } from 'next/navigation';
 import styles from '../../styles/Register.module.css';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence, useAnimation } from 'framer-motion';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useAuth } from '../../context/useAuth';
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -106,11 +107,27 @@ const Register = () => {
   return (
     <div className={styles.container}>
       <div className={styles.leftPane}>
+        {/* Decorative elements */}
+        <div className={styles.decorCircle1}></div>
+        <div className={styles.decorCircle2}></div>
+        
         <div className={styles.brand}>
-          {/* <Image src="/logo.svg" alt="Logo" width={50} height={50} /> */}
-          <h1>Sayings.</h1>
-          <h4>YourVoice</h4>
+          <motion.h1
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            Sayings.
+          </motion.h1>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3, duration: 0.5 }}
+          >
+            YourVoice
+          </motion.div>
         </div>
+        
         <motion.p
           className={styles.tagline}
           initial="hidden"
@@ -120,21 +137,30 @@ const Register = () => {
         >
           Join us and let your voice be heard by the world.
         </motion.p>
-        {/* <Image
-          src="/images/illustration/signup.webp"
-          alt="Illustration"
-          width={500}
-          height={500}
-          className={styles.illustration}
-        /> */}
+        
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.2, duration: 0.7 }}
+        >
+          <Image
+            src="/images/illustration/signup.webp"
+            alt="Illustration"
+            width={500}
+            height={500}
+            className={styles.illustration}
+            priority
+          />
+        </motion.div>
       </div>
+      
       <div className={styles.rightPane}>
         <motion.form
           onSubmit={handleSubmit}
           className={styles.form}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5 }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: 'easeOut' }}
         >
           <motion.h2
             className={styles.title}
@@ -145,52 +171,234 @@ const Register = () => {
           >
             Create Account
           </motion.h2>
-          {serverError && <p className={styles.error}>{serverError}</p>}
-          <div className={styles.inputGroup}>
-            <input
+          {serverError && (
+            <motion.p 
+              className={styles.error}
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ type: "spring", stiffness: 100 }}
+            >
+              {serverError}
+            </motion.p>
+          )}
+          
+          <motion.div 
+            className={styles.inputContainer}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: 0.1 }}
+          >
+            <motion.input
               type="text"
               name="username"
-              placeholder="Username"
               value={username}
               onChange={handleChange}
               required
-              className={`${styles.input} ${errors.username ? styles.inputError : ''}`}
+              className={`${styles.input} ${username ? styles.inputFilled : ''} ${errors.username ? styles.inputError : ''}`}
+              initial={{ borderColor: 'rgba(79, 84, 92, 0.18)' }}
+              animate={{ 
+                borderColor: username ? 'rgba(88, 101, 242, 0.4)' : 'rgba(79, 84, 92, 0.18)'
+              }}
+              whileTap={{ scale: 0.995 }}
+              transition={{ duration: 0.15 }}
             />
-            {errors.username && <span className={styles.errorMessage}>{errors.username}</span>}
-          </div>
-          <div className={styles.inputGroup}>
-            <input
+            <motion.label 
+              className={styles.inputLabel}
+              initial={{
+                y: 0,
+                x: 0,
+                scale: 1,
+                color: 'var(--text-secondary)',
+                opacity: 0.75
+              }}
+              animate={{
+                y: username ? -28 : 0,
+                x: 0,
+                scale: username ? 0.85 : 1,
+                color: username ? 'var(--primary)' : 'var(--text-secondary)',
+                opacity: username ? 1 : 0.75
+              }}
+              transition={{ type: "spring", stiffness: 150, damping: 25, mass: 0.5 }}
+            >
+              Username
+            </motion.label>
+            <AnimatePresence>
+              {errors.username && (
+                <motion.span 
+                  className={styles.errorMessage}
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  {errors.username}
+                </motion.span>
+              )}
+            </AnimatePresence>
+          </motion.div>
+          
+          <motion.div 
+            className={styles.inputContainer}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: 0.2 }}
+          >
+            <motion.input
               type="email"
               name="email"
-              placeholder="Email"
               value={email}
               onChange={handleChange}
               required
-              className={`${styles.input} ${errors.email ? styles.inputError : ''}`}
+              className={`${styles.input} ${email ? styles.inputFilled : ''} ${errors.email ? styles.inputError : ''}`}
+              initial={{ borderColor: 'rgba(79, 84, 92, 0.18)' }}
+              animate={{ 
+                borderColor: email ? 'rgba(88, 101, 242, 0.4)' : 'rgba(79, 84, 92, 0.18)'
+              }}
+              whileTap={{ scale: 0.995 }}
+              transition={{ duration: 0.15 }}
             />
-            {errors.email && <span className={styles.errorMessage}>{errors.email}</span>}
-          </div>
-          <div className={styles.inputGroup}>
-            <input
+            <motion.label 
+              className={styles.inputLabel}
+              initial={{
+                y: 0,
+                x: 0,
+                scale: 1,
+                color: 'var(--text-secondary)',
+                opacity: 0.75
+              }}
+              animate={{
+                y: email ? -28 : 0,
+                x: 0,
+                scale: email ? 0.85 : 1,
+                color: email ? 'var(--primary)' : 'var(--text-secondary)',
+                opacity: email ? 1 : 0.75
+              }}
+              transition={{ type: "spring", stiffness: 150, damping: 25, mass: 0.5 }}
+            >
+              Email
+            </motion.label>
+            <AnimatePresence>
+              {errors.email && (
+                <motion.span 
+                  className={styles.errorMessage}
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  {errors.email}
+                </motion.span>
+              )}
+            </AnimatePresence>
+          </motion.div>
+          
+          <motion.div 
+            className={styles.inputContainer}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: 0.3 }}
+          >
+            <motion.input
               type="password"
               name="password"
-              placeholder="Password"
               value={password}
               onChange={handleChange}
               required
-              className={`${styles.input} ${errors.password ? styles.inputError : ''}`}
+              className={`${styles.input} ${password ? styles.inputFilled : ''} ${errors.password ? styles.inputError : ''}`}
+              initial={{ borderColor: 'rgba(79, 84, 92, 0.18)' }}
+              animate={{ 
+                borderColor: password ? 'rgba(88, 101, 242, 0.4)' : 'rgba(79, 84, 92, 0.18)'
+              }}
+              whileTap={{ scale: 0.995 }}
+              transition={{ duration: 0.15 }}
             />
-            {errors.password && <span className={styles.errorMessage}>{errors.password}</span>}
-          </div>
-          <div className={styles.inputGroup}>
-            <textarea
+            <motion.label 
+              className={styles.inputLabel}
+              initial={{
+                y: 0,
+                x: 0,
+                scale: 1,
+                color: 'var(--text-secondary)',
+                opacity: 0.75
+              }}
+              animate={{
+                y: password ? -28 : 0,
+                x: 0,
+                scale: password ? 0.85 : 1,
+                color: password ? 'var(--primary)' : 'var(--text-secondary)',
+                opacity: password ? 1 : 0.75
+              }}
+              transition={{ type: "spring", stiffness: 150, damping: 25, mass: 0.5 }}
+            >
+              Password
+            </motion.label>
+            <AnimatePresence>
+              {errors.password && (
+                <motion.span 
+                  className={styles.errorMessage}
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  {errors.password}
+                </motion.span>
+              )}
+            </AnimatePresence>
+          </motion.div>
+          
+          <motion.div 
+            className={styles.inputContainer}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: 0.4 }}
+          >
+            <motion.textarea
               name="bio"
-              placeholder="Bio (optional)"
               value={bio}
               onChange={handleChange}
-              className={`${styles.textarea}`}
-            ></textarea>
-          </div>
+              className={`${styles.textarea} ${bio ? styles.textareaFilled : ''}`}
+              initial={{ borderColor: 'rgba(79, 84, 92, 0.18)' }}
+              animate={{ 
+                borderColor: bio ? 'rgba(88, 101, 242, 0.4)' : 'rgba(79, 84, 92, 0.18)'
+              }}
+              whileTap={{ scale: 0.995 }}
+              transition={{ duration: 0.15 }}
+            />
+            <motion.label 
+              className={styles.inputLabel}
+              initial={{
+                y: 0,
+                x: 0,
+                scale: 1,
+                color: 'var(--text-secondary)',
+                opacity: 0.75
+              }}
+              animate={{
+                y: bio ? -28 : 0,
+                x: 0,
+                scale: bio ? 0.85 : 1,
+                color: bio ? 'var(--primary)' : 'var(--text-secondary)',
+                opacity: bio ? 1 : 0.75
+              }}
+              transition={{ type: "spring", stiffness: 150, damping: 25, mass: 0.5 }}
+            >
+              Bio (optional)
+            </motion.label>
+            <AnimatePresence>
+              {errors.bio && (
+                <motion.span 
+                  className={styles.errorMessage}
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  {errors.bio}
+                </motion.span>
+              )}
+            </AnimatePresence>
+          </motion.div>
           <motion.button
             type="submit"
             className={styles.button}

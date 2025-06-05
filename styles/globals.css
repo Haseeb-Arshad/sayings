@@ -29,6 +29,28 @@
   --border-color: #2a2a2a;
   --gradient-start: #8a56ff;
   --gradient-end: #56ccf2;
+  --charcoal-darkest: #0F1419;
+  --charcoal-darker: #151D26;
+  --charcoal-dark: #1E2732;
+  --charcoal-medium: #2C3640;
+  --charcoal-light: #3A444E;
+  --charcoal-lighter: #586979;
+  --accent-gold: #FFD700;
+  --star-yellow: #FFD700;
+  --online-green: #00BA7C;
+  
+  /* Light theme variables */
+  --light-background: #ffffff;
+  --light-card-bg: #f7f9fa;
+  --light-sidebar-bg: #ffffff;
+  --light-sidebar-nav-bg: #f7f9fa;
+  --light-text-primary: #0F1419;
+  --light-text-secondary: #536471;
+  --light-text-tertiary: #8899A6;
+  --light-accent-blue: #1a8cd8;
+  --light-accent-gold: #f59b24;
+  --light-hover-bg: rgba(0, 0, 0, 0.03);
+  --light-border-color: #e6ecf0;
   --button-gradient: linear-gradient(45deg, var(--gradient-start), var(--gradient-end));
   
   /* Charcoal palette */

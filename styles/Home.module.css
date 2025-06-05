@@ -8,9 +8,18 @@
   --text-primary: #f5f5f7;
   --text-secondary: #a0a0a5;
   --text-tertiary: #666668;
-  --accent-primary: linear-gradient(135deg, #8e2de2, #4a00e0);
-  --accent-secondary: linear-gradient(135deg, #4776E6, #8E54E9);
-  --accent-tertiary: linear-gradient(135deg, #00c6ff, #0072ff);
+  /* Minimalistic Charcoal/Grey Accents */
+  --solid-accent-primary: #787880;            /* Mid-light grey for links, focus */
+  --solid-accent-primary-rgb: 120, 120, 128; /* For shadows, glows */
+  --solid-accent-secondary: #505055;          /* Darker grey for hover/less prominent */
+  --button-background-gradient: linear-gradient(135deg, #3a3a40, #2c2c30); /* Subtle dark grey gradient for buttons */
+
+  /* Main accent for interactive elements like buttons, remapped */
+  --accent-primary: var(--button-background-gradient);
+
+  /* Neutralizing other colorful accents for a consistent minimalistic theme */
+  --accent-secondary: linear-gradient(135deg, #434348, #333337); /* Darker grey gradient */
+  --accent-tertiary: linear-gradient(135deg, #55555a, #45454a);  /* Another grey gradient */
   --shadow-sm: 0 4px 6px rgba(0, 0, 0, 0.2);
   --shadow-md: 0 8px 15px rgba(0, 0, 0, 0.3);
   --shadow-lg: 0 12px 28px rgba(0, 0, 0, 0.4);

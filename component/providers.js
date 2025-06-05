@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useState, useEffect, createContext, useCallback } from 'react';
 import { persistQueryClient } from '@tanstack/react-query-persist-client';
 import { createSyncStoragePersister } from '@tanstack/query-sync-storage-persister';
+import { ThemeProvider } from '../context/ThemeContext';
 
 // Create a context for refreshing posts
 export const RefreshContext = createContext(() => {});
@@ -51,9 +52,11 @@ const Providers = ({ children }) => {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <RefreshContext.Provider value={refreshPosts}>
-        {children}
-      </RefreshContext.Provider>
+      <ThemeProvider>
+        <RefreshContext.Provider value={refreshPosts}>
+          {children}
+        </RefreshContext.Provider>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 };
