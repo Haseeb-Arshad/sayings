@@ -11,6 +11,9 @@ const axiosInstance = axios.create({
   }
 });
 
+// Dev-only flag to relax auth redirects and optionally mock behavior
+const DEV_AUTO_LOGIN = process.env.NEXT_PUBLIC_DEV_AUTO_LOGIN === 'true';
+
 // Constants for error handling
 let lastErrorLoggedAt = 0;
 const ERROR_LOG_THROTTLE_MS = 3000;
@@ -139,13 +142,15 @@ axiosInstance.interceptors.response.use(
       lastErrorLoggedAt = now;
     }
     
-    // Handle authentication errors
+// Handle authentication errors
     if (error.response?.status === 401 && !error.config?.url?.includes('/login')) {
-      // Clear token and redirect to login if not already there
       if (typeof window !== 'undefined') {
-        localStorage.removeItem('token');
-        if (!window.location.pathname.includes('/login')) {
-          window.location.href = '/login?session=expired';
+        // In dev auto-login mode, do NOT force-redirect to login.
+        if (!DEV_AUTO_LOGIN) {
+          localStorage.removeItem('token');
+          if (!window.location.pathname.includes('/login')) {
+            window.location.href = '/login?session=expired';
+          }
         }
       }
     }
