@@ -11,6 +11,13 @@ import {
   FaEllipsisH,
   FaTrash,
   FaTimes,
+  FaHeadphones,
+  FaStepBackward,
+  FaStepForward,
+  FaVolumeUp,
+  FaVolumeMute,
+  FaSyncAlt,
+  FaSpinner,
 } from 'react-icons/fa';
 import { formatDistanceToNow } from 'date-fns';
 import WaveSurfer from 'wavesurfer.js';
@@ -47,9 +54,14 @@ const Post = React.memo(({ post, currentUserId, onDelete }) => {
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [isReady, setIsReady] = useState(false);
+  const [isBuffering, setIsBuffering] = useState(false);
   const [highlightedWordIndex, setHighlightedWordIndex] = useState(null);
   const [showTranscript, setShowTranscript] = useState(false);
   const [wavesurferInitialized, setWavesurferInitialized] = useState(false);
+  const [playbackRateIndex, setPlaybackRateIndex] = useState(1); // 0.75x, 1x, 1.25x, 1.5x
+  const playbackRates = [0.75, 1.0, 1.25, 1.5];
+  const [volume, setVolume] = useState(0.8);
+  const [muted, setMuted] = useState(false);
 
   const waveformRef = useRef(null);
   const wavesurfer = useRef(null);
@@ -92,10 +104,13 @@ const Post = React.memo(({ post, currentUserId, onDelete }) => {
         waveColor: '#E0E0E0',
         progressColor: '#1DA1F2',
         cursorColor: 'transparent',
-        barWidth: 2,
-        barRadius: 2,
-        height: 50,
+        barWidth: 1,
+        barRadius: 1,
+        barGap: 1,
+        height: 36,
+        normalize: true,
         responsive: true,
+        partialRender: true,
         backend: 'WebAudio',
       });
 
@@ -107,14 +122,35 @@ const Post = React.memo(({ post, currentUserId, onDelete }) => {
       wavesurfer.current.on('ready', () => {
         setDuration(wavesurfer.current.getDuration());
         setIsReady(true);
-        wavesurfer.current.play();
-        setIsPlaying(true);
+        setIsBuffering(false);
+        // apply initial volume and rate
+        try {
+          wavesurfer.current.setVolume(muted ? 0 : volume);
+          wavesurfer.current.setPlaybackRate(playbackRates[playbackRateIndex]);
+        } catch {}
+        // do not auto-play to avoid surprises
       });
 
       wavesurfer.current.on('audioprocess', () => {
-        const currentTime = wavesurfer.current.getCurrentTime();
-        setCurrentTime(currentTime);
-        updateHighlightedWord(currentTime);
+        const ct = wavesurfer.current.getCurrentTime();
+        setCurrentTime(ct);
+        updateHighlightedWord(ct);
+      });
+
+      wavesurfer.current.on('seek', () => {
+        const ct = wavesurfer.current.getCurrentTime();
+        setCurrentTime(ct);
+        setIsBuffering(false);
+      });
+
+      wavesurfer.current.on('loading', (perc) => {
+        // show buffering spinner while loading new segments
+        setIsBuffering(perc < 100);
+      });
+
+      wavesurfer.current.on('error', (e) => {
+        console.error('WaveSurfer error:', e);
+        setIsBuffering(false);
       });
 
       wavesurfer.current.on('finish', () => {
@@ -140,17 +176,18 @@ const Post = React.memo(({ post, currentUserId, onDelete }) => {
 
       if (!wavesurferInitialized) {
         await initializeWaveSurfer();
+      }
+      if (!wavesurfer.current) return;
+
+      if (isPlaying) {
+        await wavesurfer.current.pause();
+        setIsPlaying(false);
       } else {
-        if (isPlaying) {
-          await wavesurfer.current.pause();
-          setIsPlaying(false);
-        } else {
-          await wavesurfer.current.play();
-          setIsPlaying(true);
-        }
+        setIsBuffering(false);
+        await wavesurfer.current.play();
+        setIsPlaying(true);
       }
 
-      setShowTranscript(true);
     } catch (err) {
       console.error('Playback error:', err);
     } finally {
@@ -349,12 +386,57 @@ const Post = React.memo(({ post, currentUserId, onDelete }) => {
     );
   };
 
+  // Keyboard controls when the post card is focused
+  const onKeyDown = async (e) => {
+    if (!wavesurfer.current) return;
+    if (e.code === 'Space') {
+      e.preventDefault();
+      togglePlay();
+    } else if (e.code === 'ArrowRight') {
+      e.preventDefault();
+      const t = Math.min((wavesurfer.current.getCurrentTime() || 0) + 5, duration || 0);
+      wavesurfer.current.seekTo(duration ? t / duration : 0);
+    } else if (e.code === 'ArrowLeft') {
+      e.preventDefault();
+      const t = Math.max((wavesurfer.current.getCurrentTime() || 0) - 5, 0);
+      wavesurfer.current.seekTo(duration ? t / duration : 0);
+    }
+  };
+
+  const setNextRate = () => {
+    const next = (playbackRateIndex + 1) % playbackRates.length;
+    setPlaybackRateIndex(next);
+    try { wavesurfer.current?.setPlaybackRate(playbackRates[next]); } catch {}
+  };
+
+  const onVolumeChange = (val) => {
+    const v = Math.max(0, Math.min(1, val));
+    setVolume(v);
+    setMuted(v === 0);
+    try { wavesurfer.current?.setVolume(v); } catch {}
+  };
+
+  const toggleMute = () => {
+    const newMuted = !muted;
+    setMuted(newMuted);
+    try { wavesurfer.current?.setVolume(newMuted ? 0 : volume); } catch {}
+  };
+
+  const skip = (secs) => {
+    if (!wavesurfer.current || !duration) return;
+    const cur = wavesurfer.current.getCurrentTime() || 0;
+    const t = Math.max(0, Math.min(duration, cur + secs));
+    wavesurfer.current.seekTo(t / duration);
+  };
+
   return (
     <>
       <AnimatePresence>
         {!isDeleting && (
           <motion.div
             className={styles.post}
+            onKeyDown={onKeyDown}
+            tabIndex={0}
             animate={isDeleting ? { opacity: 0, y: -20 } : { opacity: 1, y: 0 }}
             transition={{
               duration: isDeleting ? 0.5 : 0.3,
@@ -519,18 +601,152 @@ const Post = React.memo(({ post, currentUserId, onDelete }) => {
 
             {/* Audio Player */}
             <div className={styles.audioPlayer}>
-              <motion.button
-                className={styles.playPauseButton}
-                onClick={togglePlay}
-                disabled={!post.audioPinataURL}
-                aria-label={isPlaying ? 'Pause' : 'Play'}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                {isPlaying ? <FaPause size={20} /> : <FaPlay size={20} />}
-              </motion.button>
-              <div className={styles.progressBarContainer}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <motion.button
+                  className={styles.iconButton}
+                  onClick={() => skip(-10)}
+                  aria-label="Skip back 10 seconds"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  disabled={!isReady}
+                  style={{ minWidth: 44, minHeight: 44 }}
+                >
+                  <FaStepBackward />
+                </motion.button>
+                <motion.button
+                  className={styles.playPauseButton}
+                  onClick={togglePlay}
+                  disabled={!post.audioPinataURL}
+                  aria-label={isPlaying ? 'Pause' : 'Play'}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  style={{ minWidth: 56, minHeight: 56 }}
+                >
+                  <AnimatePresence mode="wait" initial={false}>
+                    {isBuffering ? (
+                      <motion.span
+                        key="loading"
+                        initial={{ opacity: 0, rotate: -90, scale: 0.8 }}
+                        animate={{ opacity: 1, rotate: 0, scale: 1 }}
+                        exit={{ opacity: 0, rotate: 90, scale: 0.8 }}
+                        transition={{ duration: 0.15 }}
+                        style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
+                      >
+                        <FaSpinner className="spin" size={20} />
+                      </motion.span>
+                    ) : isPlaying ? (
+                      <motion.span
+                        key="pause"
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.8 }}
+                        transition={{ duration: 0.15 }}
+                        style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
+                      >
+                        <FaPause size={20} />
+                      </motion.span>
+                    ) : (
+                      <motion.span
+                        key="play"
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.8 }}
+                        transition={{ duration: 0.15 }}
+                        style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
+                      >
+                        <FaPlay size={20} />
+                      </motion.span>
+                    )}
+                  </AnimatePresence>
+                </motion.button>
+                <motion.button
+                  className={styles.iconButton}
+                  onClick={() => skip(10)}
+                  aria-label="Skip forward 10 seconds"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  disabled={!isReady}
+                  style={{ minWidth: 44, minHeight: 44 }}
+                >
+                  <FaStepForward />
+                </motion.button>
+
+                <motion.button
+                  className={styles.iconButton}
+                  onClick={setNextRate}
+                  aria-label={`Playback rate ${playbackRates[playbackRateIndex]}x`}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  disabled={!isReady}
+                  style={{ minWidth: 56, minHeight: 44 }}
+                >
+                  <FaSyncAlt style={{ marginRight: 6 }} />
+                  {playbackRates[playbackRateIndex]}x
+                </motion.button>
+
+                <motion.button
+                  className={styles.iconButton}
+                  onClick={toggleMute}
+                  aria-label={muted ? 'Unmute' : 'Mute'}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  style={{ minWidth: 44, minHeight: 44 }}
+                >
+                  {muted ? <FaVolumeMute /> : <FaVolumeUp />}
+                </motion.button>
+                <input
+                  type="range"
+                  min={0}
+                  max={1}
+                  step={0.05}
+                  value={muted ? 0 : volume}
+                  onChange={(e) => onVolumeChange(parseFloat(e.target.value))}
+                  aria-label="Volume"
+                  style={{ width: 140, height: 32, touchAction: 'none' }}
+                />
+              </div>
+
+              <div className={styles.progressBarContainer} style={{ position: 'relative' }}>
+                {/* Loading skeleton shimmer */}
+                {!isReady && (
+                  <motion.div
+                    aria-hidden
+                    initial={{ opacity: 0.6 }}
+                    animate={{ backgroundPositionX: ['0%', '100%'] }}
+                    transition={{ repeat: Infinity, repeatType: 'reverse', duration: 1.2 }}
+                    style={{
+                      position: 'absolute',
+                      inset: 0,
+                      borderRadius: 8,
+                      background:
+                        'linear-gradient(90deg, rgba(240,240,240,0.9) 0%, rgba(230,230,230,0.9) 50%, rgba(240,240,240,0.9) 100%)',
+                      backgroundSize: '200% 100%',
+                    }}
+                  />
+                )}
+
                 <div className={styles.waveform} ref={waveformRef}></div>
+
+                {/* Buffering spinner overlay */}
+                {isBuffering && (
+                  <div style={{ position: 'absolute', inset: 0, display: 'grid', placeItems: 'center', pointerEvents: 'none' }}>
+                    <FaSpinner className="spin" />
+                  </div>
+                )}
+
+                {/* Relocated Listen Along button */}
+                <motion.button
+                  className={styles.listenAlongButton}
+                  onClick={togglePlay}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  animate={{ y: [0, -2, 0] }}
+                  transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
+                  style={{ position: 'absolute', top: 8, right: 8 }}
+                >
+                  <FaHeadphones />
+                  <span>Listen Along</span>
+                </motion.button>
               </div>
             </div>
             <div className={styles.timeInfo}>
@@ -539,13 +755,11 @@ const Post = React.memo(({ post, currentUserId, onDelete }) => {
             </div>
 
             {/* Toggle Transcript Button */}
-            {isPlaying && (
-              <div className={styles.toggleTranscript}>
-                <button onClick={toggleTranscript}>
-                  {showTranscript ? 'Hide Transcript' : 'Show Transcript'}
-                </button>
-              </div>
-            )}
+            <div className={styles.toggleTranscript}>
+              <button onClick={toggleTranscript}>
+                {showTranscript ? 'Hide Transcript' : 'Show Transcript'}
+              </button>
+            </div>
 
             {/* Interactions */}
             <div className={styles.postFooter}>
@@ -578,15 +792,6 @@ const Post = React.memo(({ post, currentUserId, onDelete }) => {
                 </motion.button>
               </div>
 
-              <motion.button
-                className={styles.listenAlongButton}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={togglePlay}
-              >
-                <FaHeadphones />
-                <span>Listen Along</span>
-              </motion.button>
             </div>
 
             {/* Confirmation Modal */}

@@ -24,15 +24,28 @@ export const metadata = {
 import ErrorBoundary from "@/component/ErrorBoundary";
 import { AuthProvider } from "@/context/useAuth";
 
+import { MotionConfig } from "framer-motion";
+import { FPSMeter, SRLiveRegion, ServiceWorkerRegistrar } from "@/component/devtools/PerfAndA11y";
+
 export default function RootLayout({ children }) {
   return (
     <html lang="en" suppressHydrationWarning={true}>
+      <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+        <link rel="manifest" href="/manifest.webmanifest" />
+        <meta name="theme-color" content="#121214" />
+      </head>
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <AuthProvider>
           <Providers>
             <ErrorBoundary>
-              {children}
-              <FloatingVoiceButton />
+              <MotionConfig reducedMotion="user">
+                <SRLiveRegion />
+                {children}
+                <FloatingVoiceButton />
+                <ServiceWorkerRegistrar />
+                <FPSMeter />
+              </MotionConfig>
             </ErrorBoundary>
           </Providers>
         </AuthProvider>

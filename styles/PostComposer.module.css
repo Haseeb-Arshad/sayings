@@ -1,0 +1,300 @@
+/*
+  PostComposer.module.css
+  - Glassmorphic container with backdrop-filter
+  - Bottom sheet (mobile) with swipe-to-close affordance
+  - Centered modal (desktop) with subtle depth
+  - Smooth phase transition animations
+  - Neumorphic buttons with tactile feedback
+  - Dark theme consistency with existing design (uses CSS vars when available)
+*/
+
+:root {
+  /* Fallbacks if app-level tokens are not defined */
+  --pc-bg: rgba(20, 24, 28, 0.6);
+  --pc-border: rgba(255, 255, 255, 0.08);
+  --pc-border-strong: rgba(255, 255, 255, 0.12);
+  --pc-surface-elev: rgba(32, 36, 40, 0.6);
+  --pc-text: #e6e8ea;
+  --pc-muted: #aab0b6;
+  --pc-accent: #6ea8fe;
+  --pc-success: #3ddc97;
+  --pc-danger: #ff6b6b;
+  --pc-shadow: rgba(0, 0, 0, 0.35);
+  --pc-shadow-lg: rgba(0, 0, 0, 0.5);
+  --pc-blur: 18px;
+  --pc-radius: 16px;
+  --pc-radius-lg: 20px;
+  --pc-radius-xl: 24px;
+  --pc-gap: 12px;
+  --pc-transition-fast: 150ms;
+  --pc-transition: 240ms;
+  --pc-transition-slow: 420ms;
+}
+
+/* Try to align with existing app tokens if available */
+:where(.root, :root) {
+  --pc-bg: var(--color-surface-glass, var(--pc-bg));
+  --pc-border: var(--border-color, var(--pc-border));
+  --pc-text: var(--color-text, var(--pc-text));
+  --pc-muted: var(--color-text-muted, var(--pc-muted));
+  --pc-accent: var(--color-primary, var(--pc-accent));
+  --pc-radius: var(--radius-md, var(--pc-radius));
+  --pc-radius-lg: var(--radius-lg, var(--pc-radius-lg));
+  --pc-radius-xl: var(--radius-xl, var(--pc-radius-xl));
+  --pc-blur: var(--blur-strong, var(--pc-blur));
+}
+
+/* Backdrop root covers viewport for modal/bottom-sheet variants */
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: saturate(120%) blur(6px);
+  -webkit-backdrop-filter: saturate(120%) blur(6px);
+  opacity: 0;
+  transition: opacity var(--pc-transition) ease;
+  z-index: 50;
+}
+.backdropVisible {
+  opacity: 1;
+}
+
+/* Glassmorphic container base */
+.container {
+  color: var(--pc-text);
+  background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02)) , var(--pc-bg);
+  border: 1px solid var(--pc-border);
+  box-shadow: 0 6px 24px var(--pc-shadow), inset 0 1px 0 rgba(255,255,255,0.06);
+  backdrop-filter: blur(var(--pc-blur)) saturate(140%);
+  -webkit-backdrop-filter: blur(var(--pc-blur)) saturate(140%);
+  border-radius: var(--pc-radius-lg);
+  overflow: hidden;
+}
+
+/* Header/Footer/Body sections */
+.header, .footer {
+  display: flex;
+  align-items: center;
+  gap: var(--pc-gap);
+  padding: 12px 16px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+  border-bottom: 1px solid var(--pc-border);
+}
+.footer {
+  border-top: 1px solid var(--pc-border);
+  border-bottom: none;
+}
+.title {
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: 0.2px;
+}
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--pc-gap);
+  padding: 16px;
+}
+
+/* Input area styling */
+.textarea {
+  width: 100%;
+  min-height: 96px;
+  background: rgba(255,255,255,0.02);
+  color: var(--pc-text);
+  border: 1px solid var(--pc-border);
+  border-radius: 12px;
+  padding: 12px 14px;
+  outline: none;
+  resize: vertical;
+  transition: border-color var(--pc-transition-fast) ease, background var(--pc-transition-fast) ease, box-shadow var(--pc-transition-fast) ease;
+}
+.textarea:focus {
+  border-color: color-mix(in oklab, var(--pc-accent) 60%, white 0%);
+  background: rgba(255,255,255,0.04);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--pc-accent) 22%, transparent 78%);
+}
+
+/* Neumorphic button styles with tactile feedback */
+.buttonRow {
+  display: flex;
+  gap: 10px;
+  margin-left: auto;
+}
+.btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 36px;
+  padding: 0 14px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--pc-text);
+  background: linear-gradient(145deg, rgba(255,255,255,0.06), rgba(0,0,0,0.2));
+  border: 1px solid var(--pc-border);
+  box-shadow: 4px 4px 10px var(--pc-shadow), -4px -4px 10px rgba(255,255,255,0.04), inset 0 -1px 0 rgba(0,0,0,0.3);
+  transition: transform var(--pc-transition-fast) ease, box-shadow var(--pc-transition-fast) ease, background var(--pc-transition-fast) ease, border-color var(--pc-transition-fast) ease, opacity var(--pc-transition-fast) ease;
+  user-select: none;
+}
+.btn:hover {
+  border-color: var(--pc-border-strong);
+  background: linear-gradient(145deg, rgba(255,255,255,0.08), rgba(0,0,0,0.24));
+  box-shadow: 6px 6px 16px var(--pc-shadow), -6px -6px 16px rgba(255,255,255,0.05), inset 0 -1px 0 rgba(0,0,0,0.34);
+}
+.btn:active {
+  transform: translateY(1px);
+  box-shadow: 2px 2px 6px var(--pc-shadow), -2px -2px 6px rgba(255,255,255,0.04), inset 0 2px 8px rgba(0,0,0,0.45);
+}
+.btnPrimary {
+  color: #0b0e13;
+  background: linear-gradient(145deg, color-mix(in oklab, var(--pc-accent) 92%, white 8%), color-mix(in oklab, var(--pc-accent) 80%, black 20%));
+  border-color: color-mix(in oklab, var(--pc-accent) 65%, black 35%);
+  box-shadow: 4px 4px 10px color-mix(in oklab, var(--pc-accent) 35%, black 65%), inset 0 -1px 0 rgba(255,255,255,0.25);
+}
+.btnPrimary:hover {
+  background: linear-gradient(145deg, color-mix(in oklab, var(--pc-accent) 96%, white 4%), color-mix(in oklab, var(--pc-accent) 82%, black 18%));
+}
+.btnPrimary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.btnDanger {
+  background: linear-gradient(145deg, color-mix(in oklab, var(--pc-danger) 90%, white 10%), color-mix(in oklab, var(--pc-danger) 78%, black 22%));
+  border-color: color-mix(in oklab, var(--pc-danger) 62%, black 38%);
+}
+
+/* Icon button */
+.iconBtn {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border-radius: 10px;
+}
+
+/* Drag handle for swipe-to-close */
+.dragHandle {
+  width: 44px;
+  height: 5px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.3);
+  border: 1px solid rgba(255,255,255,0.25);
+  margin: 8px auto 6px;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.35), 0 1px 2px rgba(0,0,0,0.35);
+}
+
+/* Bottom sheet (mobile) */
+.sheetRoot {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 60;
+  pointer-events: none; /* enabled by child when open */
+}
+.sheet {
+  composes: container;
+  pointer-events: auto;
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  bottom: 8px;
+  border-radius: var(--pc-radius-xl) var(--pc-radius-xl) 16px 16px;
+  transform: translateY(8px) scale(0.98);
+  opacity: 0;
+  transition: transform var(--pc-transition) cubic-bezier(0.22, 1, 0.36, 1), opacity var(--pc-transition) ease;
+  touch-action: none;
+}
+.sheetOpen {
+  transform: translateY(0) scale(1);
+  opacity: 1;
+}
+.sheetContent {
+  max-height: min(calc(100dvh - 24px), 80vh);
+  overflow: auto;
+}
+
+/* Centered modal (desktop) */
+.modalRoot {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  z-index: 60;
+  pointer-events: none;
+}
+.modal {
+  composes: container;
+  pointer-events: auto;
+  width: min(700px, calc(100vw - 40px));
+  max-height: min(85vh, 900px);
+  display: flex;
+  flex-direction: column;
+  transform: translateY(6px) scale(0.98);
+  opacity: 0;
+  border-radius: var(--pc-radius-xl);
+  box-shadow: 0 20px 60px var(--pc-shadow-lg), 0 2px 0 rgba(255,255,255,0.04) inset;
+  transition: transform var(--pc-transition) cubic-bezier(0.22, 1, 0.36, 1), opacity var(--pc-transition) ease;
+}
+.modalOpen {
+  transform: translateY(0) scale(1);
+  opacity: 1;
+}
+
+/* Phase transitions for content sections */
+.phaseEnter {
+  animation: phaseIn var(--pc-transition) both;
+}
+.phaseExit {
+  animation: phaseOut var(--pc-transition) both;
+}
+@keyframes phaseIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.98);
+    filter: saturate(80%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: saturate(100%);
+  }
+}
+@keyframes phaseOut {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(6px) scale(0.98);
+  }
+}
+
+/* Utility rows */
+.row {
+  display: flex;
+  align-items: center;
+  gap: var(--pc-gap);
+}
+.spacer {
+  flex: 1 1 auto;
+}
+
+/* Helper for swipe-to-close motion (applied during gesture) */
+.swiping {
+  transition: none !important;
+}
+
+/* Media queries for adaptive layout */
+@media (min-width: 768px) {
+  /* Prefer centered modal on tablet/desktop; sheet can still be used if desired */
+  .sheetRoot { display: none; }
+}
+
+@media (max-width: 767.98px) {
+  .modalRoot { display: none; }
+}
+

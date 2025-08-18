@@ -84,11 +84,19 @@ const Register = () => {
     try {
       const response = await axios.post('/auth/register', formData);
       // Token is set via HTTP-only cookie
+      if (typeof document !== 'undefined') {
+        const sr = document.getElementById('sr-announce');
+        if (sr) sr.textContent = 'Registration successful. Redirecting to profile';
+      }
       // Redirect to profile after registration
       router.push('/profile');
     } catch (err) {
       console.error(err);
       setServerError(err.response?.data?.error || 'Registration failed.');
+      if (typeof document !== 'undefined') {
+        const sr = document.getElementById('sr-announce');
+        if (sr) sr.textContent = 'Registration failed';
+      }
     }
   };
 
@@ -188,7 +196,8 @@ const Register = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3, delay: 0.1 }}
           >
-            <motion.input
+          motion.input
+              id="register-username"
               type="text"
               name="username"
               value={username}
@@ -202,7 +211,8 @@ const Register = () => {
               whileTap={{ scale: 0.995 }}
               transition={{ duration: 0.15 }}
             />
-            <motion.label 
+          motion.label 
+              htmlFor="register-username"
               className={styles.inputLabel}
               initial={{
                 y: 0,
@@ -243,7 +253,8 @@ const Register = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3, delay: 0.2 }}
           >
-            <motion.input
+            motion.input
+              id="register-email"
               type="email"
               name="email"
               value={email}
@@ -257,7 +268,8 @@ const Register = () => {
               whileTap={{ scale: 0.995 }}
               transition={{ duration: 0.15 }}
             />
-            <motion.label 
+            motion.label 
+              htmlFor="register-email"
               className={styles.inputLabel}
               initial={{
                 y: 0,
@@ -298,7 +310,8 @@ const Register = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3, delay: 0.3 }}
           >
-            <motion.input
+            motion.input
+              id="register-password"
               type="password"
               name="password"
               value={password}
@@ -312,7 +325,8 @@ const Register = () => {
               whileTap={{ scale: 0.995 }}
               transition={{ duration: 0.15 }}
             />
-            <motion.label 
+            motion.label 
+              htmlFor="register-password"
               className={styles.inputLabel}
               initial={{
                 y: 0,
@@ -353,7 +367,8 @@ const Register = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3, delay: 0.4 }}
           >
-            <motion.textarea
+            motion.textarea
+              id="register-bio"
               name="bio"
               value={bio}
               onChange={handleChange}
@@ -365,7 +380,8 @@ const Register = () => {
               whileTap={{ scale: 0.995 }}
               transition={{ duration: 0.15 }}
             />
-            <motion.label 
+            motion.label 
+              htmlFor="register-bio"
               className={styles.inputLabel}
               initial={{
                 y: 0,

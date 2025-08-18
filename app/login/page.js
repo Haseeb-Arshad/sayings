@@ -52,14 +52,22 @@ const Login = () => {
 
     try {
       const response = await axios.post('/auth/login', formData);
-      // console.log('Login response:', response);
       // Update Auth Context
       setUser(response.data.user);
+      // SR announce successful login for screen readers
+      if (typeof document !== 'undefined') {
+        const sr = document.getElementById('sr-announce');
+        if (sr) sr.textContent = 'Login successful. Redirecting to profile';
+      }
       // Redirect to profile after login
       router.push('/profile');
     } catch (err) {
       console.error(err);
       setServerError(err.response?.data?.error || 'Login failed.');
+      if (typeof document !== 'undefined') {
+        const sr = document.getElementById('sr-announce');
+        if (sr) sr.textContent = 'Login failed';
+      }
     }
   };
 
@@ -149,7 +157,8 @@ const Login = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3, delay: 0.1 }}
           >
-            <motion.input
+            motion.input
+              id="login-identifier"
               type="text"
               name="identifier"
               value={identifier}
@@ -163,7 +172,8 @@ const Login = () => {
               whileTap={{ scale: 0.995 }}
               transition={{ duration: 0.15 }}
             />
-            <motion.label 
+            motion.label 
+              htmlFor="login-identifier"
               className={styles.inputLabel}
               initial={{
                 y: 0,
@@ -204,7 +214,8 @@ const Login = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3, delay: 0.2 }}
           >
-            <motion.input
+            motion.input
+              id="login-password"
               type="password"
               name="password"
               value={password}
@@ -218,7 +229,8 @@ const Login = () => {
               whileTap={{ scale: 0.995 }}
               transition={{ duration: 0.15 }}
             />
-            <motion.label 
+            motion.label 
+              htmlFor="login-password"
               className={styles.inputLabel}
               initial={{
                 y: 0,

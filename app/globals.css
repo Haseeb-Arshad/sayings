@@ -17,6 +17,34 @@ body {
 
 }
 
+/* Respect user motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  html, body, * {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* High contrast / forced colors support */
+@media (forced-colors: active) {
+  body {
+    background: Canvas;
+    color: CanvasText;
+  }
+  a { color: LinkText; }
+  
+  /* Ensure focus outlines are visible in high contrast */
+  :focus {
+    outline: 2px solid Highlight !important;
+    outline-offset: 2px;
+  }
+  
+  /* Ensure overlays and modals remain visible */
+  .bg-black\/40 { background: rgba(0,0,0,0.4); }
+}
+
 a {
   color: inherit;
   text-decoration: none;
