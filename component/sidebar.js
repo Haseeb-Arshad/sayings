@@ -1,15 +1,25 @@
 'use client';
 
 import styles from '../styles/Sidebar.module.css';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import Link from 'next/link';
 import { FaHome, FaBell, FaUserAlt, FaPlus, FaComment, FaEllipsisH, FaStar, FaBookmark, FaSearch, FaCog, FaMapMarkerAlt } from 'react-icons/fa';
 import { useTheme } from '../context/ThemeContext';
 
 const Sidebar = () => {
   const router = useRouter();
+  const pathname = usePathname();
   const { theme, toggleTheme } = useTheme();
+
+  const navItems = [
+    { id: 'home', icon: FaHome, label: 'Home', path: '/' },
+    { id: 'search', icon: FaSearch, label: 'Search', disabled: true },
+    { id: 'notifications', icon: FaBell, label: 'Notifications', badge: true, disabled: true },
+    { id: 'bookmarks', icon: FaBookmark, label: 'Bookmarks', disabled: true },
+    { id: 'favorites', icon: FaStar, label: 'Favorites', disabled: true },
+    { id: 'profile', icon: FaUserAlt, label: 'Profile', path: '/profile' },
+    { id: 'settings', icon: FaCog, label: 'Settings', path: '/settings' }
+  ];
   
   const handleNavClick = (path) => {
     router.push(path);
@@ -23,41 +33,33 @@ const Sidebar = () => {
     <aside className={styles.sidebar}>
       {/* Left sidebar navigation */}
       <nav className={styles.sidebarNav}>
-        <div className={styles.navItem} onClick={() => handleNavClick('/')}>
-          <FaHome size={20} />
-          <span className={styles.navTooltip}>Home</span>
-        </div>
-        
-        <div className={styles.navItem}>
-          <FaSearch size={18} />
-          <span className={styles.navTooltip}>Search</span>
-        </div>
-        
-        <div className={styles.navItem}>
-          <FaBell size={18} />
-          <div className={styles.notificationDot}></div>
-          <span className={styles.navTooltip}>Notifications</span>
-        </div>
-        
-        <div className={styles.navItem}>
-          <FaBookmark size={18} />
-          <span className={styles.navTooltip}>Bookmarks</span>
-        </div>
-        
-        <div className={styles.navItem}>
-          <FaStar size={18} />
-          <span className={styles.navTooltip}>Favorites</span>
-        </div>
-        
-        <div className={styles.navItem}>
-          <FaUserAlt size={18} />
-          <span className={styles.navTooltip}>Profile</span>
-        </div>
-        
-        <div className={styles.navItem}>
-          <FaCog size={18} />
-          <span className={styles.navTooltip}>Settings</span>
-        </div>
+        {navItems.map(({ id, icon: Icon, label, path, badge, disabled }) => {
+          const isActive = path && pathname === path;
+          const handleClick = () => {
+            if (path) {
+              handleNavClick(path);
+            }
+          };
+
+          return (
+            <motion.button
+              key={id}
+              type="button"
+              className={`${styles.navItem} ${isActive ? styles.active : ''}`}
+              onClick={handleClick}
+              disabled={disabled}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.92 }}
+              aria-label={label}
+              aria-current={isActive ? 'page' : undefined}
+              aria-disabled={disabled ? 'true' : undefined}
+            >
+              <Icon size={18} />
+              {badge && <div className={styles.notificationDot}></div>}
+              <span className={styles.navTooltip}>{label}</span>
+            </motion.button>
+          );
+        })}
         
         <div className={styles.navDivider}></div>
         
@@ -103,23 +105,14 @@ const Sidebar = () => {
         
         {/* Bio Section */}
         <div className={styles.aboutSection}>About</div>
-        <div className={styles.bioText}>design that feels alive.</div>
-        <div className={styles.bioDetails}>
-          cat parent & dad of 2! 🐱❤️ i regularly abuse & neglect my children.
-        </div>
-        <div className={styles.prideText}>OUT & PROUD! 🌈</div>
-        
-        {/* Additional Info */}
-        <div className={styles.additionalInfo}>
-          <div>m/he hobny brown STAN!</div>
-          <div>46 elder millenia! 🌟</div>
-        </div>
+        <div className={styles.bioText}>Sharing thoughts on sound, design, and simplicity.</div>
+        <div className={styles.bioDetails}>Always learning. Building in public.</div>
         
         {/* Song Reference */}
         <div className={styles.songReference}>
           <div className={styles.songTitle}>
-            <span className={styles.songName}>I Love You Jesus</span>
-            <span className={styles.artistName}> — Trisha Patyas</span>
+            <span className={styles.songName}>Now Playing</span>
+            <span className={styles.artistName}> — Unknown Artist</span>
           </div>
           <div className={styles.duration}>-0:24</div>
         </div>

@@ -702,7 +702,8 @@ const Post = React.memo(({ post, currentUserId, onDelete }) => {
                   value={muted ? 0 : volume}
                   onChange={(e) => onVolumeChange(parseFloat(e.target.value))}
                   aria-label="Volume"
-                  style={{ width: 140, height: 32, touchAction: 'none' }}
+                  className={styles.volumeSlider}
+                  style={{ touchAction: 'none' }}
                 />
               </div>
 

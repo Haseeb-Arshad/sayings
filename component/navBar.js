@@ -15,7 +15,7 @@ import {
 } from 'react-icons/fa';
 import { motion, AnimatePresence } from 'framer-motion';
 import styles from '../styles/Navbar.module.css';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '../context/useAuth';
 import axiosInstance from '@/utils/axiosInstance';
 
@@ -23,16 +23,19 @@ const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isOffline, setIsOffline] = useState(false);
   const { push } = useRouter();
+  const pathname = usePathname();
   const { user, logout } = useAuth();
 
-  const isActive = (path) => window.location.pathname === path;
+  const isActive = (path) => pathname === path;
 
   const navItems = [
-    { id: 'home', label: 'Home', path: '/', icon: <FaHome /> },
-    { id: 'explore', label: 'Explore', path: '/explore', icon: <FaCompass /> },
-    { id: 'profile', label: 'Profile', path: '/profile', icon: <FaUser /> },
-    { id: 'listen', label: 'Listen', path: '/listen', icon: <FaHeadphones /> }
+    { id: 'home', label: 'Home', path: '/', icon: FaHome },
+    { id: 'explore', label: 'Explore', path: '/explore', icon: FaCompass },
+    { id: 'profile', label: 'Profile', path: '/profile', icon: FaUser },
+    { id: 'listen', label: 'Listen', path: '/listen', icon: FaHeadphones }
   ];
+
+  const mobileNavItems = user ? navItems : navItems.filter((item) => item.id !== 'listen');
 
   const handleNavClick = (path) => {
     push(path);
@@ -87,18 +90,6 @@ const Navbar = () => {
     };
   }, []);
 
-  // Animation variants for menu items
-  const navVariants = {
-    visible: (i) => ({
-      opacity: 1,
-      y: 0,
-      transition: {
-        delay: i * 0.1,
-      }
-    }),
-    hidden: { opacity: 0, y: -20 }
-  };
-
   return (
     <>
       <motion.nav 
@@ -134,18 +125,21 @@ const Navbar = () => {
           {/* Center section with icons */}
           <div className={styles.centerSection}>
             {navItems.map((item) => (
-              <motion.div 
+              <motion.button
                 key={item.id}
-                className={`${styles.navItem} ${isActive(item.path) ? styles.active : ''}`} 
+                type="button"
+                className={`${styles.navItem} ${isActive(item.path) ? styles.active : ''}`}
                 onClick={() => handleNavClick(item.path)}
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
+                whileHover={{ scale: 1.08 }}
+                whileTap={{ scale: 0.94 }}
+                aria-label={item.label}
+                aria-current={isActive(item.path) ? 'page' : undefined}
               >
                 <span className={styles.navLink}>
-                  <span className={styles.icon}>{item.icon}</span>
+                  <span className={styles.icon}><item.icon /></span>
                 </span>
                 {isActive(item.path) && <div className={styles.activeIndicator} />}
-              </motion.div>
+              </motion.button>
             ))}
           </div>
 
@@ -158,6 +152,7 @@ const Navbar = () => {
                 type="text"
                 placeholder="Search..."
                 className={styles.searchInput}
+                aria-label="Search"
               />
             </div>
 
@@ -280,47 +275,23 @@ const Navbar = () => {
               </div>
 
               <div className={styles.mobileNavItems}>
-                <motion.div
-                  whileHover={{ x: 5 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <Link href="/" className={styles.mobileNavItem} onClick={() => setIsMobileMenuOpen(false)}>
-                    <FaHome size={20} />
-                    <span>Home</span>
-                  </Link>
-                </motion.div>
-                
-                <motion.div
-                  whileHover={{ x: 5 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <Link href="/explore" className={styles.mobileNavItem} onClick={() => setIsMobileMenuOpen(false)}>
-                    <FaCompass size={20} />
-                    <span>Explore</span>
-                  </Link>
-                </motion.div>
-
-                <motion.div
-                  whileHover={{ x: 5 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <Link href="/profile" className={styles.mobileNavItem} onClick={() => setIsMobileMenuOpen(false)}>
-                    <FaUser size={20} />
-                    <span>Profile</span>
-                  </Link>
-                </motion.div>
-
-                {user && (
+                {mobileNavItems.map((item) => (
                   <motion.div
+                    key={item.id}
                     whileHover={{ x: 5 }}
                     whileTap={{ scale: 0.95 }}
                   >
-                    <Link href="/listen" className={styles.mobileNavItem} onClick={() => setIsMobileMenuOpen(false)}>
-                      <FaHeadphones size={20} />
-                      <span>Listen Along</span>
+                    <Link
+                      href={item.path}
+                      className={`${styles.mobileNavItem} ${isActive(item.path) ? styles.mobileNavItemActive : ''}`}
+                      aria-current={isActive(item.path) ? 'page' : undefined}
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      <item.icon size={20} />
+                      <span>{item.id === 'listen' ? 'Listen Along' : item.label}</span>
                     </Link>
                   </motion.div>
-                )}
+                ))}
               </div>
 
               {/* Search in mobile menu */}
