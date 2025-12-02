@@ -1,0 +1,40 @@
+{
+  "name": "sayings",
+  "version": "1.0.0",
+  "description": "The Sayings App",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node index.js",
+    "postinstall": "npm rebuild bcrypt --build-from-source",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Haseeb-Arshad/sayings-backend.git"
+  },
+  "author": "Haseeb Arshad",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Haseeb-Arshad/sayings-backend/issues"
+  },
+  "homepage": "https://github.com/Haseeb-Arshad/sayings-backend#readme",
+  "keywords": [],
+  "dependencies": {
+    "axios": "^1.7.7",
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.20.3",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1",
+    "express-rate-limit": "^7.4.1",
+    "form-data": "^4.0.1",
+    "helmet": "^8.0.0",
+    "hume": "^0.9.6",
+    "jose": "^5.9.6",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.8.2",
+    "multer": "^1.4.5-lts.1"
+  }
+}
