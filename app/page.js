@@ -6,7 +6,6 @@ import Post from '../component/post';
 import Navbar from '../component/navBar';
 import Sidebar from '../component/sidebar';
 // import SuggestionsSidebar from '../component/SuggestionsBar';
-import FloatingVoiceButton from '../component/floatingButton';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import debounce from 'lodash.debounce';
 import styles from '../styles/Home.module.css';
@@ -233,13 +232,7 @@ const Home = () => {
     setPage((prevPage) => prevPage + 1);
   };
 
-  // Handler to prepend new post
-  const handleNewPost = (newPost) => {
-    setPosts((prevPosts) => {
-      const updatedPosts = [newPost, ...prevPosts];
-      return sortPosts(updatedPosts);
-    });
-  };
+
 
   // Handler to remove a post
   const handleDeletePost = (postId) => {
@@ -295,6 +288,7 @@ const Home = () => {
   return (
     <RefreshContext.Provider value={refreshPosts}>
       <div className={styles.home}>
+        <Navbar />
         <Sidebar setFilter={handleFilterChange} currentFilter={filter} />
         {/* <SuggestionsSidebar /> */}
         <div
@@ -329,7 +323,7 @@ const Home = () => {
             )}
           </AnimatePresence>
 
-          <FloatingVoiceButton onNewPost={handleNewPost} />
+
           {error && (
             <motion.div 
               className={styles.error}

@@ -7,7 +7,8 @@ import { useRouter, useParams } from 'next/navigation';
 import Navbar from '../../component/navBar';
 import Sidebar from '../../component/sidebar';
 import Post from '../../component/post';
-import FloatingVoiceButton from '../../component/floatingButton';
+
+
 import InfiniteScroll from 'react-infinite-scroll-component';
 import debounce from 'lodash.debounce';
 import axios from '../../utils/axiosInstance';
@@ -140,9 +141,6 @@ const UserProfile = () => {
                 <p className={styles.bio}>{profileUser.bio}</p>
               </div>
               <div className={styles.postsSection}>
-                {isOwnProfile && (
-                  <FloatingVoiceButton onNewPost={handleNewPost} />
-                )}
                 {isLoadingPosts ? (
                   <p className={styles.loadingText}>Loading posts...</p>
                 ) : posts.length > 0 ? (

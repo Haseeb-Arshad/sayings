@@ -5,7 +5,8 @@ import { useState, useEffect } from 'react';
 import Navbar from '../component/navBar';
 import Sidebar from '../component/sidebar';
 import Post from '../component/post';
-import FloatingVoiceButton from '../component/floatingButton';
+
+
 import styles from '../styles/Profile.module.css';
 import axios from '../utils/axiosInstance';
 import useCurrentUser from '../hooks/useCurrentUser';
@@ -69,7 +70,6 @@ const Profile = () => {
             </div>
           )}
           <div className={styles.postsSection}>
-            <FloatingVoiceButton onNewPost={handleNewPost} />
             {isLoadingPosts ? (
               <p className={styles.loadingText}>Loading posts...</p>
             ) : posts.length > 0 ? (

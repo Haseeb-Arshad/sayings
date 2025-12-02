@@ -15,7 +15,7 @@
     font-size: 2.5rem;
     font-weight: 700;
     margin-bottom: 2rem;
-    color: #333;
+    color: var(--text);
   }
   
   /* Grid Layout */
@@ -33,10 +33,10 @@
   
   /* Sidebar Navigation */
   .sidebar {
-    background-color: #fff;
+    background-color: var(--surface);
+    border: 1px solid var(--border);
     border-radius: 8px;
     padding: 1rem;
-    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
   }
   
   .navButton {
@@ -48,7 +48,7 @@
     border: none;
     border-radius: 6px;
     background-color: transparent;
-    color: #555;
+    color: var(--muted);
     cursor: pointer;
     font-size: 1rem;
     transition: background-color 0.2s ease, color 0.2s ease;
@@ -56,20 +56,21 @@
   }
   
   .navButton:hover {
-    background-color: #f2f2f2;
+    background-color: color-mix(in oklab, var(--surface-2) 70%, white 0%);
   }
   
   .active {
-    background-color: #e3f2fd;
-    color: #0288d1;
+    background-color: color-mix(in oklab, var(--accent) 15%, transparent);
+    color: var(--accent);
   }
   
   /* Content Area */
   .content {
-    background-color: #fff;
+    background-color: var(--surface);
+    border: 1px solid var(--border);
     border-radius: 8px;
     padding: 2rem;
-    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+    color: var(--text);
   }
   
   /* Sections & Typography */
@@ -81,7 +82,7 @@
     font-size: 1.75rem;
     font-weight: 600;
     margin-bottom: 1rem;
-    color: #222;
+    color: var(--text);
   }
   
   /* Form Elements */
@@ -95,25 +96,26 @@
     margin-bottom: 0.5rem;
     font-size: 0.9rem;
     font-weight: 500;
-    color: #666;
+    color: var(--muted);
   }
   
   .formInput,
   .formTextarea,
   .formSelect {
     padding: 0.75rem;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+    border: 1px solid var(--border);
+    background: var(--surface-2);
+    border-radius: 8px;
     font-size: 1rem;
-    color: #333;
+    color: var(--text);
   }
   
   .formInput:focus,
   .formTextarea:focus,
   .formSelect:focus {
     outline: none;
-    border-color: #0288d1;
-    box-shadow: 0 0 0 2px rgba(2, 136, 209, 0.2);
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px color-mix(in oklab, var(--accent) 25%, transparent);
   }
   
   /* Profile image & upload button */
@@ -121,12 +123,12 @@
     width: 80px;
     height: 80px;
     border-radius: 50%;
-    background-color: #eee;
+    background-color: var(--surface-2);
   }
   
   .uploadButton {
     padding: 0.5rem 1rem;
-    background-color: #0288d1;
+    background-color: var(--accent);
     color: #fff;
     border: none;
     border-radius: 4px;
@@ -136,7 +138,7 @@
   }
   
   .uploadButton:hover {
-    background-color: #0277bd;
+    background-color: var(--accent-hover);
   }
   
   .fullWidth {
@@ -151,7 +153,7 @@
     align-items: center;
     justify-content: space-between;
     padding: 0.75rem 0;
-    border-bottom: 1px solid #e0e0e0;
+    border-bottom: 1px solid var(--border);
   }
   
   .toggleWrapper:last-child {

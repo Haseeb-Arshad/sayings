@@ -3,7 +3,7 @@ import { useState, useRef, useEffect } from 'react';
 import axios from '../../utils/axiosInstance';
 import { useRouter } from 'next/navigation';
 import styles from '../../styles/Login.module.css';
-import { motion, AnimatePresence, useAnimation } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useAuth } from '../../context/useAuth';
@@ -157,7 +157,7 @@ const Login = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3, delay: 0.1 }}
           >
-            motion.input
+            <motion.input
               id="login-identifier"
               type="text"
               name="identifier"
@@ -172,7 +172,7 @@ const Login = () => {
               whileTap={{ scale: 0.995 }}
               transition={{ duration: 0.15 }}
             />
-            motion.label 
+            <motion.label 
               htmlFor="login-identifier"
               className={styles.inputLabel}
               initial={{
@@ -189,7 +189,7 @@ const Login = () => {
                 color: identifier ? 'var(--primary)' : 'var(--text-secondary)',
                 opacity: identifier ? 1 : 0.75
               }}
-              transition={{ type: "spring", stiffness: 150, damping: 25, mass: 0.5 }}
+              transition={{ type: 'spring', stiffness: 150, damping: 25, mass: 0.5 }}
             >
               Email or Username
             </motion.label>
@@ -214,7 +214,7 @@ const Login = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3, delay: 0.2 }}
           >
-            motion.input
+            <motion.input
               id="login-password"
               type="password"
               name="password"
@@ -229,7 +229,7 @@ const Login = () => {
               whileTap={{ scale: 0.995 }}
               transition={{ duration: 0.15 }}
             />
-            motion.label 
+            <motion.label 
               htmlFor="login-password"
               className={styles.inputLabel}
               initial={{
@@ -246,7 +246,7 @@ const Login = () => {
                 color: password ? 'var(--primary)' : 'var(--text-secondary)',
                 opacity: password ? 1 : 0.75
               }}
-              transition={{ type: "spring", stiffness: 150, damping: 25, mass: 0.5 }}
+              transition={{ type: 'spring', stiffness: 150, damping: 25, mass: 0.5 }}
             >
               Password
             </motion.label>

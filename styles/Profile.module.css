@@ -29,8 +29,9 @@
   --accent-font-family: 'Poppins', sans-serif; 
 
 
-  padding-top: 40px; /* Height of Navbar */
-  background-color: var(--background-color);
+  padding-top: 64px; /* Height of Navbar */
+  background-color: var(--bg);
+  color: var(--text);
   min-height: 100vh;
   font-family: var(--font-family);
 }
@@ -45,9 +46,9 @@
 .profileSection {
   flex: 1;
   max-width: 800px;
-  background: var(--secondary-color);
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: 10px;
-  box-shadow: var(--card-shadow);
   padding: 2rem;
   display: flex;
   flex-direction: column;
@@ -82,7 +83,7 @@
 .username {
   font-size: 2rem;
   font-weight: 700;
-  color: var(--text-color);
+  color: var(--text);
   margin: 0;
 }
 

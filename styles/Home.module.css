@@ -42,9 +42,10 @@ body,
 .home {
   position: relative;
   min-height: 100%;
-  background-color: var(--bg-dark);
-  color: var(--text-primary);
-  font-family: 'Poppins', sans-serif;
+  background-color: var(--bg);
+  color: var(--text);
+  padding-top: 64px;
+  font-family: var(--font-geist-sans), system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
 }
 
 /* Note: Navbar styles moved to Navbar.module.css */
@@ -62,7 +63,7 @@ body,
   overflow-y: auto;
   height: 100vh;
   scrollbar-width: thin;
-  scrollbar-color: var(--text-tertiary) var(--bg-dark);
+  scrollbar-color: var(--muted) var(--bg);
   transition: margin-left 0.3s ease;
 }
 
@@ -156,7 +157,7 @@ body,
 }
 
 .postsContainer::-webkit-scrollbar-track {
-  background: var(--bg-dark);
+  background: var(--bg);
 }
 
 .postsContainer::-webkit-scrollbar-thumb {
