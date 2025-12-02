@@ -6,7 +6,8 @@ import { useState, useEffect, useCallback } from 'react';
 import Navbar from '../component/navBar';
 import Sidebar from '../component/sidebar';
 import Post from '../component/post';
-import FloatingVoiceButton from '../component/floatingButton';
+
+
 import InfiniteScroll from 'react-infinite-scroll-component';
 import debounce from 'lodash.debounce';
 import styles from '../styles/Profile.module.css';
@@ -231,7 +232,6 @@ const Profile = () => {
 
               {/* Posts Section */}
               <div className={styles.postsSection}>
-                <FloatingVoiceButton onNewPost={handleNewPost} />
                 <div className={styles.profileHeader}>
                   <h2 style={{ marginLeft: '1.5rem' }}>Your Sayings</h2>
                   <div className={styles.filterOptions}>

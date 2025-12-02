@@ -6,7 +6,8 @@ import { useState, useEffect, useCallback } from 'react';
 import Navbar from '../component/navBar';
 import Sidebar from '../component/sidebar';
 import Post from '../component/post';
-import FloatingVoiceButton from '@/component/floatingButton';
+
+
 import InfiniteScroll from 'react-infinite-scroll-component';
 import debounce from 'lodash.debounce';
 import styles from './../styles/Explore.module.css';
@@ -156,7 +157,7 @@ const Explore = () => {
       <div className={styles.mainContent}>
         <Sidebar setFilter={handleFilterChange} currentFilter={filter} />
         <div id="scrollableExploreDiv" className={styles.exploreSection}>
-          <FloatingVoiceButton onNewPost={handleNewPost} /> {/* Pass the handler */}
+
           {error && <p className={styles.error}>{error}</p>}
           <InfiniteScroll
             dataLength={posts.length}
