@@ -9,17 +9,23 @@
   --text-secondary: #a0a0a5;
   --text-tertiary: #666668;
   /* Minimalistic Charcoal/Grey Accents */
-  --solid-accent-primary: #787880;            /* Mid-light grey for links, focus */
-  --solid-accent-primary-rgb: 120, 120, 128; /* For shadows, glows */
-  --solid-accent-secondary: #505055;          /* Darker grey for hover/less prominent */
-  --button-background-gradient: linear-gradient(135deg, #3a3a40, #2c2c30); /* Subtle dark grey gradient for buttons */
+  --solid-accent-primary: #787880;
+  /* Mid-light grey for links, focus */
+  --solid-accent-primary-rgb: 120, 120, 128;
+  /* For shadows, glows */
+  --solid-accent-secondary: #505055;
+  /* Darker grey for hover/less prominent */
+  --button-background-gradient: linear-gradient(135deg, #3a3a40, #2c2c30);
+  /* Subtle dark grey gradient for buttons */
 
   /* Main accent for interactive elements like buttons, remapped */
   --accent-primary: var(--button-background-gradient);
 
   /* Neutralizing other colorful accents for a consistent minimalistic theme */
-  --accent-secondary: linear-gradient(135deg, #434348, #333337); /* Darker grey gradient */
-  --accent-tertiary: linear-gradient(135deg, #55555a, #45454a);  /* Another grey gradient */
+  --accent-secondary: linear-gradient(135deg, #434348, #333337);
+  /* Darker grey gradient */
+  --accent-tertiary: linear-gradient(135deg, #55555a, #45454a);
+  /* Another grey gradient */
   --shadow-sm: 0 4px 6px rgba(0, 0, 0, 0.2);
   --shadow-md: 0 8px 15px rgba(0, 0, 0, 0.3);
   --shadow-lg: 0 12px 28px rgba(0, 0, 0, 0.4);
@@ -35,7 +41,8 @@ body,
   height: 100%;
   margin: 0;
   padding: 0;
-  scroll-behavior: smooth; /* Enables smooth scrolling */
+  scroll-behavior: smooth;
+  /* Enables smooth scrolling */
 }
 
 /* Home Container */
@@ -48,35 +55,12 @@ body,
   font-family: var(--font-geist-sans), system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
 }
 
-/* Note: Navbar styles moved to Navbar.module.css */
-/* Only keep this as a placeholder to prevent breaking styles */
-.navbar {
-  display: none;
-}
-
-/* Posts Container */
-.postsContainer {
-  max-width: 800px;
-  margin: 0 auto 0 calc(280px + 2rem); /* Adjust for sidebar width + spacing */
-  padding: 2rem 1rem;
-  box-sizing: border-box;
-  overflow-y: auto;
-  height: 100vh;
-  scrollbar-width: thin;
-  scrollbar-color: var(--muted) var(--bg);
-  transition: margin-left 0.3s ease;
-}
-
-/* Infinite Scroll Loader and Messages */
-.loadingText,
-.noPosts,
-.endMessage {
-  text-align: center;
-  color: var(--text-secondary);
-  font-size: 1rem;
-  margin-top: 2rem;
-  font-weight: 300;
-  letter-spacing: 0.5px;
+text-align: center;
+color: var(--text-secondary);
+font-size: 1rem;
+margin-top: 2rem;
+font-weight: 300;
+letter-spacing: 0.5px;
 }
 
 .error {
@@ -179,7 +163,8 @@ body,
 
 @media (max-width: 1024px) {
   .postsContainer {
-    margin-left: calc(250px + 1rem); /* Adjust for smaller sidebar on tablets */
+    margin-left: calc(250px + 1rem);
+    /* Adjust for smaller sidebar on tablets */
     margin-right: 1rem;
     max-width: 700px;
   }
@@ -190,17 +175,20 @@ body,
 }
 
 @media (max-width: 768px) {
+
   .sidebar,
   .suggestionsSidebar {
-    display: none; /* Hide sidebars on small screens */
+    display: none;
+    /* Hide sidebars on small screens */
   }
 
   .postsContainer {
-    margin: 84px 15px 0 15px; /* navbar height + spacing */
+    margin: 84px 15px 0 15px;
+    /* navbar height + spacing */
     max-width: none;
     padding: 0.5rem;
   }
-  
+
   .floatingButton {
     bottom: 20px;
     right: 20px;
@@ -212,7 +200,8 @@ body,
 /* New Posts Notification */
 .newPostsNotification {
   position: fixed;
-  top: 90px; /* Below the Navbar */
+  top: 90px;
+  /* Below the Navbar */
   left: 50%;
   transform: translateX(-50%);
   background: var(--accent-secondary);

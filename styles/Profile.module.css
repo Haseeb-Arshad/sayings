@@ -1,39 +1,14 @@
 /* styles/Profile.module.css */
+/* Premium Profile Page - Unified Design System */
 
-@import url('https://fonts.googleapis.com/css2?family=Inika:wght@400;700&display=swap');
-
-/* :global(:root) {
-  --primary-color: #1DA1F2;
-  --secondary-color: #ffffff;
-  --background-color: #f0f2f5;
-  --text-color: #333333; 
-  --subtext-color: #777777; 
-  --border-color: #e0e0e0; 
-  --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); 
-  --transition-speed: 0.3s; 
-  --font-family: 'Inika', serif; 
-  --accent-font-family: 'Poppins', sans-serif; 
-} */
+/* ========================================
+   PROFILE CONTAINER
+   ======================================== */
 
 .container {
-
-  --primary-color: #1DA1F2; /* Accent color */
-  --secondary-color: #ffffff; /* White */
-  --background-color: #f0f2f5; /* Light grey background */
-  --text-color: #333333; /* Primary text color */
-  --subtext-color: #777777; /* Secondary text color */
-  --border-color: #e0e0e0; /* Light border color */
-  --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); /* Subtle shadow */
-  --transition-speed: 0.3s; /* Transition speed for hover effects */
-  --font-family: 'Inika', serif; /* Main font */
-  --accent-font-family: 'Poppins', sans-serif; 
-
-
-  padding-top: 64px; /* Height of Navbar */
-  background-color: var(--bg);
-  color: var(--text);
   min-height: 100vh;
-  font-family: var(--font-family);
+  background: var(--bg);
+  padding-top: 64px;
 }
 
 .mainContent {
@@ -43,78 +18,218 @@
   gap: 2rem;
 }
 
+/* ========================================
+   PROFILE SECTION - GLASSMORPHISM CARD
+   ======================================== */
+
 .profileSection {
   flex: 1;
   max-width: 800px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 2rem;
-  display: flex;
-  flex-direction: column;
+  overflow-y: auto;
+  max-height: calc(100vh - 100px);
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
 }
+
+.profileSection::-webkit-scrollbar {
+  width: 6px;
+}
+
+.profileSection::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.profileSection::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 10px;
+}
+
+/* ========================================
+   PROFILE INFO CARD - PREMIUM GLASS EFFECT
+   ======================================== */
 
 .profileInfo {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 2rem;
-  margin-bottom: 1rem;
-  border-bottom: 1px solid var(--border-color);
-  padding-bottom: 1.5rem;
+  padding: 2rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-md);
+  margin-bottom: 1.5rem;
+  position: relative;
+  overflow: hidden;
+  transition: all var(--transition-base);
 }
 
+.profileInfo::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 120px;
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-hover) 100%);
+  opacity: 0.1;
+  z-index: 0;
+}
+
+.profileInfo:hover {
+  box-shadow: var(--shadow-lg);
+  border-color: var(--border-hover);
+}
+
+/* ========================================
+   AVATAR - ANIMATED GRADIENT BORDER
+   ======================================== */
+
 .avatar {
-  width: 150px;
-  height: 150px;
+  width: 140px;
+  height: 140px;
   border-radius: 50%;
   object-fit: cover;
-  border: 4px solid var(--primary-color);
-  transition: transform var(--transition-speed) ease;
+  position: relative;
+  z-index: 1;
+  padding: 4px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-hover), var(--accent-light));
+  background-size: 200% 200%;
+  animation: gradientShift 3s ease infinite;
+  transition: transform var(--transition-base), box-shadow var(--transition-base);
 }
 
 .avatar:hover {
-  transform: scale(1.05);
+  transform: scale(1.05) rotate(2deg);
+  box-shadow: 0 8px 30px rgba(59, 130, 246, 0.3);
 }
+
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* ========================================
+   USER DETAILS
+   ======================================== */
 
 .userDetails {
   flex: 1;
+  z-index: 1;
 }
 
 .username {
   font-size: 2rem;
   font-weight: 700;
-  color: var(--text);
-  margin: 0;
+  color: var(--text-primary);
+  margin: 0 0 0.25rem 0;
+  letter-spacing: -0.02em;
 }
 
 .bio {
-  font-size: 1.1rem;
-  color: var(--subtext-color);
-  margin: 0.5rem 0 1.5rem;
+  font-size: 1rem;
+  color: var(--text-secondary);
+  margin: 0 0 1.5rem 0;
+  line-height: 1.6;
 }
 
-/* Personality Section */
+/* ========================================
+   USER STATS - MODERN CARD GRID
+   ======================================== */
 
-/* Personality Section */
+.userStats {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
 
+.statItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  background: var(--surface-hover);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  min-width: 100px;
+  transition: all var(--transition-base);
+}
+
+.statItem:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+  border-color: var(--accent);
+  background: var(--accent-light);
+}
+
+.statItem>div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.statNumber {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 0.25rem;
+}
+
+.statLabel {
+  font-size: 0.75rem;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 500;
+}
+
+/* ========================================
+   PERSONALITY & REVIEW SECTIONS
+   ======================================== */
 
 .personalityAndReview {
-  /* margin-top: 2rem; */
-  /* margin-bottom: 2rem; */
-  /* Adjust the layout as needed */
-  /* border: 1px solid var(--border-color); */
-}
-
-/* Personality Traits Section */
-.personalitySection {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
   margin-bottom: 1.5rem;
 }
 
+/* ========================================
+   PERSONALITY SECTION - GRADIENT BADGES
+   ======================================== */
+
+.personalitySection {
+  padding: 1.5rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
 .sectionTitle {
-  font-size: 1.2rem;
+  font-size: 1rem;
   font-weight: 600;
-  /* color: var(--primary-color); */
-  margin-bottom: 0.5rem;
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.sectionTitle::before {
+  content: '';
+  width: 4px;
+  height: 18px;
+  background: linear-gradient(180deg, var(--accent), var(--accent-hover));
+  border-radius: 2px;
 }
 
 .personalityDescriptors {
@@ -124,293 +239,199 @@
 }
 
 .descriptorBadge {
-  background-color: var(--primary-color);
-  color: var(--secondary-color);
-  padding: 0.4rem 0.8rem;
-  border-radius: 20px;
-  font-size: 0.9rem;
-  font-weight: 500;
-  transition: background-color var(--transition-speed) ease;
-}
-
-.descriptorBadge:hover {
-  background-color: #0d8ddb;
-}
-
-/* Profile Review Section */
-.profileReviewSection {
-  margin-bottom: 1.5rem;
-}
-
-.profileReviewText {
-  font-size: 1rem;
-  line-height: 1.6;
-  color: var(--text-color);
-  background-color: #f9f9f9;
-  padding: 1rem;
-  border-left: 4px solid var(--primary-color);
-  border-radius: 4px;
-  box-shadow: var(--card-shadow);
-  font-family: var(--font-family);
-}
-
-
-
-
-
-
-
-
-/* .personalitySection {
-  margin-bottom: 2rem;
-} */
-
-.traitBars {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.traitBar {
-  display: flex;
-  flex-direction: column;
-}
-
-.traitLabel {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 0.3rem;
-  font-weight: 500;
-  color: var(--text-color);
-}
-
-.traitDescriptor {
-  font-style: italic;
-  color: var(--subtext-color);
-}
-
-.progressBar {
-  background-color: #e0e0e0;
-  border-radius: 10px;
-  overflow: hidden;
-  height: 12px;
-}
-
-.progressFill {
-  height: 100%;
-  border-radius: 10px;
-}
-
-/* .profileReviewSection {
-  margin-bottom: 2rem;
-}
-
-.profileReviewText {
-  font-size: 1rem;
-  line-height: 1.6;
-  color: var(--text-color);
-  background-color: #f9f9f9;
-  padding: 1rem;
-  border-left: 4px solid var(--primary-color);
-  border-radius: 4px;
-  box-shadow: var(--card-shadow);
-  font-family: var(--accent-font-family);
-} */
-
-/* Adjusted userStats positioning */
-.userStats {
-  display: flex;
-  gap: 2rem;
-  margin-top: 1rem;
-}
-
-
-
-
-
-
-
-
-
-/* 
-
-
-
-.personalitySection {
-  margin-bottom: 1.5rem;
-} */
-
-/* .sectionTitle {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--primary-color);
-  font-family: var(--accent-font-family);
-  margin-bottom: 0.5rem;
-} */
-
-/* .personalityDescriptors {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-} */
-
-/* .descriptorBadge {
-  background-color: var(--primary-color);
-  color: var(--secondary-color);
-  padding: 0.4rem 0.8rem;
-  border-radius: 20px;
-  font-size: 0.9rem;
-  font-weight: 500;
-  transition: background-color var(--transition-speed) ease;
-}
-
-.descriptorBadge:hover {
-  background-color: #0d8ddb;
-} */
-
-/* Profile Review Section */
-.profileReviewSection {
-  margin-bottom: 1.5rem;
-}
-
-.profileReviewText {
-  font-size: 1rem;
-  line-height: 1.6;
-  color: var(--text-color);
-  background-color: #f9f9f9;
-  padding: 1rem;
-  border-radius: 8px;
-  box-shadow: var(--card-shadow);
-  font-family: var(--accent-font-family);
-}
-
-.userStats {
-  display: flex;
-  gap: 2rem;
-  margin-top: 1.5rem;
-}
-
-.statItem {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+  color: white;
+  border-radius: var(--radius-full);
+  font-size: 0.875rem;
+  font-weight: 500;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.25);
+  transition: all var(--transition-base);
+  cursor: default;
 }
 
-.statNumber {
-  font-size: 1.05rem;
-  font-weight: 600;
-  margin-right: 0.3rem;
-  color: var(--text-color);
+.descriptorBadge:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.35);
 }
 
-.statLabel {
-  font-size: 0.85rem;
-  color: var(--subtext-color);
+/* ========================================
+   PROFILE REVIEW SECTION
+   ======================================== */
+
+.profileReviewSection {
+  padding: 1.5rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
 }
+
+.profileReviewText {
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: var(--text-secondary);
+  padding: 1rem 1.25rem;
+  background: var(--surface-hover);
+  border-left: 4px solid var(--accent);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  margin: 0;
+  font-style: italic;
+}
+
+/* ========================================
+   POSTS SECTION
+   ======================================== */
 
 .postsSection {
-  position: relative;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  box-shadow: var(--shadow-sm);
 }
 
 .profileHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 0rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border);
 }
 
 .profileHeader h2 {
-  font-size: 1.75rem;
-  color: var(--text-color);
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-primary);
   margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
+
+.profileHeader h2::before {
+  content: '';
+  width: 4px;
+  height: 18px;
+  background: linear-gradient(180deg, var(--accent), var(--accent-hover));
+  border-radius: 2px;
+}
+
+/* ========================================
+   FILTER OPTIONS
+   ======================================== */
 
 .filterOptions {
   display: flex;
-  gap: 1rem;
+  gap: 0.5rem;
 }
 
 .filterButton {
-  padding: 0.6rem 1.2rem;
-  background-color: transparent;
-  color: var(--primary-color);
-  border: 2px solid var(--primary-color);
-  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
   cursor: pointer;
-  font-size: 0.9rem;
-  transition: all var(--transition-speed) ease;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all var(--transition-base);
 }
 
 .filterButton:hover {
-  background-color: var(--primary-color);
-  color: var(--secondary-color);
+  background: var(--surface-hover);
+  color: var(--text-primary);
+  border-color: var(--border-hover);
 }
 
 .filterButton.active {
-  background-color: var(--primary-color);
-  color: var(--secondary-color);
+  background: var(--accent);
+  color: white;
+  border-color: var(--accent);
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.25);
 }
 
-.loadingText,
-.noPosts,
-.endMessage,
-.error {
-  text-align: center;
-  color: var(--subtext-color);
-  font-size: 1rem;
-  margin-top: 2rem;
-}
-
-.error {
-  color: #ff4d4f; /* Red color for errors */
-}
+/* ========================================
+   POST CARDS
+   ======================================== */
 
 .postCard {
-  background: var(--secondary-color);
-  border-radius: 12px;
-  padding: 1.5rem;
-  margin-bottom: 0rem;
-  transition: transform var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
+  margin-bottom: 1rem;
+  transition: transform var(--transition-base);
 }
 
 .postCard:hover {
-  transform: translateY(-5px);
+  transform: translateY(-2px);
 }
+
+.postCard:last-child {
+  margin-bottom: 0;
+}
+
+/* ========================================
+   LOADING & STATUS MESSAGES
+   ======================================== */
+
+.loadingText,
+.noPosts,
+.endMessage {
+  text-align: center;
+  color: var(--text-tertiary);
+  font-size: 0.95rem;
+  padding: 2rem;
+}
+
+.error {
+  text-align: center;
+  color: var(--error);
+  background: rgba(239, 68, 68, 0.1);
+  padding: 1rem;
+  border-radius: var(--radius-md);
+  margin-bottom: 1rem;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+/* ========================================
+   RESPONSIVE DESIGN
+   ======================================== */
 
 @media (max-width: 1024px) {
   .mainContent {
     flex-direction: column;
     align-items: center;
+    padding: 1rem;
   }
 
   .profileSection {
     width: 100%;
     max-width: 700px;
+    max-height: none;
+    overflow-y: visible;
   }
 }
 
 @media (max-width: 768px) {
   .profileInfo {
     flex-direction: column;
+    align-items: center;
     text-align: center;
+    padding: 1.5rem;
   }
 
-  .userStats {
-    justify-content: center;
-    flex-wrap: wrap;
-  }
-
-  .filterOptions {
-    flex-wrap: wrap;
-    justify-content: center;
+  .profileInfo::before {
+    height: 80px;
   }
 
   .avatar {
-    width: 90px;
-    height: 90px;
+    width: 100px;
+    height: 100px;
+  }
+
+  .userDetails {
+    width: 100%;
   }
 
   .username {
@@ -418,6 +439,66 @@
   }
 
   .bio {
+    font-size: 0.95rem;
+  }
+
+  .userStats {
+    justify-content: center;
+  }
+
+  .statItem {
+    padding: 0.75rem 1rem;
+    min-width: 80px;
+  }
+
+  .profileHeader {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+  }
+
+  .filterOptions {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .personalitySection,
+  .profileReviewSection,
+  .postsSection {
+    padding: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding-top: 56px;
+  }
+
+  .mainContent {
+    padding: 0.75rem;
+  }
+
+  .profileInfo {
+    padding: 1rem;
+    gap: 1rem;
+  }
+
+  .avatar {
+    width: 80px;
+    height: 80px;
+  }
+
+  .statItem {
+    padding: 0.5rem 0.75rem;
+    min-width: 70px;
+  }
+
+  .statNumber {
     font-size: 1rem;
+  }
+
+  .descriptorBadge {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.8rem;
   }
 }

@@ -29,10 +29,9 @@ const Navbar = () => {
   const isActive = (path) => pathname === path;
 
   const navItems = [
-    { id: 'home', label: 'Home', path: '/', icon: FaHome },
     { id: 'explore', label: 'Explore', path: '/explore', icon: FaCompass },
-    { id: 'profile', label: 'Profile', path: '/profile', icon: FaUser },
-    { id: 'listen', label: 'Listen', path: '/listen', icon: FaHeadphones }
+    { id: 'listen', label: 'Listen', path: '/listen', icon: FaHeadphones },
+    { id: 'upload', label: 'Upload', path: '/upload', icon: FaMicrophone }
   ];
 
   const mobileNavItems = user ? navItems : navItems.filter((item) => item.id !== 'listen');
@@ -40,7 +39,7 @@ const Navbar = () => {
   const handleNavClick = (path) => {
     push(path);
     setIsMobileMenuOpen(false);
-    
+
     // Close the mobile menu if it's open
     if (isMobileMenuOpen) {
       setIsMobileMenuOpen(false);
@@ -77,13 +76,13 @@ const Navbar = () => {
 
   useEffect(() => {
     const handleOnlineStatus = () => setIsOffline(!navigator.onLine);
-    
+
     window.addEventListener('online', handleOnlineStatus);
     window.addEventListener('offline', handleOnlineStatus);
-    
+
     // Initial check
     setIsOffline(!navigator.onLine);
-    
+
     return () => {
       window.removeEventListener('online', handleOnlineStatus);
       window.removeEventListener('offline', handleOnlineStatus);
@@ -92,7 +91,7 @@ const Navbar = () => {
 
   return (
     <>
-      <motion.nav 
+      <motion.nav
         className={styles.navbar}
         initial={{ y: -50 }}
         animate={{ y: 0 }}
@@ -105,7 +104,7 @@ const Navbar = () => {
         <div className={styles.navContainer}>
           {/* Left section with page indicator instead of logo */}
           <div className={styles.leftSection}>
-            <motion.div 
+            <motion.div
               className={styles.pageIndicator}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -117,7 +116,9 @@ const Navbar = () => {
                 {isActive('/explore') && 'Explore'}
                 {isActive('/profile') && 'Profile'}
                 {isActive('/listen') && 'Listen'}
-                {!isActive('/') && !isActive('/explore') && !isActive('/profile') && !isActive('/listen') && 'Sayings'}
+                {isActive('/upload') && 'Upload'}
+                {isActive('/settings') && 'Settings'}
+                {!isActive('/') && !isActive('/explore') && !isActive('/profile') && !isActive('/listen') && !isActive('/upload') && !isActive('/settings') && 'Sayings'}
               </span>
             </motion.div>
           </div>

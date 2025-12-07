@@ -5,7 +5,8 @@ import axios, { isNetworkOffline } from '../utils/axiosInstance';
 import Post from '../component/post';
 import Navbar from '../component/navBar';
 import Sidebar from '../component/sidebar';
-// import SuggestionsSidebar from '../component/SuggestionsBar';
+import ProfileSidebar from '../component/ProfileSidebar';
+import SuggestionsSidebar from '../component/suggestionsBar';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import debounce from 'lodash.debounce';
 import styles from '../styles/Home.module.css';
@@ -149,7 +150,7 @@ const Home = () => {
         }
         return;
       }
-      
+
       setIsFetching(true);
       setLoading(true);
       setError('');
@@ -194,7 +195,7 @@ const Home = () => {
         if (currentPage >= totalPages) {
           setHasMore(false);
         }
-        
+
         // Clear any previous errors on successful fetch
         setError('');
       } catch (err) {
@@ -290,7 +291,8 @@ const Home = () => {
       <div className={styles.home}>
         <Navbar />
         <Sidebar setFilter={handleFilterChange} currentFilter={filter} />
-        {/* <SuggestionsSidebar /> */}
+        <ProfileSidebar />
+        <SuggestionsSidebar />
         <div
           className={styles.postsContainer}
           ref={postsContainerRef}
@@ -325,7 +327,7 @@ const Home = () => {
 
 
           {error && (
-            <motion.div 
+            <motion.div
               className={styles.error}
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -336,7 +338,7 @@ const Home = () => {
               </div>
               <p>{error}</p>
               {error.includes('offline') && (
-                <motion.button 
+                <motion.button
                   className={styles.retryButton}
                   onClick={() => fetchHomePosts(1)}
                   whileHover={{ scale: 1.05 }}

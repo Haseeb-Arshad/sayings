@@ -1,481 +1,445 @@
-/* Navbar.module.css */
+/* Navbar.module.css - Clean, Professional Design */
 
 .navbar {
-  background: var(--surface);
-  padding: 0 1.25rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
   position: fixed;
   top: 0;
   left: 280px;
   right: 0;
   height: 64px;
-  z-index: 90;
+  background: var(--surface);
   border-bottom: 1px solid var(--border);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  transition: left 0.3s ease;
-}
-
-/* Responsive adjustments for tablet and mobile */
-@media (max-width: 1024px) {
-  .navbar {
-    left: 250px;
-  }
-
-  .centerSection {
-    gap: 0.75rem;
-  }
-
-  .navItem {
-    padding: 0.5rem;
-  }
+  z-index: 90;
+  transition: all var(--transition-base);
 }
 
 @media (max-width: 768px) {
   .navbar {
     left: 0;
-    padding: 0 1rem;
-  }
-
-  .leftSection {
-    max-width: 150px;
-  }
-
-  .pageName {
-    font-size: 1rem;
-  }
-
-  .centerSection {
-    display: none; /* Hide center navigation on mobile */
-  }
-
-  .rightSection {
-    max-width: 100%;
-  }
-
-  .searchContainer {
-    max-width: 150px;
-    margin: 0 0.75rem;
-  }
-
-  .recordButton span {
-    display: none;
   }
 }
 
 .navContainer {
   max-width: 1920px;
   margin: 0 auto;
-  padding: 0;
-  height: 64px;
+  padding: 0 1.5rem;
+  height: 100%;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  width: 100%;
+  gap: 2rem;
 }
+
+/* ========================================
+   LEFT SECTION
+   ======================================== */
 
 .leftSection {
   display: flex;
   align-items: center;
   gap: 1.5rem;
-  flex: 1;
-  max-width: 300px;
+  flex: 0 0 auto;
 }
 
 .pageIndicator {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  color: var(--text);
+  color: var(--text-primary);
   font-weight: 600;
-  font-size: 1.2rem;
+  font-size: 1.125rem;
 }
 
 .pageIcon {
   font-size: 1.25rem;
-  background: linear-gradient(135deg, var(--accent), color-mix(in oklab, var(--accent) 70%, white 0%));
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: var(--accent);
 }
 
 .pageName {
-  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
 }
 
-/* Moved logoWrapper styles to sidebar component as the logo now lives there */
-.logoWrapper {
-  display: none;
-}
-
-.logo {
-  display: none;
-}
+/* ========================================
+   CENTER SECTION - Navigation
+   ======================================== */
 
 .centerSection {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 1rem;
+  gap: 0.5rem;
   flex: 1;
-  max-width: 680px;
-  height: 100%;
+  max-width: 600px;
+}
+
+@media (max-width: 768px) {
+  .centerSection {
+    display: none;
+  }
 }
 
 .navItem {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0.5rem 0.9rem;
-  border-radius: 10px;
+  padding: 0.625rem 1rem;
+  border-radius: var(--radius-md);
   cursor: pointer;
   position: relative;
-  transition: all 0.2s ease;
-  margin: 0 4px;
-  border: none;
   background: transparent;
-  color: inherit;
-  outline: none;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all var(--transition-base);
 }
 
 .navItem:hover {
-  background-color: rgba(255, 255, 255, 0.06);
-}
-
-.navItem:focus-visible {
-  background-color: rgba(255, 255, 255, 0.06);
-  box-shadow: 0 0 0 2px color-mix(in oklab, var(--accent) 35%, white 0%);
+  background: var(--surface-hover);
+  color: var(--text-primary);
 }
 
 .navItem.active {
-  background-color: rgba(109, 141, 255, 0.18);
+  color: var(--accent);
+  background: var(--accent-light);
 }
 
 .navLink {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--text);
-  text-decoration: none;
-  font-weight: 500;
-  font-size: 0.9375rem;
-  transition: color 0.2s ease;
 }
 
 .icon {
   display: flex;
   align-items: center;
   font-size: 1.25rem;
-  transition: transform 0.2s ease;
 }
-
-.navItem:hover .icon {
-  transform: scale(1.1);
-}
-
-.active { color: var(--accent); }
-
-.navItem.active .icon { transform: scale(1.1); color: var(--accent); }
 
 .activeIndicator {
   position: absolute;
   bottom: 0;
-  left: 0;
-  width: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 24px;
   height: 3px;
   background: var(--accent);
-  border-radius: 3px 3px 0 0;
+  border-radius: var(--radius-full);
 }
+
+/* ========================================
+   RIGHT SECTION
+   ======================================== */
 
 .rightSection {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  transition: all 0.3s ease;
-  flex: 1;
-  justify-content: flex-end;
-  max-width: 600px;
+  gap: 0.75rem;
+  flex: 0 0 auto;
 }
 
-.userActions { display: flex; align-items: center; gap: 0.75rem; }
-
-.iconButton {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px; height: 36px;
-  border-radius: 8px;
-  border: 1px solid var(--border);
-  background: var(--surface-2);
-  color: var(--text);
-  cursor: pointer;
-}
-
-.iconButton:focus-visible {
-  outline: 2px solid color-mix(in oklab, var(--accent) 35%, white 0%);
-  outline-offset: 2px;
-}
-
-.notificationBadge {
-  position: absolute;
-  top: -2px;
-  right: -2px;
-  background: #ef4444;
-  color: #fff;
-  font-size: 10px;
-  border-radius: 9999px;
-  padding: 2px 4px;
-}
-
-/* SearchBar styles */
+/* Search */
 .searchContainer {
   position: relative;
-  flex: 1;
-  max-width: 360px;
-  margin: 0 1.5rem;
+  width: 100%;
+  max-width: 320px;
+}
+
+@media (max-width: 1024px) {
+  .searchContainer {
+    max-width: 200px;
+  }
+}
+
+@media (max-width: 768px) {
+  .searchContainer {
+    max-width: 150px;
+  }
 }
 
 .searchIcon {
   position: absolute;
   top: 50%;
-  left: 1rem;
+  left: 0.875rem;
   transform: translateY(-50%);
-  color: var(--muted);
+  color: var(--text-tertiary);
   pointer-events: none;
-  font-size: 0.95rem;
-  transition: color 0.2s ease;
+  font-size: 0.875rem;
+  transition: color var(--transition-base);
 }
 
 .searchInput {
   width: 100%;
-  padding: 0.7rem 1rem 0.7rem 2.6rem;
-  border-radius: 10px;
+  padding: 0.625rem 1rem 0.625rem 2.5rem;
+  border-radius: var(--radius-md);
   border: 1px solid var(--border);
-  background: var(--surface-2);
-  color: var(--text);
-  font-size: 0.9375rem;
-  transition: all 0.2s ease;
-  font-family: inherit;
+  background: var(--bg);
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  transition: all var(--transition-base);
   outline: none;
 }
 
-.searchContainer:focus-within .searchInput { border-color: var(--accent); box-shadow: 0 0 0 2px color-mix(in oklab, var(--accent) 25%, transparent); }
-
-.searchContainer:focus-within .searchIcon { color: var(--accent); }
-
-.searchInput::placeholder { color: var(--muted); }
-
-/* Notification styles */
-.notificationBell {
-  position: relative;
-  padding: 0.5rem;
-  background: var(--surface-2);
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.2s ease;
+.searchInput:hover {
+  border-color: var(--border-hover);
 }
 
-.notificationBell:hover {
-  background: color-mix(in oklab, var(--surface-2) 70%, white 0%);
-  transform: translateY(-1px);
-}
-
-.notificationDot {
-  position: absolute;
-  top: 0.25rem;
-  right: 0.25rem;
-  width: 8px;
-  height: 8px;
-  background: #ef4444;
-  border-radius: 50%;
-}
-
-/* Mobile menu styles */
-.mobileMenuButton {
-  display: none;
-  background: transparent;
-  border: none;
-  color: var(--text);
-  font-size: 1.5rem;
-  cursor: pointer;
-  padding: 0.5rem;
-  transition: transform 0.2s ease;
-}
-
-.mobileMenu {
-  display: none;
+.searchInput:focus {
+  border-color: var(--accent);
   background: var(--surface);
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 1rem;
 }
 
-/* .mobileNavItem {
-  padding: 0.75rem;
-  border-radius: 8px;
-  transition: all 0.2s ease;
+.searchInput:focus+.searchIcon,
+.searchContainer:focus-within .searchIcon {
+  color: var(--accent);
 }
 
-.mobileNavItem:hover {
-  color: var(--gradient-end);
-  background: rgba(255, 255, 255, 0.1);
-  transform: translateX(4px);
-} */
+.searchInput::placeholder {
+  color: var(--text-tertiary);
+}
 
-/* .mobileNavLink {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  color: rgba(255, 255, 255, 0.9);
-  text-decoration: none;
-  font-weight: 500;
-} */
-
-
-.authButtons {
-  display: flex;
-  gap: 1rem;
-  align-items: center;
+/* User Actions */
+.userActions {
   display: flex;
   align-items: center;
   gap: 0.5rem;
 }
 
-/* Base styles for auth buttons */
-.authButton {
-  background-color: rgba(255, 255, 255, 0.2);
-  color: var(--text);
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 9999px;
-  font-weight: 600;
+.iconButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-secondary);
   cursor: pointer;
-  transition: background-color 0.2s ease, transform 0.2s ease;
-  font-family: inherit;
+  position: relative;
+  transition: all var(--transition-base);
+}
+
+.iconButton:hover {
+  background: var(--surface-hover);
+  border-color: var(--border-hover);
+  color: var(--text-primary);
+}
+
+.notificationBadge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background: var(--error);
+  color: white;
+  font-size: 0.625rem;
+  font-weight: 600;
+  border-radius: var(--radius-full);
+  padding: 0.125rem 0.375rem;
+  line-height: 1;
+  min-width: 1.125rem;
+  text-align: center;
+}
+
+/* Record Button */
+.recordButton {
+  text-decoration: none;
+}
+
+.recordButtonInner {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.25rem;
+  border-radius: var(--radius-full);
+  background: var(--accent);
+  color: white;
+  font-weight: 600;
+  font-size: 0.875rem;
+  border: 1px solid var(--accent);
+  transition: all var(--transition-base);
+}
+
+.recordButtonInner:hover {
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.recordButtonInner:active {
+  transform: translateY(0);
+}
+
+@media (max-width: 768px) {
+  .recordButton span {
+    display: none;
+  }
+
+  .recordButtonInner {
+    padding: 0.625rem;
+    width: 2.5rem;
+    height: 2.5rem;
+    justify-content: center;
+  }
+}
+
+/* Avatar */
+.avatar {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  border: 2px solid var(--border);
+  background: var(--surface);
+  transition: all var(--transition-base);
+  cursor: pointer;
+}
+
+.avatar:hover {
+  border-color: var(--accent);
+  transform: scale(1.05);
+}
+
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.defaultAvatar {
+  width: 100%;
+  height: 100%;
   display: flex;
   align-items: center;
+  justify-content: center;
+  background: var(--accent-light);
+  color: var(--accent);
+  font-weight: 600;
+  font-size: 0.875rem;
 }
 
-/* Hover effect for auth buttons */
-.authButton:hover {
-  background-color: rgba(255, 255, 255, 0.3);
+/* Auth Buttons */
+.authButtons {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
-/* Active/pressed state */
-.authButton:active {
-  transform: scale(0.98);
-}
-
-/* Specific styles for Signup button */
 .loginButton,
 .signupButton {
-  border: 1px solid var(--border);
-  background: var(--surface-2);
-  color: var(--text);
-  border-radius: 9999px;
-  padding: 0.5rem 0.9rem;
+  padding: 0.625rem 1.25rem;
+  border-radius: var(--radius-full);
   font-weight: 600;
+  font-size: 0.875rem;
+  transition: all var(--transition-base);
 }
 
-.loginButton:hover,
-.signupButton:hover { background: color-mix(in oklab, var(--surface-2) 70%, white 0%); }
-
-/* Specific styles for Logout button */
-.logoutButton {
-  background-color: rgba(255, 255, 255, 0.2);
-  color: var(--text);
+.loginButton {
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
 }
 
-/* Adjust mobileMenuButton position if necessary */
+.loginButton:hover {
+  background: var(--surface-hover);
+  border-color: var(--border-hover);
+  color: var(--text-primary);
+}
 
+.signupButton {
+  background: var(--accent);
+  color: white;
+  border: 1px solid var(--accent);
+}
 
-/* Add fonts to other styles as needed */
+.signupButton:hover {
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
 
+.signupButton:active {
+  transform: translateY(0);
+}
 
+/* Mobile Menu Toggle */
+.mobileMenuToggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border: none;
+  background: transparent;
+  color: var(--text-primary);
+  font-size: 1.25rem;
+  cursor: pointer;
+}
 
-/* Overlay Styles */
+@media (max-width: 768px) {
+  .mobileMenuToggle {
+    display: inline-flex;
+  }
+}
+
+/* ========================================
+   MOBILE MENU
+   ======================================== */
+
 .overlay {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(3px);
-  -webkit-backdrop-filter: blur(3px);
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
   z-index: 999;
 }
 
-/* Mobile Drawer Styles */
 .mobileNav {
   position: fixed;
   top: 0;
   right: 0;
   height: 100vh;
-  width: 300px;
-  background-color: var(--surface);
-  z-index: 1001;
+  width: 320px;
+  max-width: 85vw;
+  background: var(--surface);
+  z-index: 1000;
   padding: 1.5rem;
-  box-shadow: -5px 0 15px rgba(0, 0, 0, 0.35);
+  box-shadow: var(--shadow-xl);
   display: flex;
   flex-direction: column;
-  border-left: 1px solid rgba(255, 255, 255, 0.1);
+  gap: 1.5rem;
+  overflow-y: auto;
 }
 
-.offlineIndicator {
-  background-color: rgba(255, 107, 107, 0.9);
-  color: white;
-  text-align: center;
-  padding: 0.5rem;
-  width: calc(100% - 280px);
-  right: 0;
-  font-size: 0.9rem;
-  position: absolute;
-  top: 64px;
-  backdrop-filter: blur(5px);
-  -webkit-backdrop-filter: blur(5px);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  z-index: 95;
-}
-
-@media (max-width: 1024px) {
-  .offlineIndicator {
-    width: calc(100% - 250px);
-  }
-}
-
-@media (max-width: 768px) {
-  .offlineIndicator {
-    width: 100%;
-  }
-}
-
-/* Mobile Header */
 .mobileNavHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-bottom: 1.5rem;
-  margin-bottom: 1.5rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  position: relative;
-}
-
-.mobileNavHeader::after {
-  content: '';
-  position: absolute;
-  bottom: -1px;
-  left: 0;
-  width: 50%;
-  height: 2px;
-  background: linear-gradient(90deg, #8a56ff, transparent);
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border);
 }
 
 .mobileLogo {
-  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.25rem;
   font-weight: 700;
-  text-decoration: none;
+  color: var(--accent);
+}
+
+.logoIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: var(--radius-md);
+  background: var(--accent-light);
   color: var(--accent);
 }
 
@@ -484,133 +448,88 @@
   border: none;
   font-size: 1.5rem;
   cursor: pointer;
-  color: var(--muted);
-  transition: color 0.2s ease;
+  color: var(--text-tertiary);
+  transition: color var(--transition-base);
+  padding: 0.5rem;
 }
 
-.closeButton:hover { color: var(--accent); }
-
-/* Mobile Navigation List */
-.mobileNavList {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  flex: 1;
+.closeButton:hover {
+  color: var(--text-primary);
 }
 
-.mobileNavItem {
-  margin-bottom: 1.5rem;
+.mobileNavItems {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
 .mobileNavItem {
   display: flex;
   align-items: center;
   gap: 1rem;
-  padding: 1rem;
-  color: var(--text);
-  text-decoration: none;
-  border-radius: 8px;
-  transition: all 0.3s ease;
-  position: relative;
-  overflow: hidden;
-}
-
-.mobileNavItem::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 0;
-  height: 100%;
-  width: 0;
-  background: linear-gradient(90deg, rgba(138, 86, 255, 0.15), transparent);
-  transition: width 0.3s ease;
-}
-
-.mobileNavItem:hover::before {
-  width: 100%;
-}
-
-.mobileNavItem:focus-visible {
-  outline: none;
-  box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.35);
-}
-
-.mobileNavItemActive { background: rgba(109, 141, 255, 0.18); }
-
-.mobileNavItemActive::before {
-  width: 100%;
-}
-
-.mobileNavLink {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  color: var(--text);
-  text-decoration: none;
-  font-size: 1.1rem;
+  padding: 0.875rem 1rem;
+  color: var(--text-secondary);
+  border-radius: var(--radius-md);
+  transition: all var(--transition-base);
   font-weight: 500;
-  transition: color 0.2s ease;
 }
 
-.mobileNavLink:hover { color: var(--accent); }
-
-/* Mobile Authentication Links */
-.mobileAuth {
-  margin-top: auto;
+.mobileNavItem:hover {
+  background: var(--surface-hover);
+  color: var(--text-primary);
 }
 
-/* Responsive Adjustments */
-@media (max-width: 768px) {
-  .mobileMenuButton {
-    display: block;
-  }
-
-  .centerSection {
-    display: none;
-  }
-
-  .leftSection {
-    flex: none;
-  }
-
-  .rightSection {
-    flex: none;
-  }
+.mobileNavItemActive {
+  background: var(--accent-light);
+  color: var(--accent);
 }
 
-/* Additional elements used by component but not defined above */
-.mobileMenuToggle { display: none; border: none; background: transparent; color: var(--text); font-size: 1.25rem; }
-
-.recordButton { text-decoration: none; }
-.recordButtonInner {
-  display: inline-flex; gap: .5rem; align-items: center;
-  border-radius: 9999px; padding: .45rem .9rem;
-  background: var(--accent); color: #0b0f14; font-weight: 600; border: 1px solid color-mix(in oklab, var(--accent) 60%, black 0%);
-}
-.recordButtonInner:hover { filter: brightness(1.05); }
-
-.avatar { width: 36px; height: 36px; border-radius: 50%; overflow: hidden; border: 1px solid var(--border); background: var(--surface-2); }
-.avatar img { width: 100%; height: 100%; object-fit: cover; }
-.defaultAvatar { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; background: var(--surface-2); color: var(--text); font-weight: 600; }
-
-.mobileNavItems { display: flex; flex-direction: column; gap: .5rem; }
-
-.mobileSearchContainer { position: relative; margin-top: 1rem; }
-.mobileSearchInput { width: 100%; padding: .65rem .9rem .65rem 2.4rem; border-radius: 10px; border: 1px solid var(--border); background: var(--surface-2); color: var(--text); }
-
-.mobileAuthContainer { margin-top: auto; display: flex; gap: .5rem; }
-
-@media (max-width: 768px) {
-  .mobileMenuToggle { display: inline-flex; align-items: center; justify-content: center; }
+.mobileSearchContainer {
+  position: relative;
+  margin-top: 0.5rem;
 }
 
-.logoIcon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 28px; height: 28px;
-  border-radius: 8px;
+.mobileSearchInput {
+  width: 100%;
+  padding: 0.75rem 1rem 0.75rem 2.75rem;
+  border-radius: var(--radius-md);
   border: 1px solid var(--border);
-  background: var(--surface-2);
-  margin-right: .5rem;
+  background: var(--bg);
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  transition: all var(--transition-base);
+}
+
+.mobileSearchInput:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.mobileAuthContainer {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/* Offline Indicator */
+.offlineIndicator {
+  position: fixed;
+  top: 64px;
+  left: 280px;
+  right: 0;
+  background: var(--error);
+  color: white;
+  text-align: center;
+  padding: 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  z-index: 95;
+  box-shadow: var(--shadow-md);
+}
+
+@media (max-width: 768px) {
+  .offlineIndicator {
+    left: 0;
+  }
 }

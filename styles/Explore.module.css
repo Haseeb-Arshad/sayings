@@ -1,25 +1,104 @@
-/* app/explore/page.module.css */
+/* styles/Explore.module.css */
+/* Explore Page - Unified Design System */
+
+/* ========================================
+   CONTAINER
+   ======================================== */
 
 .container {
-  padding-top: 60px; /* Height of Navbar */
+  min-height: 100vh;
+  background: var(--bg);
+  padding-top: 64px;
 }
+
+/* ========================================
+   MAIN CONTENT LAYOUT
+   ======================================== */
 
 .mainContent {
   display: flex;
   justify-content: center;
-  padding: 1rem;
+  padding: 1.5rem 1rem;
+  gap: 2rem;
 }
+
+/* ========================================
+   EXPLORE SECTION
+   ======================================== */
 
 .exploreSection {
   flex: 1;
   max-width: 600px;
-  margin: 0 1rem;
+  min-height: calc(100vh - 100px);
 }
 
+/* ========================================
+   STATUS MESSAGES
+   ======================================== */
+
 .loadingText,
-.noPosts {
+.noPosts,
+.endMessage {
   text-align: center;
-  color: #657786;
-  font-size: 1rem;
-  margin-top: 2rem;
+  color: var(--text-tertiary);
+  font-size: 0.95rem;
+  padding: 2rem;
+  margin-top: 1rem;
+}
+
+.noPosts {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.endMessage {
+  padding: 1.5rem;
+  margin-top: 0.5rem;
+}
+
+.endMessage b {
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+/* ========================================
+   ERROR STATE
+   ======================================== */
+
+.error {
+  text-align: center;
+  color: var(--error);
+  background: rgba(239, 68, 68, 0.1);
+  padding: 1rem 1.5rem;
+  border-radius: var(--radius-md);
+  margin-bottom: 1rem;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  font-size: 0.95rem;
+}
+
+/* ========================================
+   RESPONSIVE DESIGN
+   ======================================== */
+
+@media (max-width: 1024px) {
+  .mainContent {
+    padding: 1rem;
+  }
+
+  .exploreSection {
+    max-width: 100%;
+    margin: 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding-top: 56px;
+  }
+
+  .mainContent {
+    padding: 0.75rem;
+  }
 }

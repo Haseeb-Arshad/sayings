@@ -233,20 +233,18 @@ const Profile = () => {
               {/* Posts Section */}
               <div className={styles.postsSection}>
                 <div className={styles.profileHeader}>
-                  <h2 style={{ marginLeft: '1.5rem' }}>Your Sayings</h2>
+                  <h2>Your Sayings</h2>
                   <div className={styles.filterOptions}>
                     <button
-                      className={`${styles.filterButton} ${
-                        filter === 'recent' ? styles.active : ''
-                      }`}
+                      className={`${styles.filterButton} ${filter === 'recent' ? styles.active : ''
+                        }`}
                       onClick={() => handleFilterChange('recent')}
                     >
                       Recent
                     </button>
                     <button
-                      className={`${styles.filterButton} ${
-                        filter === 'top' ? styles.active : ''
-                      }`}
+                      className={`${styles.filterButton} ${filter === 'top' ? styles.active : ''
+                        }`}
                       onClick={() => handleFilterChange('top')}
                     >
                       Top
