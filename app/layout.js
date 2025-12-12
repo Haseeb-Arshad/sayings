@@ -26,6 +26,8 @@ import { AuthProvider } from "@/context/useAuth";
 
 import { MotionConfig } from "framer-motion";
 import { FPSMeter, SRLiveRegion, ServiceWorkerRegistrar } from "@/component/devtools/PerfAndA11y";
+import UploadQueueInitializer from "@/component/UploadQueueInitializer";
+import UploadQueueStatus from "@/component/UploadQueueStatus";
 
 export default function RootLayout({ children }) {
   return (
@@ -41,8 +43,10 @@ export default function RootLayout({ children }) {
             <ErrorBoundary>
               <MotionConfig reducedMotion="user">
                 <SRLiveRegion />
+                <UploadQueueInitializer />
                 {children}
                 <FloatingVoiceButton />
+                <UploadQueueStatus />
                 <ServiceWorkerRegistrar />
                 <FPSMeter />
               </MotionConfig>
