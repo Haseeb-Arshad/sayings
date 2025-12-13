@@ -2,8 +2,17 @@
 
 import styles from '../styles/Sidebar.module.css';
 import { usePathname, useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
-import { FaHome, FaBell, FaUserAlt, FaPlus, FaStar, FaBookmark, FaSearch, FaCog, FaHashtag, FaChartLine, FaFire } from 'react-icons/fa';
+import {
+  FaBell,
+  FaBookmark,
+  FaChartLine,
+  FaCog,
+  FaFire,
+  FaHashtag,
+  FaHome,
+  FaPlus,
+  FaUserAlt,
+} from 'react-icons/fa';
 import { useTheme } from '../context/ThemeContext';
 
 const Sidebar = ({ setFilter, currentFilter }) => {
@@ -16,10 +25,9 @@ const Sidebar = ({ setFilter, currentFilter }) => {
     { id: 'profile', icon: FaUserAlt, label: 'Profile', path: '/profile' },
     { id: 'notifications', icon: FaBell, label: 'Notifications', badge: true, disabled: true },
     { id: 'bookmarks', icon: FaBookmark, label: 'Bookmarks', disabled: true },
-    { id: 'settings', icon: FaCog, label: 'Settings', path: '/settings' }
+    { id: 'settings', icon: FaCog, label: 'Settings', path: '/settings' },
   ];
 
-  // Filter options for topics
   const filterOptions = [
     { id: 'recent', icon: FaFire, label: 'Recent', filter: 'recent' },
     { id: 'trending', icon: FaChartLine, label: 'Trending', filter: 'trending', disabled: true },
@@ -46,7 +54,6 @@ const Sidebar = ({ setFilter, currentFilter }) => {
 
   return (
     <aside className={styles.sidebar}>
-      {/* Profile Section at Top */}
       <div className={styles.profileSection}>
         <div className={styles.profileHeader}>
           <div className={styles.profileAvatar}>
@@ -59,83 +66,74 @@ const Sidebar = ({ setFilter, currentFilter }) => {
         </div>
       </div>
 
-      {/* Navigation */}
       <nav className={styles.sidebarNav}>
         {navItems.map(({ id, icon: Icon, label, path, badge, disabled }) => {
           const isActive = path && pathname === path;
-          const handleClick = () => {
-            if (path && !disabled) {
-              handleNavClick(path);
-            }
-          };
 
           return (
-            <motion.button
+            <button
               key={id}
               type="button"
               className={`${styles.navItem} ${isActive ? styles.active : ''}`}
-              onClick={handleClick}
+              onClick={() => {
+                if (path && !disabled) {
+                  handleNavClick(path);
+                }
+              }}
               disabled={disabled}
-              whileHover={{ scale: disabled ? 1 : 1.02 }}
-              whileTap={{ scale: disabled ? 1 : 0.98 }}
               aria-label={label}
               aria-current={isActive ? 'page' : undefined}
               aria-disabled={disabled ? 'true' : undefined}
             >
               <Icon className={styles.navIcon} />
               <span className={styles.navLabel}>{label}</span>
-              {badge && <div className={styles.notificationDot}></div>}
-            </motion.button>
+              {badge && <div className={styles.notificationDot} />}
+            </button>
           );
         })}
       </nav>
 
-      <div className={styles.navDivider}></div>
+      <div className={styles.navDivider} />
 
-      {/* Filters Section */}
       <div className={styles.filtersSection}>
         <div className={styles.sectionTitle}>Topics</div>
         {filterOptions.map(({ id, icon: Icon, label, filter, disabled }) => {
           const isActive = currentFilter === filter;
 
           return (
-            <motion.button
+            <button
               key={id}
               type="button"
               className={`${styles.filterItem} ${isActive ? styles.active : ''}`}
               onClick={() => !disabled && handleFilterClick(filter)}
               disabled={disabled}
-              whileHover={{ scale: disabled ? 1 : 1.02 }}
-              whileTap={{ scale: disabled ? 1 : 0.98 }}
               aria-label={label}
             >
               <Icon className={styles.filterIcon} />
               <span className={styles.filterLabel}>{label}</span>
-            </motion.button>
+            </button>
           );
         })}
       </div>
 
-      {/* Create Button at Bottom */}
       <div className={styles.createButtonContainer}>
-        <motion.button
+        <button
           className={styles.createButton}
           onClick={handleCreatePost}
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
           aria-label="Create post"
+          type="button"
         >
           <FaPlus />
           <span>Create Post</span>
-        </motion.button>
+        </button>
       </div>
 
-      {/* Theme Switcher */}
       <div className={styles.themeSwitcherContainer}>
         <button
           className={styles.themeSwitcher}
           onClick={toggleTheme}
           aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
+          type="button"
         >
           {theme === 'dark' ? '☀️' : '🌙'}
         </button>

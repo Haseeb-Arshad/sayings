@@ -10,6 +10,19 @@
     position: relative;
     overflow: hidden;
   }
+
+  .skeletonPulse {
+    animation: skeletonPulse 1s ease-in-out infinite;
+  }
+
+  @keyframes skeletonPulse {
+    0%, 100% {
+      opacity: 0.65;
+    }
+    50% {
+      opacity: 1;
+    }
+  }
   
   .skeletonHeader {
     display: flex;

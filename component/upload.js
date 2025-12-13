@@ -1,7 +1,7 @@
-// components/AnimatedAudioRecorder.js
-import React, { useState, useRef, useEffect } from 'react';
+'use client';
+
+import React, { useEffect, useRef, useState } from 'react';
 import { FaMicrophone, FaStop } from 'react-icons/fa';
-import { motion, AnimatePresence } from 'framer-motion';
 import styles from '../styles/AudioRecorder.module.css';
 import axios from '../utils/axiosInstance';
 
@@ -23,6 +23,7 @@ const AnimatedAudioRecorder = ({ onNewPost, onClose }) => {
 
   useEffect(() => {
     setIsVisible(true);
+
     return () => {
       if (animationFrameRef.current) {
         cancelAnimationFrame(animationFrameRef.current);
@@ -64,7 +65,7 @@ const AnimatedAudioRecorder = ({ onNewPost, onClose }) => {
 
       updateAudioLevel();
       startTimeRef.current = Date.now();
-      setTimeElapsed(0); // Reset the timer
+      setTimeElapsed(0);
 
       const updateTimer = () => {
         const elapsed = Math.floor((Date.now() - startTimeRef.current) / 1000);
@@ -76,7 +77,6 @@ const AnimatedAudioRecorder = ({ onNewPost, onClose }) => {
       mediaRecorder.ondataavailable = (e) => chunksRef.current.push(e.data);
       mediaRecorder.start();
       setRecording(true);
-
     } catch (err) {
       console.error('Error accessing microphone:', err);
       alert('Error accessing microphone.');
@@ -88,25 +88,21 @@ const AnimatedAudioRecorder = ({ onNewPost, onClose }) => {
       mediaRecorderRef.current.stop();
       setRecording(false);
 
-      // Stop audio level animation
       if (animationFrameRef.current) {
         cancelAnimationFrame(animationFrameRef.current);
         animationFrameRef.current = null;
       }
 
-      // Disconnect analyser
       if (analyserRef.current) {
         analyserRef.current.disconnect();
         analyserRef.current = null;
       }
 
-      // Close audio context
       if (audioContextRef.current) {
         audioContextRef.current.close();
         audioContextRef.current = null;
       }
 
-      // Stop media stream tracks
       mediaRecorderRef.current.stream.getTracks().forEach((track) => track.stop());
       mediaRecorderRef.current = null;
 
@@ -140,7 +136,6 @@ const AnimatedAudioRecorder = ({ onNewPost, onClose }) => {
       const data = response.data;
       setTranscript(data.transcript || '');
 
-      // Construct post object
       const post = {
         _id: data._id,
         audioURL: data.audioURL,
@@ -161,90 +156,72 @@ const AnimatedAudioRecorder = ({ onNewPost, onClose }) => {
     }
   };
 
+  if (!isVisible) return null;
+
   return (
-    <AnimatePresence>
-      {isVisible && (
-        <motion.div
-          className={styles.container}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          onClick={onClose} // Close when clicking on the overlay
-        >
-          <motion.div
-            className={styles.recorderContainer}
-            onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.8, opacity: 0 }}
-            transition={{ type: "spring", damping: 20 }}
-            style={{
-              background: isProcessing
-                ? "linear-gradient(135deg, rgba(147,51,234,0.9), rgba(192,38,211,0.8))"
-                : `linear-gradient(135deg, rgba(59,130,246,${0.5 + audioLevel/512}), rgba(37,99,235,${0.5 + audioLevel/512}))`,
+    <div
+      className={styles.container}
+      onClick={() => {
+        setIsVisible(false);
+        if (onClose) onClose();
+      }}
+    >
+      <div
+        className={styles.recorderContainer}
+        onClick={(e) => e.stopPropagation()}
+        style={{
+          background: isProcessing
+            ? 'linear-gradient(135deg, rgba(147,51,234,0.9), rgba(192,38,211,0.8))'
+            : `linear-gradient(135deg, rgba(59,130,246,${0.5 + audioLevel / 512}), rgba(37,99,235,${0.5 + audioLevel / 512}))`,
+        }}
+      >
+        <div className={`${styles.innerContent} ${recording ? styles.innerPulsing : ''}`}>
+          <button
+            className={styles.closeButton}
+            onClick={() => {
+              setIsVisible(false);
+              if (onClose) onClose();
             }}
+            type="button"
+            aria-label="Close recorder"
           >
-            <motion.div
-              className={styles.innerContent}
-              animate={{ scale: recording ? [1, 1.02, 1] : 1 }}
-              transition={{ repeat: recording ? Infinity : 0, duration: 1.5 }}
-            >
-              <button
-                className={styles.closeButton}
-                onClick={() => {
-                  setIsVisible(false);
-                  if (onClose) onClose();
-                }}
-              >
-                &times;
-              </button>
+            &times;
+          </button>
 
-              <div className={styles.visualizer}>
-                <motion.div
-                  className={styles.wave}
-                  animate={{
-                    height: recording ? [20, 40, 20] : 20,
-                    opacity: recording ? [0.5, 1, 0.5] : 0.5
-                  }}
-                  transition={{ repeat: Infinity, duration: 1.5 }}
-                />
-              </div>
+          <div className={styles.visualizer}>
+            <div className={`${styles.wave} ${recording ? styles.waveAnimating : ''}`} />
+          </div>
 
-              {recording && (
-                <div className={styles.timer}>{timeElapsed}s</div>
-              )}
+          {recording && <div className={styles.timer}>{timeElapsed}s</div>}
 
-              <motion.button
-                className={recording ? styles.stopButton : styles.recordButton}
-                onClick={recording ? stopRecording : startRecording}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                {recording ? <FaStop /> : <FaMicrophone />}
-                {recording ? 'Stop' : 'Start Recording'}
-              </motion.button>
+          <button
+            className={recording ? styles.stopButton : styles.recordButton}
+            onClick={recording ? stopRecording : startRecording}
+            type="button"
+          >
+            {recording ? <FaStop /> : <FaMicrophone />}
+            {recording ? 'Stop' : 'Start Recording'}
+          </button>
 
-              {isProcessing && (
-                <div className={styles.processingContainer}>
-                  <div className={styles.processingSpinner} />
-                  <p>Processing your audio...</p>
-                </div>
-              )}
+          {isProcessing && (
+            <div className={styles.processingContainer}>
+              <div className={styles.processingSpinner} />
+              <p>Processing your audio...</p>
+            </div>
+          )}
 
-              {transcript && (
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className={styles.transcriptContainer}
-                >
-                  <p>{transcript}</p>
-                </motion.div>
-              )}
-            </motion.div>
-          </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+          {transcript && (
+            <div className={styles.transcriptContainer}>
+              <p>{transcript}</p>
+            </div>
+          )}
+
+          {audioURL && (
+            <audio controls preload="none" src={audioURL} style={{ width: '100%' }} />
+          )}
+        </div>
+      </div>
+    </div>
   );
 };
 

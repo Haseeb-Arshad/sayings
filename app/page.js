@@ -1,18 +1,19 @@
 'use client';
 
-import { useEffect, useState, useCallback, useRef } from 'react';
+import { Suspense, lazy, useEffect, useState, useCallback, useRef } from 'react';
 import axios, { isNetworkOffline } from '../utils/axiosInstance';
-import Post from '../component/post';
-import Navbar from '../component/navBar';
-import Sidebar from '../component/sidebar';
-import ProfileSidebar from '../component/ProfileSidebar';
-import SuggestionsSidebar from '../component/suggestionsBar';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import debounce from 'lodash.debounce';
 import styles from '../styles/Home.module.css';
 import useCurrentUser from '../hooks/useCurrentUser';
-import { AnimatePresence, motion } from 'framer-motion';
 import RefreshContext from '../context/RefreshContext';
+import SkeletonPost from '../component/SkeletonPost';
+
+const Post = lazy(() => import('../component/post'));
+const Navbar = lazy(() => import('../component/navBar'));
+const Sidebar = lazy(() => import('../component/sidebar'));
+const ProfileSidebar = lazy(() => import('../component/ProfileSidebar'));
+const SuggestionsSidebar = lazy(() => import('../component/suggestionsBar'));
 
 const Home = () => {
   const [posts, setPosts] = useState([]);
@@ -289,65 +290,57 @@ const Home = () => {
   return (
     <RefreshContext.Provider value={refreshPosts}>
       <div className={styles.home}>
-        <Navbar />
-        <Sidebar setFilter={handleFilterChange} currentFilter={filter} />
-        <ProfileSidebar />
-        <SuggestionsSidebar />
+        <Suspense fallback={null}>
+          <Navbar />
+        </Suspense>
+        <Suspense fallback={null}>
+          <Sidebar setFilter={handleFilterChange} currentFilter={filter} />
+        </Suspense>
+        <Suspense fallback={null}>
+          <ProfileSidebar />
+        </Suspense>
+        <Suspense fallback={null}>
+          <SuggestionsSidebar />
+        </Suspense>
         <div
           className={styles.postsContainer}
           ref={postsContainerRef}
           id="scrollableDiv"
         >
-          <AnimatePresence>
-            {newPostsAvailable && (
-              <motion.div
-                className={styles.newPostsNotification}
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.3 }}
-                onClick={() => {
-                  setPosts((prevPosts) =>
-                    sortPosts([...newPosts, ...prevPosts])
-                  );
-                  setNewPostsAvailable(false);
-                  setNewPosts([]);
-                  if (postsContainerRef.current) {
-                    postsContainerRef.current.scrollTo({
-                      top: 0,
-                      behavior: 'smooth',
-                    });
-                  }
-                }}
-              >
-                New posts available. Click to view.
-              </motion.div>
-            )}
-          </AnimatePresence>
+          {newPostsAvailable && (
+            <div
+              className={styles.newPostsNotification}
+              onClick={() => {
+                setPosts((prevPosts) => sortPosts([...newPosts, ...prevPosts]));
+                setNewPostsAvailable(false);
+                setNewPosts([]);
+                if (postsContainerRef.current) {
+                  postsContainerRef.current.scrollTo({
+                    top: 0,
+                    behavior: 'smooth',
+                  });
+                }
+              }}
+            >
+              New posts available. Click to view.
+            </div>
+          )}
 
 
           {error && (
-            <motion.div
-              className={styles.error}
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3 }}
-            >
-              <div className={styles.errorIcon}>
-                {error.includes('offline') ? '📶' : '⚠️'}
-              </div>
+            <div className={styles.error}>
+              <div className={styles.errorIcon}>{error.includes('offline') ? '📶' : '⚠️'}</div>
               <p>{error}</p>
               {error.includes('offline') && (
-                <motion.button
+                <button
                   className={styles.retryButton}
                   onClick={() => fetchHomePosts(1)}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
+                  type="button"
                 >
                   Retry
-                </motion.button>
+                </button>
               )}
-            </motion.div>
+            </div>
           )}
           <InfiniteScroll
             dataLength={posts.length}
@@ -361,16 +354,16 @@ const Home = () => {
             }
             scrollableTarget="scrollableDiv"
           >
-            <AnimatePresence>
+            <Suspense
+              fallback={
+                <>
+                  <SkeletonPost />
+                  <SkeletonPost />
+                </>
+              }
+            >
               {posts.length === 0 && !loading && !error && (
-                <motion.p
-                  className={styles.noPosts}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                >
-                  No posts available.
-                </motion.p>
+                <p className={styles.noPosts}>No posts available.</p>
               )}
               {Array.isArray(posts) &&
                 posts.map((post) => {
@@ -387,7 +380,7 @@ const Home = () => {
                     />
                   );
                 })}
-            </AnimatePresence>
+            </Suspense>
           </InfiniteScroll>
           {loading && posts.length === 0 && (
             <p className={styles.loadingText}>Loading posts...</p>

@@ -1,20 +1,17 @@
-// app/profile/page.jsx
-
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
-import Navbar from '../component/navBar';
-import Sidebar from '../component/sidebar';
-import Post from '../component/post';
-
-
+import { Suspense, lazy, useCallback, useEffect, useMemo, useState } from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import debounce from 'lodash.debounce';
 import styles from '../styles/Profile.module.css';
 import axios from '../utils/axiosInstance';
-import { AnimatePresence, motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import useCurrentUser from '../hooks/useCurrentUser';
+import SkeletonPost from './SkeletonPost';
+
+const Navbar = lazy(() => import('../component/navBar'));
+const Sidebar = lazy(() => import('../component/sidebar'));
+const Post = lazy(() => import('../component/post'));
 
 const Profile = () => {
   const { user, loading: userLoading } = useCurrentUser();
@@ -30,7 +27,6 @@ const Profile = () => {
 
   useEffect(() => {
     if (!userLoading && !user) {
-      // If not loading and user is null, redirect to login
       router.push('/login');
     }
   }, [user, userLoading, router]);
@@ -47,20 +43,16 @@ const Profile = () => {
         const response = await axios.get(`/posts/user/${user._id}`, {
           params: { filter, page, limit: 10 },
         });
-        // console.log('Response:', response);
 
         const fetchedPosts = response.data.posts || [];
 
         setPosts((prevPosts) => {
           if (page === 1) {
             return fetchedPosts;
-          } else {
-            const existingIds = new Set(prevPosts.map((post) => post._id));
-            const newUniquePosts = fetchedPosts.filter(
-              (post) => !existingIds.has(post._id)
-            );
-            return [...prevPosts, ...newUniquePosts];
           }
+          const existingIds = new Set(prevPosts.map((p) => p._id));
+          const newUniquePosts = fetchedPosts.filter((p) => !existingIds.has(p._id));
+          return [...prevPosts, ...newUniquePosts];
         });
 
         const totalPosts = response.data.totalPosts || fetchedPosts.length;
@@ -80,17 +72,10 @@ const Profile = () => {
     fetchUserPosts();
   }, [user, filter, page]);
 
-  // Handler to delete a post
   const handleDeletePost = (postId) => {
     setPosts((prevPosts) => prevPosts.filter((post) => post._id !== postId));
   };
 
-  // Handler to prepend new post
-  const handleNewPost = (newPost) => {
-    setPosts((prevPosts) => [newPost, ...prevPosts]);
-  };
-
-  // Handle filter changes with debounce
   const debouncedSetFilter = useCallback(
     debounce((newFilter) => {
       setFilter(newFilter);
@@ -107,52 +92,41 @@ const Profile = () => {
     }
   };
 
-  // Fetch more data for infinite scroll
   const fetchMoreData = () => {
     if (!hasMore || isFetching) return;
     setPage((prevPage) => prevPage + 1);
   };
 
-  // Format date
   const formatDate = (dateString) => {
     const options = { year: 'numeric', month: 'long' };
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
 
-  // Calculate total likes
   const calculateTotalLikes = () => {
     return posts.reduce((acc, post) => acc + (post.likes || 0), 0);
   };
 
-  // Function to map personality traits to descriptors
   const getPersonalityDescriptors = (traits) => {
     const descriptors = [];
-
-    // Define thresholds
     const highThreshold = 0.6;
     const lowThreshold = 0.4;
 
-    // Openness
     if (traits.Openness >= highThreshold) descriptors.push('Open-minded');
     else if (traits.Openness < lowThreshold) descriptors.push('Conventional');
     else descriptors.push('Practical');
 
-    // Conscientiousness
     if (traits.Conscientiousness >= highThreshold) descriptors.push('Organized');
     else if (traits.Conscientiousness < lowThreshold) descriptors.push('Spontaneous');
     else descriptors.push('Flexible');
 
-    // Extraversion
     if (traits.Extraversion >= highThreshold) descriptors.push('Outgoing');
     else if (traits.Extraversion < lowThreshold) descriptors.push('Introverted');
     else descriptors.push('Reserved');
 
-    // Agreeableness
     if (traits.Agreeableness >= highThreshold) descriptors.push('Friendly');
     else if (traits.Agreeableness < lowThreshold) descriptors.push('Critical');
     else descriptors.push('Neutral');
 
-    // Neuroticism
     if (traits.Neuroticism >= highThreshold) descriptors.push('Sensitive');
     else if (traits.Neuroticism < lowThreshold) descriptors.push('Calm');
     else descriptors.push('Stable');
@@ -160,16 +134,24 @@ const Profile = () => {
     return descriptors;
   };
 
-  // Get personality descriptors
-  const personalityDescriptors = user ? getPersonalityDescriptors(user.personality) : [];
+  const personalityDescriptors = useMemo(() => {
+    return user?.personality ? getPersonalityDescriptors(user.personality) : [];
+  }, [user]);
 
   return (
     <div className={styles.container}>
-      <Navbar />
+      <Suspense fallback={null}>
+        <Navbar />
+      </Suspense>
+
       <div className={styles.mainContent}>
-        <Sidebar setFilter={handleFilterChange} currentFilter={filter} />
+        <Suspense fallback={null}>
+          <Sidebar setFilter={handleFilterChange} currentFilter={filter} />
+        </Suspense>
+
         <div id="scrollableProfileDiv" className={styles.profileSection}>
           {error && <p className={styles.error}>{error}</p>}
+
           {user ? (
             <>
               <div className={styles.profileInfo}>
@@ -197,9 +179,7 @@ const Profile = () => {
                     </div>
                     <div className={styles.statItem}>
                       <div>
-                        <span className={styles.statNumber}>
-                          {formatDate(user.createdAt)}
-                        </span>
+                        <span className={styles.statNumber}>{formatDate(user.createdAt)}</span>
                         <span className={styles.statLabel}>Joined</span>
                       </div>
                     </div>
@@ -207,9 +187,7 @@ const Profile = () => {
                 </div>
               </div>
 
-              {/* Personality Traits and Profile Review Sections */}
               <div className={styles.personalityAndReview}>
-                {/* Personality Traits Section */}
                 <div className={styles.personalitySection}>
                   <div className={styles.sectionTitle}>Personality Traits</div>
                   <div className={styles.personalityDescriptors}>
@@ -221,7 +199,6 @@ const Profile = () => {
                   </div>
                 </div>
 
-                {/* Profile Review Section */}
                 <div className={styles.profileReviewSection}>
                   <div className={styles.sectionTitle}>Profile Review</div>
                   <p className={styles.profileReviewText}>
@@ -230,27 +207,27 @@ const Profile = () => {
                 </div>
               </div>
 
-              {/* Posts Section */}
               <div className={styles.postsSection}>
                 <div className={styles.profileHeader}>
                   <h2>Your Sayings</h2>
                   <div className={styles.filterOptions}>
                     <button
-                      className={`${styles.filterButton} ${filter === 'recent' ? styles.active : ''
-                        }`}
+                      className={`${styles.filterButton} ${filter === 'recent' ? styles.active : ''}`}
                       onClick={() => handleFilterChange('recent')}
+                      type="button"
                     >
                       Recent
                     </button>
                     <button
-                      className={`${styles.filterButton} ${filter === 'top' ? styles.active : ''
-                        }`}
+                      className={`${styles.filterButton} ${filter === 'top' ? styles.active : ''}`}
                       onClick={() => handleFilterChange('top')}
+                      type="button"
                     >
                       Top
                     </button>
                   </div>
                 </div>
+
                 {isLoadingPosts && page === 1 ? (
                   <p className={styles.loadingText}>Loading posts...</p>
                 ) : (
@@ -266,37 +243,28 @@ const Profile = () => {
                     }
                     scrollableTarget="scrollableProfileDiv"
                   >
-                    <AnimatePresence>
+                    <Suspense
+                      fallback={
+                        <>
+                          <SkeletonPost />
+                          <SkeletonPost />
+                        </>
+                      }
+                    >
                       {posts.length > 0 ? (
                         posts.map((post) => (
-                          <motion.div
-                            key={post._id}
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -20 }}
-                            transition={{ duration: 0.3 }}
-                            className={styles.postCard}
-                          >
+                          <div key={post._id} className={styles.postCard}>
                             <Post
                               post={post}
                               currentUserId={user._id}
                               onDelete={handleDeletePost}
                             />
-                          </motion.div>
+                          </div>
                         ))
                       ) : (
-                        !isLoadingPosts && (
-                          <motion.p
-                            className={styles.noPosts}
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                          >
-                            No posts available.
-                          </motion.p>
-                        )
+                        !isLoadingPosts && <p className={styles.noPosts}>No posts available.</p>
                       )}
-                    </AnimatePresence>
+                    </Suspense>
                   </InfiniteScroll>
                 )}
               </div>

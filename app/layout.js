@@ -2,8 +2,7 @@
 
 import localFont from "next/font/local";
 import "./globals.css";
-import FloatingVoiceButton from "@/component/floatingButton";
-import Providers from "@/component/providers"; // Adjust the path as necessary
+import Providers from "@/component/providers";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -23,9 +22,7 @@ export const metadata = {
 
 import ErrorBoundary from "@/component/ErrorBoundary";
 import { AuthProvider } from "@/context/useAuth";
-
-import { MotionConfig } from "framer-motion";
-import { FPSMeter, SRLiveRegion, ServiceWorkerRegistrar } from "@/component/devtools/PerfAndA11y";
+import ClientOverlays from "@/component/ClientOverlays";
 
 export default function RootLayout({ children }) {
   return (
@@ -34,18 +31,17 @@ export default function RootLayout({ children }) {
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
         <link rel="manifest" href="/manifest.webmanifest" />
         <meta name="theme-color" content="#121214" />
+
+        <link rel="preconnect" href="https://sayings-backend.onrender.com" />
+        <link rel="preconnect" href="https://gateway.pinata.cloud" />
+        <link rel="preload" as="image" href="/images/profile/dp.webp" />
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <AuthProvider>
           <Providers>
             <ErrorBoundary>
-              <MotionConfig reducedMotion="user">
-                <SRLiveRegion />
-                {children}
-                <FloatingVoiceButton />
-                <ServiceWorkerRegistrar />
-                <FPSMeter />
-              </MotionConfig>
+              {children}
+              <ClientOverlays />
             </ErrorBoundary>
           </Providers>
         </AuthProvider>

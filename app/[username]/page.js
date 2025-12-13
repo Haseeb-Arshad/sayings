@@ -1,24 +1,22 @@
-// app/[username]/page.jsx
-
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
-import { useRouter, useParams } from 'next/navigation';
-import Navbar from '../../component/navBar';
-import Sidebar from '../../component/sidebar';
-import Post from '../../component/post';
-
-
+import { Suspense, lazy, useCallback, useEffect, useState } from 'react';
+import { useParams } from 'next/navigation';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import debounce from 'lodash.debounce';
 import axios from '../../utils/axiosInstance';
 import styles from '../../styles/Profile.module.css';
 import useCurrentUser from '../../hooks/useCurrentUser';
-import { AnimatePresence, motion } from 'framer-motion';
+import SkeletonPost from '../../component/SkeletonPost';
+
+const Navbar = lazy(() => import('../../component/navBar'));
+const Sidebar = lazy(() => import('../../component/sidebar'));
+const Post = lazy(() => import('../../component/post'));
 
 const UserProfile = () => {
-  const { username } = useParams(); // Get the dynamic username from the URL
-  const { user: currentUser, loading: userLoading } = useCurrentUser();
+  const { username } = useParams();
+  const { user: currentUser } = useCurrentUser();
+
   const [profileUser, setProfileUser] = useState(null);
   const [posts, setPosts] = useState([]);
   const [filter, setFilter] = useState('recent');
@@ -28,14 +26,10 @@ const UserProfile = () => {
   const [isFetching, setIsFetching] = useState(false);
   const [error, setError] = useState('');
 
-  const router = useRouter();
-
-  // Fetch user details by username
   useEffect(() => {
     const fetchUser = async () => {
       try {
         const response = await axios.get(`/users/username/${username}`);
-        console.log("Response:", response);
         setProfileUser(response.data.user);
       } catch (err) {
         console.error('Error fetching user:', err);
@@ -48,10 +42,10 @@ const UserProfile = () => {
     }
   }, [username]);
 
-  // Fetch user's posts
   useEffect(() => {
     const fetchUserPosts = async () => {
       if (!profileUser) return;
+
       setIsFetching(true);
       setIsLoadingPosts(true);
       setError('');
@@ -66,13 +60,10 @@ const UserProfile = () => {
         setPosts((prevPosts) => {
           if (page === 1) {
             return fetchedPosts;
-          } else {
-            const existingIds = new Set(prevPosts.map((post) => post._id));
-            const newUniquePosts = fetchedPosts.filter(
-              (post) => !existingIds.has(post._id)
-            );
-            return [...prevPosts, ...newUniquePosts];
           }
+          const existingIds = new Set(prevPosts.map((p) => p._id));
+          const newUniquePosts = fetchedPosts.filter((p) => !existingIds.has(p._id));
+          return [...prevPosts, ...newUniquePosts];
         });
 
         const totalPosts = response.data.totalPosts || fetchedPosts.length;
@@ -92,17 +83,10 @@ const UserProfile = () => {
     fetchUserPosts();
   }, [profileUser, filter, page]);
 
-  // Handler to delete a post
   const handleDeletePost = (postId) => {
     setPosts((prevPosts) => prevPosts.filter((post) => post._id !== postId));
   };
 
-  // Handler to prepend new post
-  const handleNewPost = (newPost) => {
-    setPosts((prevPosts) => [newPost, ...prevPosts]);
-  };
-
-  // Handle filter changes with debounce
   const debouncedSetFilter = useCallback(
     debounce((newFilter) => {
       setFilter(newFilter);
@@ -119,16 +103,20 @@ const UserProfile = () => {
     }
   };
 
-  // Determine if the profile belongs to the current user
-  const isOwnProfile = profileUser && currentUser && profileUser._id === currentUser._id;
-
   return (
     <div className={styles.container}>
-      <Navbar />
+      <Suspense fallback={null}>
+        <Navbar />
+      </Suspense>
+
       <div className={styles.mainContent}>
-        <Sidebar setFilter={handleFilterChange} currentFilter={filter} />
+        <Suspense fallback={null}>
+          <Sidebar setFilter={handleFilterChange} currentFilter={filter} />
+        </Suspense>
+
         <div className={styles.profileSection}>
           {error && <p className={styles.error}>{error}</p>}
+
           {profileUser ? (
             <>
               <div className={styles.profileInfo}>
@@ -140,6 +128,7 @@ const UserProfile = () => {
                 <h2 className={styles.username}>{profileUser.username}</h2>
                 <p className={styles.bio}>{profileUser.bio}</p>
               </div>
+
               <div className={styles.postsSection}>
                 {isLoadingPosts ? (
                   <p className={styles.loadingText}>Loading posts...</p>
@@ -155,7 +144,14 @@ const UserProfile = () => {
                       </p>
                     }
                   >
-                    <AnimatePresence>
+                    <Suspense
+                      fallback={
+                        <>
+                          <SkeletonPost />
+                          <SkeletonPost />
+                        </>
+                      }
+                    >
                       {posts.map((post) => (
                         <Post
                           key={post._id}
@@ -164,7 +160,7 @@ const UserProfile = () => {
                           onDelete={handleDeletePost}
                         />
                       ))}
-                    </AnimatePresence>
+                    </Suspense>
                   </InfiniteScroll>
                 ) : (
                   <p className={styles.noPosts}>No posts available.</p>

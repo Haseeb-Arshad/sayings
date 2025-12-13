@@ -1,12 +1,9 @@
-// components/SearchBar.js
-
 'use client';
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import axios from '../utils/axiosInstance';
 import { FaSearch } from 'react-icons/fa';
 import styles from './../styles/SearchBar.module.css';
-import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import debounce from 'lodash.debounce';
 
@@ -20,7 +17,6 @@ const SearchBar = () => {
   const dropdownRef = useRef(null);
   const router = useRouter();
 
-  // Debounced search function
   const debouncedSearch = useCallback(
     debounce(async (searchTerm) => {
       if (!searchTerm.trim()) {
@@ -59,7 +55,6 @@ const SearchBar = () => {
     }
   }, [query, debouncedSearch]);
 
-  // Close dropdown when clicking outside
   const handleClickOutside = (e) => {
     if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
       setIsDropdownOpen(false);
@@ -73,7 +68,6 @@ const SearchBar = () => {
     };
   }, []);
 
-  // Handle navigation on result click
   const handleResultClick = (result) => {
     setIsDropdownOpen(false);
     setQuery('');
@@ -90,8 +84,7 @@ const SearchBar = () => {
   return (
     <div className={styles.searchContainer} ref={dropdownRef}>
       <form onSubmit={(e) => e.preventDefault()} className={styles.searchForm}>
-        <motion.button
-          whileTap={{ scale: 0.95 }}
+        <button
           className={styles.searchButton}
           type="button"
           aria-label="Search"
@@ -102,7 +95,8 @@ const SearchBar = () => {
           }}
         >
           <FaSearch />
-        </motion.button>
+        </button>
+
         <input
           type="text"
           className={styles.searchInput}
@@ -116,52 +110,45 @@ const SearchBar = () => {
           }}
         />
       </form>
-      <AnimatePresence>
-        {isDropdownOpen && (
-          <motion.div
-            className={styles.dropdown}
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.2 }}
-          >
-            {loading ? (
-              <p className={styles.loadingText}>Searching...</p>
-            ) : error ? (
-              <p className={styles.errorText}>{error}</p>
-            ) : results.length > 0 ? (
-              results.map((result) => (
-                <div
-                  key={result.id || result.topic}
-                  className={styles.resultItem}
-                  onClick={() => handleResultClick(result)}
-                >
-                  {result.type === 'user' ? (
-                    <div className={styles.userResult}>
-                      <img
-                        src={result.avatar || '/placeholder-avatar.png'}
-                        alt={`${result.username}'s avatar`}
-                        className={styles.avatar}
-                      />
-                      <span>{result.username}</span>
-                    </div>
-                  ) : result.type === 'post' ? (
-                    <div className={styles.postResult}>
-                      <span>{result.transcript.slice(0, 50)}...</span>
-                    </div>
-                  ) : (
-                    <div className={styles.topicResult}>
-                      <span>#{result.topic}</span>
-                    </div>
-                  )}
-                </div>
-              ))
-            ) : (
-              <p className={styles.noResults}>No results found.</p>
-            )}
-          </motion.div>
-        )}
-      </AnimatePresence>
+
+      {isDropdownOpen && (
+        <div className={styles.dropdown}>
+          {loading ? (
+            <p className={styles.loadingText}>Searching...</p>
+          ) : error ? (
+            <p className={styles.errorText}>{error}</p>
+          ) : results.length > 0 ? (
+            results.map((result) => (
+              <div
+                key={result.id || result.topic}
+                className={styles.resultItem}
+                onClick={() => handleResultClick(result)}
+              >
+                {result.type === 'user' ? (
+                  <div className={styles.userResult}>
+                    <img
+                      src={result.avatar || '/placeholder-avatar.png'}
+                      alt={`${result.username}'s avatar`}
+                      className={styles.avatar}
+                    />
+                    <span>{result.username}</span>
+                  </div>
+                ) : result.type === 'post' ? (
+                  <div className={styles.postResult}>
+                    <span>{result.transcript.slice(0, 50)}...</span>
+                  </div>
+                ) : (
+                  <div className={styles.topicResult}>
+                    <span>#{result.topic}</span>
+                  </div>
+                )}
+              </div>
+            ))
+          ) : (
+            <p className={styles.noResults}>No results found.</p>
+          )}
+        </div>
+      )}
     </div>
   );
 };
