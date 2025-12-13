@@ -11,6 +11,7 @@ import InfiniteScroll from 'react-infinite-scroll-component';
 import debounce from 'lodash.debounce';
 import styles from '../styles/Home.module.css';
 import useCurrentUser from '../hooks/useCurrentUser';
+import useRealtimeFeed from '../hooks/useRealtimeFeed';
 import { AnimatePresence, motion } from 'framer-motion';
 import RefreshContext from '../context/RefreshContext';
 
@@ -32,6 +33,7 @@ const Home = () => {
   const [newPostsAvailable, setNewPostsAvailable] = useState(false);
   const postsContainerRef = useRef(null);
   const [isUserAtTop, setIsUserAtTop] = useState(true);
+  const [newPostsCount, setNewPostsCount] = useState(0);
 
   // Debounced filter setter
   const debouncedSetFilter = useCallback(
@@ -93,52 +95,54 @@ const Home = () => {
     return 0;
   };
 
-  // Function to fetch new posts without disrupting existing posts
-  const fetchNewPosts = useCallback(async () => {
-    if (isFetching || isNetworkOffline()) return;
-    setIsFetching(true);
-
-    const latestTimestamp = posts.length > 0 ? posts[0].timestamp : null;
-    try {
-      const response = await axios.get('/posts', {
-        params: {
-          filter,
-          page: 1,
-          limit: 5,
-          since: latestTimestamp,
-        },
-      });
-
-      const fetchedPosts = response.data.posts || [];
-
-      const existingIds = new Set(posts.map((post) => post._id));
-      const uniqueNewPosts = fetchedPosts.filter(
-        (post) => !existingIds.has(post._id)
-      );
-
-      if (uniqueNewPosts.length > 0) {
-        if (isUserAtTop) {
-          setPosts((prevPosts) => sortPosts([...uniqueNewPosts, ...prevPosts]));
-        } else {
-          setNewPosts(uniqueNewPosts);
-          setNewPostsAvailable(true);
-        }
+  // Callback when new posts are detected via real-time updates
+  const handleNewPosts = useCallback((uniqueNewPosts) => {
+    if (uniqueNewPosts.length > 0) {
+      if (isUserAtTop) {
+        // User is at top, prepend new posts immediately
+        setPosts((prevPosts) => sortPosts([...uniqueNewPosts, ...prevPosts]));
+        setNewPostsCount(0);
+        setNewPostsAvailable(false);
+      } else {
+        // User is scrolled down, show badge
+        setNewPosts((prevNewPosts) => {
+          const allNewPosts = [...prevNewPosts, ...uniqueNewPosts];
+          const uniqueIds = new Set();
+          const deduped = allNewPosts.filter(post => {
+            if (uniqueIds.has(post._id)) return false;
+            uniqueIds.add(post._id);
+            return true;
+          });
+          setNewPostsCount(deduped.length);
+          return deduped;
+        });
+        setNewPostsAvailable(true);
       }
-    } catch (error) {
-      // Only show errors when they're not related to being offline
-      if (!error.isOffline) {
-        console.error('Error fetching new posts:', error);
-      }
-      // We don't set the error state for background fetches to avoid disrupting the UI
-    } finally {
-      setIsFetching(false);
     }
-  }, [filter, isFetching, posts, isUserAtTop, sortPosts]);
+  }, [isUserAtTop, sortPosts]);
 
-  // Define the refresh function to fetch new posts
+  // Callback when a post is updated (like, comment, etc.)
+  const handlePostUpdate = useCallback((updatedPost) => {
+    setPosts((prevPosts) => 
+      prevPosts.map((post) => 
+        post._id === updatedPost._id ? { ...post, ...updatedPost } : post
+      )
+    );
+  }, []);
+
+  // Use real-time feed hook for WebSocket/polling updates
+  const { isConnected, connectionType, forceCheck } = useRealtimeFeed({
+    posts,
+    onNewPosts: handleNewPosts,
+    onPostUpdate: handlePostUpdate,
+    filter,
+    enabled: !loading && posts.length > 0, // Only enable after initial load
+  });
+
+  // Define the refresh function for manual refresh
   const refreshPosts = useCallback(() => {
-    fetchNewPosts();
-  }, [fetchNewPosts]);
+    forceCheck();
+  }, [forceCheck]);
 
   const fetchHomePosts = useCallback(
     async (currentPage) => {
@@ -249,23 +253,23 @@ const Home = () => {
     };
   }, [abortController]);
 
-  // Implement periodic refresh every 60 seconds, but only when online
-  useEffect(() => {
-    const interval = setInterval(() => {
-      if (!isNetworkOffline()) {
-        refreshPosts();
-      }
-    }, 60000);
-
-    return () => clearInterval(interval);
-  }, [refreshPosts]);
-
   // Detect if user is at the top of the posts container
   useEffect(() => {
     const handleScroll = () => {
       if (!postsContainerRef.current) return;
       const { scrollTop } = postsContainerRef.current;
-      setIsUserAtTop(scrollTop < 100);
+      const wasAtTop = isUserAtTop;
+      const nowAtTop = scrollTop < 100;
+      
+      setIsUserAtTop(nowAtTop);
+      
+      // If user scrolled to top and there are new posts available, auto-load them
+      if (!wasAtTop && nowAtTop && newPostsAvailable) {
+        setPosts((prevPosts) => sortPosts([...newPosts, ...prevPosts]));
+        setNewPostsAvailable(false);
+        setNewPosts([]);
+        setNewPostsCount(0);
+      }
     };
 
     const container = postsContainerRef.current;
@@ -279,7 +283,7 @@ const Home = () => {
         container.removeEventListener('scroll', handleScroll);
       }
     };
-  }, []);
+  }, [isUserAtTop, newPostsAvailable, newPosts, sortPosts]);
 
   // Initial fetch and fetch on filter or page change
   useEffect(() => {
@@ -312,6 +316,7 @@ const Home = () => {
                   );
                   setNewPostsAvailable(false);
                   setNewPosts([]);
+                  setNewPostsCount(0);
                   if (postsContainerRef.current) {
                     postsContainerRef.current.scrollTo({
                       top: 0,
@@ -320,10 +325,29 @@ const Home = () => {
                   }
                 }}
               >
-                New posts available. Click to view.
+                {newPostsCount > 0 
+                  ? `${newPostsCount} new post${newPostsCount > 1 ? 's' : ''} available. Click to view.`
+                  : 'New posts available. Click to view.'
+                }
               </motion.div>
             )}
           </AnimatePresence>
+
+          {/* Connection Status Indicator */}
+          {isConnected && (
+            <motion.div
+              className={styles.connectionStatus}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5 }}
+              title={`Connected via ${connectionType === 'websocket' ? 'WebSocket' : 'Polling'}`}
+            >
+              <span className={styles.connectionDot}></span>
+              <span className={styles.connectionText}>
+                {connectionType === 'websocket' ? 'Live' : 'Auto-refresh'}
+              </span>
+            </motion.div>
+          )}
 
 
           {error && (

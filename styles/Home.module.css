@@ -55,12 +55,27 @@ body,
   font-family: var(--font-geist-sans), system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
 }
 
-text-align: center;
-color: var(--text-secondary);
-font-size: 1rem;
-margin-top: 2rem;
-font-weight: 300;
-letter-spacing: 0.5px;
+/* Posts Container */
+.postsContainer {
+  position: relative;
+  height: calc(100vh - 64px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  margin: 0 auto;
+  max-width: 800px;
+  padding: 1rem;
+  padding-top: 2rem;
+}
+
+.loadingText,
+.noPosts,
+.endMessage {
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 1rem;
+  margin-top: 2rem;
+  font-weight: 300;
+  letter-spacing: 0.5px;
 }
 
 .error {
@@ -226,4 +241,59 @@ letter-spacing: 0.5px;
 .newPostsNotification:active {
   transform: translateX(-50%) translateY(0);
   box-shadow: var(--shadow-sm);
+}
+
+/* Connection Status Indicator */
+.connectionStatus {
+  position: fixed;
+  top: 90px;
+  right: 20px;
+  background: rgba(30, 30, 36, 0.9);
+  color: var(--text-secondary);
+  padding: 8px 16px;
+  border-radius: var(--border-radius-md);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  z-index: 999;
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  box-shadow: var(--shadow-sm);
+}
+
+.connectionDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #4ade80;
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.connectionText {
+  letter-spacing: 0.3px;
+}
+
+@media (max-width: 768px) {
+  .connectionStatus {
+    top: 75px;
+    right: 15px;
+    padding: 6px 12px;
+    font-size: 0.75rem;
+  }
+  
+  .connectionDot {
+    width: 6px;
+    height: 6px;
+  }
 }
