@@ -1,12 +1,7 @@
-import Explore from '@/component/explore'
-import React from 'react'
+'use client';
 
-const page = () => {
-  return (
-    <div>
-      <Explore/>
-    </div>
-  )
+import Explore from '../../component/explore';
+
+export default function ExplorePage() {
+  return <Explore />;
 }
-
-export default page
