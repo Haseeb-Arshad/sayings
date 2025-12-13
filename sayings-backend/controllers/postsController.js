@@ -5,70 +5,167 @@ const User = require('../models/User');
 const Comment = require('../models/Comment');
 const Topic = require('../models/Topic');
 
-// Get posts with optional filters
+// Helper function to decode cursor
+const decodeCursor = (cursor) => {
+  if (!cursor) return null;
+  try {
+    const decoded = JSON.parse(Buffer.from(cursor, 'base64').toString('utf-8'));
+    return decoded;
+  } catch (error) {
+    console.error('Error decoding cursor:', error);
+    return null;
+  }
+};
+
+// Helper function to encode cursor
+const encodeCursor = (post, filter) => {
+  const cursorData = {
+    id: post._id.toString(),
+    timestamp: post.timestamp || post.createdAt,
+  };
+  
+  // For top posts, include likes for proper cursor-based pagination
+  if (filter === 'top') {
+    cursorData.likes = post.likes;
+  }
+  
+  return Buffer.from(JSON.stringify(cursorData)).toString('base64');
+};
+
+// Get posts with cursor-based pagination
 exports.getPosts = async (req, res) => {
   try {
-    const { filter, page = 1, limit = 10 } = req.query;
+    const { filter, cursor, limit = 20 } = req.query;
+    const limitNum = parseInt(limit);
     let query = {};
+    let sort = {};
 
+    // Set up query and sort based on filter
     if (filter === 'top') {
-      query = {}; // Define 'top' based on likes
-      const posts = await Post.find(query)
-        .sort({ likes: -1, timestamp: -1 })
-        .limit(parseInt(limit))
-        .skip((parseInt(page) - 1) * parseInt(limit))
-        .populate('user', 'username avatar');
-      return res.json({ posts, page: parseInt(page), limit: parseInt(limit) });
+      sort = { likes: -1, timestamp: -1 };
     } else if (filter === 'recent' || !filter) {
-      query = {};
-      const posts = await Post.find(query)
-        .sort({ timestamp: -1 })
-        .limit(parseInt(limit))
-        .skip((parseInt(page) - 1) * parseInt(limit))
-        .populate('user', 'username avatar');
-      return res.json({ posts, page: parseInt(page), limit: parseInt(limit) });
+      sort = { timestamp: -1 };
     } else if (filter.startsWith('topic:')) {
       const topic = filter.split(':')[1];
       query = { 'topics.topic': topic };
-      const posts = await Post.find(query)
-        .sort({ timestamp: -1 })
-        .limit(parseInt(limit))
-        .skip((parseInt(page) - 1) * parseInt(limit))
-        .populate('user', 'username avatar');
-      return res.json({ posts, page: parseInt(page), limit: parseInt(limit) });
+      sort = { timestamp: -1 };
     } else {
       return res.status(400).json({ error: 'Invalid filter' });
     }
+
+    // Handle cursor-based pagination
+    if (cursor) {
+      const decodedCursor = decodeCursor(cursor);
+      if (decodedCursor) {
+        if (filter === 'top' && decodedCursor.likes !== undefined) {
+          // For top posts, we need to handle the composite sort on likes and timestamp
+          query.$or = [
+            { likes: { $lt: decodedCursor.likes } },
+            { 
+              likes: decodedCursor.likes,
+              timestamp: { $lt: new Date(decodedCursor.timestamp) }
+            }
+          ];
+        } else {
+          query.timestamp = { $lt: new Date(decodedCursor.timestamp) };
+        }
+      }
+    }
+
+    // Fetch posts with cursor-based pagination
+    const posts = await Post.find(query)
+      .sort(sort)
+      .limit(limitNum + 1) // Fetch one extra to determine if there are more
+      .populate('user', 'username avatar')
+      .populate('topics', 'name');
+
+    const hasMore = posts.length > limitNum;
+    const postsToReturn = hasMore ? posts.slice(0, limitNum) : posts;
+    
+    // Generate cursor for next page
+    let nextCursor = null;
+    if (hasMore && postsToReturn.length > 0) {
+      nextCursor = encodeCursor(postsToReturn[postsToReturn.length - 1], filter);
+    }
+
+    // Generate prev cursor (for navigation)
+    let prevCursor = null;
+    if (cursor) {
+      const decodedCursor = decodeCursor(cursor);
+      if (decodedCursor && postsToReturn.length > 0) {
+        prevCursor = encodeCursor(postsToReturn[0], filter);
+      }
+    }
+
+    res.json({
+      posts: postsToReturn,
+      nextCursor,
+      prevCursor,
+      hasMore,
+      filter
+    });
   } catch (error) {
     console.error('Error fetching posts:', error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 };
 
-// Get posts by a specific user
+// Get posts by a specific user with cursor-based pagination
 exports.getUserPosts = async (req, res) => {
   try {
     const { userId } = req.params;
-    const { filter, page = 1, limit = 10 } = req.query;
+    const { filter, cursor, limit = 20 } = req.query;
+    const limitNum = parseInt(limit);
     let query = { user: userId };
+    let sort = {};
 
+    // Set up sort based on filter
     if (filter === 'top') {
-      // Fetch top posts by likes
-      const posts = await Post.find(query)
-        .sort({ likes: -1, timestamp: -1 })
-        .limit(parseInt(limit))
-        .skip((parseInt(page) - 1) * parseInt(limit))
-        .populate('user', 'username avatar');
-      return res.json({ posts, page: parseInt(page), limit: parseInt(limit) });
+      sort = { likes: -1, timestamp: -1 };
     } else {
-      // Default to recent posts
-      const posts = await Post.find(query)
-        .sort({ timestamp: -1 })
-        .limit(parseInt(limit))
-        .skip((parseInt(page) - 1) * parseInt(limit))
-        .populate('user', 'username avatar');
-      return res.json({ posts, page: parseInt(page), limit: parseInt(limit) });
+      sort = { timestamp: -1 }; // Default to recent
     }
+
+    // Handle cursor-based pagination
+    if (cursor) {
+      const decodedCursor = decodeCursor(cursor);
+      if (decodedCursor) {
+        if (filter === 'top' && decodedCursor.likes !== undefined) {
+          // For top posts, handle composite sort
+          query.$or = [
+            { likes: { $lt: decodedCursor.likes } },
+            { 
+              likes: decodedCursor.likes,
+              timestamp: { $lt: new Date(decodedCursor.timestamp) }
+            }
+          ];
+        } else {
+          query.timestamp = { $lt: new Date(decodedCursor.timestamp) };
+        }
+      }
+    }
+
+    // Fetch posts with cursor-based pagination
+    const posts = await Post.find(query)
+      .sort(sort)
+      .limit(limitNum + 1) // Fetch one extra to determine if there are more
+      .populate('user', 'username avatar');
+
+    const hasMore = posts.length > limitNum;
+    const postsToReturn = hasMore ? posts.slice(0, limitNum) : posts;
+    
+    // Generate cursor for next page
+    let nextCursor = null;
+    if (hasMore && postsToReturn.length > 0) {
+      nextCursor = encodeCursor(postsToReturn[postsToReturn.length - 1], filter);
+    }
+
+    res.json({
+      posts: postsToReturn,
+      nextCursor,
+      hasMore,
+      filter
+    });
   } catch (error) {
     console.error('Error fetching user posts:', error);
     res.status(500).json({ error: 'Internal Server Error' });
@@ -161,76 +258,12 @@ exports.sharePost = async (req, res) => {
 };
 
 
-// controllers/postController.js
-exports.getPosts = async (req, res) => {
-  try {
-    const { filter } = req.query;
-
-    let sort = { createdAt: -1 }; // Default: Recent posts
-
-    if (filter === 'trending') {
-      sort = { likes: -1 }; // Sort by number of likes
-    } else if (filter === 'popular') {
-      sort = { views: -1 }; // Sort by number of views
-    }
-
-    const posts = await Post.find()
-      .sort(sort)
-      .populate('user', 'username avatar') // Populate user details
-      .populate('topics', 'name'); // Populate topic details
-
-    res.status(200).json({ posts });
-  } catch (error) {
-    console.error('Error fetching posts:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
-};
+// Duplicate getPosts function removed - using cursor-based version above
 
 
 
 
-// Like a post with uniqueness based on user or IP
-exports.likePost = async (req, res) => {
-  try {
-    const { postId } = req.params;
-    const userId = req.user ? req.user.id : null; // Authenticated user ID if available
-    const userIP = req.ip; // User's IP address
-
-    const post = await Post.findById(postId);
-    if (!post) return res.status(404).json({ error: 'Post not found' });
-
-    let hasLiked = false;
-
-    if (userId) {
-      // Check if the user has already liked the post
-      hasLiked = post.likedByUsers.includes(userId);
-      if (!hasLiked) {
-        post.likes += 1;
-        post.likedByUsers.push(userId);
-      }
-    } else {
-      // For unauthenticated users, check IP
-      hasLiked = post.likedByIPs.includes(userIP);
-      if (!hasLiked) {
-        post.likes += 1;
-        post.likedByIPs.push(userIP);
-      }
-    }
-
-    await post.save();
-
-    // Populate user details if authenticated
-    await post.populate('user', 'username avatar');
-
-    res.json({
-      post,
-      message: hasLiked ? 'You have already liked this post.' : 'Post liked successfully.',
-    });
-  } catch (error) {
-    console.error('Error liking post:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
-};
+// Duplicate likePost function removed - using simpler version above
 
 
 // Get a single post by ID

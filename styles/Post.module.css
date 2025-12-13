@@ -1,23 +1,21 @@
 /* Modern Post Styling */
 
-:root {
-  --post-bg: var(--surface);
-  --post-bg-hover: color-mix(in oklab, var(--surface) 85%, white 0%);
-  --post-border: var(--border);
-  --post-text: var(--text);
-  --post-text-muted: var(--muted);
-  --post-accent: var(--accent);
-  --post-accent-hover: var(--accent-hover);
+.postContainer,
+.post {
+  --post-bg: #1e1e24;
+  --post-bg-hover: #2a2a30;
+  --post-border: rgba(255, 255, 255, 0.1);
+  --post-text: #f5f5f7;
+  --post-text-muted: #a0a0a5;
+  --post-accent: #787880;
+  --post-accent-hover: #8a8a95;
   --post-success: #10b981;
   --post-danger: #f43f5e;
   --post-shadow: rgba(0, 0, 0, 0.25);
   --post-radius: 16px;
   --post-radius-sm: 8px;
   --post-spacing: 16px;
-}
-
-.postContainer,
-.post {
+  
   background: var(--post-bg);
   border: 1px solid var(--post-border);
   border-radius: 12px;

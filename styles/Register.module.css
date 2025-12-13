@@ -3,12 +3,21 @@
 
 /* Container */
 .container {
+  --background: #121214;
+  --card-bg: #1e1e24;
+  --text-primary: #f5f5f7;
+  --text-secondary: #a0a0a5;
+  --light-background: #F2F3F5;
+  --light-card-bg: #FFFFFF;
+  --light-text-primary: #313338;
+  --light-text-secondary: #6D6F78;
+  
   display: flex;
   min-height: 100vh;
   width: 100%;
   font-family: 'Poppins', sans-serif;
-  background-color: var(--background); /* Now #121214 */
-  color: var(--text-primary); /* Now #f5f5f7 */
+  background-color: var(--background);
+  color: var(--text-primary);
   transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
@@ -21,52 +30,6 @@
 }
 
 /* Color Variables */
-:root {
-  /* Theme alignment with Home.module.css */
-  --bg-dark: #121214;
-  --bg-card: #1e1e24;
-  --text-primary: #f5f5f7;
-  --text-secondary: #a0a0a5;
-  /* Minimalistic Charcoal/Grey Accents from Home.module.css */
-  --solid-accent-primary: #787880;            /* Mid-light grey for links, focus */
-  --solid-accent-primary-rgb: 120, 120, 128; /* For shadows, glows */
-  --solid-accent-secondary: #505055;          /* Darker grey for hover/less prominent */
-  --button-background-gradient: linear-gradient(135deg, #3a3a40, #2c2c30); /* Subtle dark grey gradient for buttons */
-
-  /* Mapping to existing variable names used in this file for smoother transition */
-  --accent-primary-gradient: var(--button-background-gradient);
-  --solid-primary-accent: var(--solid-accent-primary);
-  /* Note: --solid-secondary-accent is defined above and used by --accent below. */
-
-  --primary: var(--solid-accent-primary); /* Main interactive color - now grey */
-  --accent: var(--solid-accent-secondary); /* Secondary interactive color - now darker grey */
-  --background: var(--bg-dark);
-  --card-bg: var(--bg-card);
-  
-  --error-color: #FF4D4F; /* Retained */
-  
-  /* Radii from Home.module.css */
-  --border-radius-sm: 8px;
-  --border-radius-md: 12px;
-  --border-radius-lg: 20px;
-
-  /* Input specific colors, pre-calculated */
-  --input-border-color: rgba(160, 160, 165, 0.2);       /* from #a0a0a5 (text-secondary) */
-  --input-focus-border-color: rgba(var(--solid-accent-primary-rgb), 0.8);  /* from new grey --solid-accent-primary-rgb */
-  --input-background-color: rgba(30, 30, 36, 0.4);       /* from #1e1e24 (card-bg) */
-  --input-focus-background-color: rgba(30, 30, 36, 0.6);/* from #1e1e24 (card-bg) */
-  --input-hover-background-color: rgba(30, 30, 36, 0.5); /* from #1e1e24 (card-bg) */
-  
-  /* For subtle-glow keyframe, using new grey primary accent */
-  --glow-primary-color-rgba-a: rgba(var(--solid-accent-primary-rgb), 0.1);
-  --glow-primary-color-rgba-b: rgba(var(--solid-accent-primary-rgb), 0.2);
-
-  /* Light Theme Colors (review recommended if light theme is a priority) */
-  --light-background: #F2F3F5;
-  --light-card-bg: #FFFFFF;
-  --light-text-primary: #313338;
-  --light-text-secondary: #6D6F78;
-}
 
 /* Left Pane */
 .leftPane {
