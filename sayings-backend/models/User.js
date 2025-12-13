@@ -107,4 +107,18 @@ UserSchema.methods.comparePassword = async function (candidatePassword) {
   return bcrypt.compare(candidatePassword, this.password);
 };
 
+UserSchema.index(
+  {
+    username: 'text',
+    bio: 'text',
+  },
+  {
+    name: 'user_full_text_search',
+    weights: {
+      username: 10,
+      bio: 3,
+    },
+  }
+);
+
 module.exports = mongoose.model('User', UserSchema);

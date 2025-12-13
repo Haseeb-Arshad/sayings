@@ -18,6 +18,7 @@ import styles from '../styles/Navbar.module.css';
 import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '../context/useAuth';
 import axiosInstance from '@/utils/axiosInstance';
+import SearchModal from './SearchModal';
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -146,15 +147,9 @@ const Navbar = () => {
 
           {/* Right section with search and user actions */}
           <div className={styles.rightSection}>
-            {/* Search Bar */}
+            {/* Search */}
             <div className={styles.searchContainer}>
-              <FaSearch className={styles.searchIcon} />
-              <input
-                type="text"
-                placeholder="Search..."
-                className={styles.searchInput}
-                aria-label="Search"
-              />
+              <SearchModal />
             </div>
 
             {/* User Actions */}
@@ -298,11 +293,16 @@ const Navbar = () => {
               {/* Search in mobile menu */}
               <div className={styles.mobileSearchContainer}>
                 <FaSearch className={styles.searchIcon} />
-                <input
-                  type="text"
-                  placeholder="Search..."
+                <button
+                  type="button"
                   className={styles.mobileSearchInput}
-                />
+                  onClick={() => {
+                    document.dispatchEvent(new Event('search:open'));
+                    setIsMobileMenuOpen(false);
+                  }}
+                >
+                  Search…
+                </button>
               </div>
 
               {/* Auth buttons in mobile menu */}
