@@ -1,12 +1,13 @@
-import Explore from '@/component/explore'
-import React from 'react'
+'use client';
 
-const page = () => {
+import React, { Suspense, lazy } from 'react';
+
+const Explore = lazy(() => import('@/component/explore'));
+
+export default function Page() {
   return (
-    <div>
-      <Explore/>
-    </div>
-  )
+    <Suspense fallback={null}>
+      <Explore />
+    </Suspense>
+  );
 }
-
-export default page

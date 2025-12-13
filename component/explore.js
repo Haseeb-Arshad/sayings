@@ -1,19 +1,16 @@
-// app/explore/page.jsx
-
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
-import Navbar from '../component/navBar';
-import Sidebar from '../component/sidebar';
-import Post from '../component/post';
-
-
+import { Suspense, lazy, useCallback, useEffect, useState } from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import debounce from 'lodash.debounce';
 import styles from './../styles/Explore.module.css';
 import axios from '../utils/axiosInstance';
-import { AnimatePresence, motion } from 'framer-motion'; // Import framer-motion
-import useCurrentUser from '../hooks/useCurrentUser'; // Ensure to import useCurrentUser
+import useCurrentUser from '../hooks/useCurrentUser';
+import SkeletonPost from './SkeletonPost';
+
+const Navbar = lazy(() => import('../component/navBar'));
+const Sidebar = lazy(() => import('../component/sidebar'));
+const Post = lazy(() => import('../component/post'));
 
 const Explore = () => {
   const [posts, setPosts] = useState([]);
@@ -21,21 +18,24 @@ const Explore = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const [page, setPage] = useState(1); // Current page
-  const [hasMore, setHasMore] = useState(true); // Indicates if more posts are available
-  const [isFetching, setIsFetching] = useState(false); // Prevents duplicate fetches
-  const [abortController, setAbortController] = useState(null); // For request cancellation
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [isFetching, setIsFetching] = useState(false);
+  const [abortController, setAbortController] = useState(null);
 
-  const { user: currentUser, loading: userLoading } = useCurrentUser(); // Get current user
+  const { user: currentUser } = useCurrentUser();
 
-  // Debounced filter setter
+  const sortPostsDescending = useCallback((postsArray) => {
+    return postsArray.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+  }, []);
+
   const debouncedSetFilter = useCallback(
     debounce((newFilter) => {
       setFilter(newFilter);
       setPage(1);
       setPosts([]);
       setHasMore(true);
-    }, 300), // 300ms delay
+    }, 300),
     []
   );
 
@@ -43,21 +43,11 @@ const Explore = () => {
     debouncedSetFilter(newFilter);
   };
 
-  useEffect(() => {
-    fetchExplorePosts(page);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filter, page]);
-
-  const sortPostsDescending = useCallback((postsArray) => {
-    return postsArray.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-  }, []);
-
   const fetchExplorePosts = async (currentPage) => {
-    if (isFetching) return; // Prevent duplicate fetches
+    if (isFetching) return;
     setIsFetching(true);
     setLoading(true);
 
-    // Cancel previous request if exists
     if (abortController) {
       abortController.abort();
     }
@@ -73,36 +63,24 @@ const Explore = () => {
           limit: 20,
         },
         signal: controller.signal,
-        silent: true, // This will prevent the interceptor from logging errors for these requests.
+        silent: true,
       });
 
       let fetchedPosts = response.data.posts || [];
-
-      // Sort posts descendingly by timestamp
       fetchedPosts = sortPostsDescending(fetchedPosts);
 
-      // Log fetched _id's for debugging
-      // console.log(
-      //   'Fetched Explore Posts IDs:',
-      //   fetchedPosts.map((post) => post._id)
-      // );
-
-      // Remove duplicates before updating state
       setPosts((prevPosts) => {
         if (currentPage === 1) {
           return fetchedPosts;
-        } else {
-          const existingIds = new Set(prevPosts.map((post) => post._id));
-          const newUniquePosts = fetchedPosts.filter(
-            (post) => !existingIds.has(post._id)
-          );
-          return [...prevPosts, ...newUniquePosts];
         }
+
+        const existingIds = new Set(prevPosts.map((p) => p._id));
+        const newUniquePosts = fetchedPosts.filter((p) => !existingIds.has(p._id));
+        return [...prevPosts, ...newUniquePosts];
       });
 
-      // Determine if more posts are available
       const totalPosts = response.data.totalPosts;
-      const totalPages = Math.ceil(totalPosts / 20); // Update based on new limit
+      const totalPages = Math.ceil(totalPosts / 20);
       if (currentPage >= totalPages) {
         setHasMore(false);
       }
@@ -122,26 +100,20 @@ const Explore = () => {
     }
   };
 
+  useEffect(() => {
+    fetchExplorePosts(page);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filter, page]);
+
   const fetchMoreData = () => {
     if (!hasMore || isFetching) return;
     setPage((prevPage) => prevPage + 1);
   };
 
-  // Handler to prepend new post
-  const handleNewPost = (newPost) => {
-    setPosts((prevPosts) => {
-      const updatedPosts = [newPost, ...prevPosts];
-      // Sort posts descendingly by timestamp
-      return sortPostsDescending(updatedPosts);
-    });
-  };
-
-  // Handler to remove a post
   const handleDeletePost = (postId) => {
     setPosts((prevPosts) => prevPosts.filter((post) => post._id !== postId));
   };
 
-  // Cleanup on unmount
   useEffect(() => {
     return () => {
       if (abortController) {
@@ -153,11 +125,16 @@ const Explore = () => {
 
   return (
     <div className={styles.container}>
-      <Navbar />
-      <div className={styles.mainContent}>
-        <Sidebar setFilter={handleFilterChange} currentFilter={filter} />
-        <div id="scrollableExploreDiv" className={styles.exploreSection}>
+      <Suspense fallback={null}>
+        <Navbar />
+      </Suspense>
 
+      <div className={styles.mainContent}>
+        <Suspense fallback={null}>
+          <Sidebar setFilter={handleFilterChange} currentFilter={filter} />
+        </Suspense>
+
+        <div id="scrollableExploreDiv" className={styles.exploreSection}>
           {error && <p className={styles.error}>{error}</p>}
           <InfiniteScroll
             dataLength={posts.length}
@@ -171,33 +148,33 @@ const Explore = () => {
             }
             scrollableTarget="scrollableExploreDiv"
           >
-            <AnimatePresence>
+            <Suspense
+              fallback={
+                <>
+                  <SkeletonPost />
+                  <SkeletonPost />
+                </>
+              }
+            >
               {posts.length === 0 && !loading && !error && (
-                <motion.p
-                  className={styles.noPosts}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                >
-                  No posts available.
-                </motion.p>
+                <p className={styles.noPosts}>No posts available.</p>
               )}
               {Array.isArray(posts) &&
                 posts.map((post) => {
                   if (!post._id) {
                     console.warn('Explore Post missing _id:', post);
-                    return null; // Or assign a temporary unique key
+                    return null;
                   }
                   return (
                     <Post
                       key={post._id}
                       post={post}
-                      currentUserId={currentUser?._id} // Pass currentUserId
-                      onDelete={handleDeletePost} // Pass onDelete handler
+                      currentUserId={currentUser?._id}
+                      onDelete={handleDeletePost}
                     />
                   );
                 })}
-            </AnimatePresence>
+            </Suspense>
           </InfiniteScroll>
         </div>
       </div>
