@@ -26,6 +26,7 @@
     "react-infinite-scroll-component": "^6.1.0",
     "simplebar": "^6.2.7",
     "simplebar-react": "^3.2.6",
+    "socket.io-client": "^4.8.1",
     "wavesurfer.js": "^7.8.9"
   },
   "devDependencies": {

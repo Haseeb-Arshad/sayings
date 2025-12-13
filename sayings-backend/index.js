@@ -7,11 +7,15 @@ const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const cookieParser = require('cookie-parser');
+const http = require('http');
+const { Server } = require('socket.io');
+const jwt = require('jsonwebtoken');
 
 // Load environment variables
 dotenv.config();
 
 const app = express();
+const server = http.createServer(app);
 
 // Set 'trust proxy' to trust the first proxy
 app.set('trust proxy', 1);
@@ -55,6 +59,66 @@ const corsOptions = {
 
 // Apply CORS middleware **once** and **before** routes
 app.use(cors(corsOptions));
+
+// Socket.IO Configuration
+const io = new Server(server, {
+  cors: corsOptions,
+  transports: ['websocket', 'polling'],
+  pingTimeout: 60000,
+  pingInterval: 25000,
+});
+
+// JWT Secret (should match authMiddleware)
+const JWT_SECRET = process.env.JWT_SECRET || "h7F!yN8$wLpX@x9&c2ZvQk3*oT5#aEg4rJ6^pBmN!A";
+
+// Socket.IO Authentication Middleware
+io.use((socket, next) => {
+  const token = socket.handshake.auth.token;
+  
+  if (!token) {
+    return next(new Error('Authentication error: No token provided'));
+  }
+
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
+    socket.userId = decoded.id;
+    socket.userEmail = decoded.email;
+    next();
+  } catch (error) {
+    console.error('Socket authentication error:', error);
+    next(new Error('Authentication error: Invalid token'));
+  }
+});
+
+// Socket.IO Connection Handler
+io.on('connection', (socket) => {
+  console.log(`User connected via WebSocket: ${socket.userId} (${socket.id})`);
+
+  // Subscribe to feed updates
+  socket.on('subscribe:feed', (data) => {
+    const { filter } = data || {};
+    const room = filter ? `feed:${filter}` : 'feed:recent';
+    
+    // Leave previous rooms
+    socket.rooms.forEach(room => {
+      if (room !== socket.id && room.startsWith('feed:')) {
+        socket.leave(room);
+      }
+    });
+    
+    // Join new room
+    socket.join(room);
+    console.log(`User ${socket.userId} subscribed to ${room}`);
+  });
+
+  // Handle disconnection
+  socket.on('disconnect', (reason) => {
+    console.log(`User disconnected: ${socket.userId} (${socket.id}) - Reason: ${reason}`);
+  });
+});
+
+// Make io accessible to routes
+app.set('io', io);
 
 // Connect to MongoDB
 mongoose
@@ -128,6 +192,7 @@ app.use((err, req, res, next) => {
 
 // Start Server
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
+  console.log(`WebSocket server is ready`);
 });
