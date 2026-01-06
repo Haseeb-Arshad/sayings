@@ -8,6 +8,10 @@ import axios, { isNetworkOffline } from '../utils/axiosInstance';
 import { useAuth } from '../context/useAuth';
 import { RefreshContext } from './providers';
 import draftRecordingService from '../services/draftRecordingService';
+import recordingService from '../services/RecordingService.js';
+import uploadQueue from '../services/UploadQueue.js';
+import analyticsService from '../services/AnalyticsService.js';
+import { InlineRecordingError } from './RecordingError.js';
 
 // Phases of the composer flow
 export const ComposerPhase = Object.freeze({
@@ -241,34 +245,49 @@ export default function PostComposer({ isOpen, onClose, onPublished }) {
       setError('You need to be signed in to record.');
       return;
     }
-    if (!canRecord) {
-      setError('Recording is not supported in this browser.');
+    if (!recordingService.isSupported()) {
+      const categorized = recordingService.categorizeError(
+        new Error('MediaRecorder not supported')
+      );
+      setError(categorized.message);
       return;
     }
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const stream = await recordingService.requestMicrophonePermission();
       mediaStreamRef.current = stream;
-      const mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm' });
+      const mediaRecorder = recordingService.createMediaRecorder(stream);
       chunksRef.current = [];
       mediaRecorder.ondataavailable = (e) => {
         if (e.data.size > 0) chunksRef.current.push(e.data);
       };
       mediaRecorder.onstop = () => {
-        const recordedBlob = new Blob(chunksRef.current, { type: 'audio/webm' });
-        setBlob(recordedBlob);
-        const url = URL.createObjectURL(recordedBlob);
-        setAudioURL(url);
-        setPhase(ComposerPhase.Processing);
-        // Simulate processing delay; could be replaced by actual upload/transcode
-        // Initialize transcript as empty; user can edit or paste
-        setTimeout(() => setPhase(ComposerPhase.Review), 600);
+        try {
+          const mimeType = mediaRecorder.mimeType || 'audio/webm';
+          const recordedBlob = recordingService.createBlob(chunksRef.current, mimeType);
+
+          if (!recordingService.validateBlob(recordedBlob)) {
+            throw new Error('Invalid audio recording');
+          }
+
+          setBlob(recordedBlob);
+          const url = URL.createObjectURL(recordedBlob);
+          setAudioURL(url);
+          setPhase(ComposerPhase.Processing);
+          setTimeout(() => setPhase(ComposerPhase.Review), 600);
+        } catch (err) {
+          console.error('Error creating blob:', err);
+          const categorized = err.categorized || recordingService.categorizeError(err);
+          setError(categorized.message);
+          setPhase(ComposerPhase.Idle);
+        }
       };
       mediaRecorder.start();
       mediaRecorderRef.current = mediaRecorder;
       setPhase(ComposerPhase.Recording);
     } catch (err) {
       console.error(err);
-      setError('Microphone permission denied or unavailable.');
+      const categorized = err.categorized || recordingService.categorizeError(err);
+      setError(categorized.message);
     }
   };
 
@@ -354,6 +373,12 @@ export default function PostComposer({ isOpen, onClose, onPublished }) {
       // axios instance uses base URL '/api'
       const res = await axios.post('/transcribe', form, {
         headers: { 'Content-Type': 'multipart/form-data' },
+        timeout: 60000
+      });
+
+      analyticsService.logUploadSuccess({
+        size: blob.size,
+        endpoint: '/transcribe'
       });
 
       // Invalidate cached lists
@@ -363,14 +388,32 @@ export default function PostComposer({ isOpen, onClose, onPublished }) {
       setIsSubmitting(false);
       if (onPublished) onPublished(res.data);
     } catch (e) {
-      console.error(e);
+      console.error('Publish error:', e);
+      const categorized = recordingService.categorizeError(e);
+
+      analyticsService.logUploadError(
+        categorized.type,
+        categorized.originalMessage,
+        { size: blob.size, endpoint: '/transcribe' }
+      );
+
       setIsSubmitting(false);
       setPhase(ComposerPhase.Review);
-      setError(e?.response?.data?.message || e?.message || 'Failed to publish.');
+      setError(categorized.message);
+
+      if (categorized.isRetryable) {
+        uploadQueue.addToUploadQueue(blob, {
+          title: title || 'Untitled',
+          transcript: transcript || '',
+          topics: selectedTopics,
+          privacy,
+          endpoint: '/transcribe'
+        }).catch(err => {
+          console.error('Failed to add to upload queue:', err);
+        });
+      }
     }
   };
-
-
 
   // Phase-specific content components to keep render small
   // Basic keyword extraction for topic suggestions
@@ -524,6 +567,16 @@ export default function PostComposer({ isOpen, onClose, onPublished }) {
           <div className="p-4">
             <h2 id="composer-title" className="text-lg font-semibold">Create a new post</h2>
             <p className="mt-1 text-sm text-gray-500">Record audio and share your saying.</p>
+            {error && (
+              <div className="mt-3">
+                <InlineRecordingError
+                  error={{
+                    message: error,
+                    isRetryable: false
+                  }}
+                />
+              </div>
+            )}
             <div className="mt-4 flex gap-2">
               <button
                 className="px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -744,7 +797,16 @@ export default function PostComposer({ isOpen, onClose, onPublished }) {
               </div>
             </div>
 
-            {error && <p className="mt-3 text-sm text-red-600" role="alert">{error}</p>}
+            {error && (
+              <div className="mt-3">
+                <InlineRecordingError
+                  error={{
+                    message: error,
+                    isRetryable: false
+                  }}
+                />
+              </div>
+            )}
 
             {/* Actions */}
             <div className="mt-4 flex flex-wrap gap-2">
