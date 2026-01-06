@@ -8,34 +8,41 @@ const Topic = require('../models/Topic');
 // Get posts with optional filters
 exports.getPosts = async (req, res) => {
   try {
-    const { filter, page = 1, limit = 10 } = req.query;
+    const { filter, page = 1, limit = 10, since } = req.query;
     let query = {};
 
+    // Support for polling - fetch posts newer than 'since' timestamp
+    if (since) {
+      query.timestamp = { $gt: new Date(since) };
+    }
+
     if (filter === 'top') {
-      query = {}; // Define 'top' based on likes
+      // Define 'top' based on likes
       const posts = await Post.find(query)
         .sort({ likes: -1, timestamp: -1 })
         .limit(parseInt(limit))
         .skip((parseInt(page) - 1) * parseInt(limit))
         .populate('user', 'username avatar');
-      return res.json({ posts, page: parseInt(page), limit: parseInt(limit) });
+      const totalPosts = await Post.countDocuments(query);
+      return res.json({ posts, page: parseInt(page), limit: parseInt(limit), totalPosts });
     } else if (filter === 'recent' || !filter) {
-      query = {};
       const posts = await Post.find(query)
         .sort({ timestamp: -1 })
         .limit(parseInt(limit))
         .skip((parseInt(page) - 1) * parseInt(limit))
         .populate('user', 'username avatar');
-      return res.json({ posts, page: parseInt(page), limit: parseInt(limit) });
+      const totalPosts = await Post.countDocuments(query);
+      return res.json({ posts, page: parseInt(page), limit: parseInt(limit), totalPosts });
     } else if (filter.startsWith('topic:')) {
       const topic = filter.split(':')[1];
-      query = { 'topics.topic': topic };
+      query['topics.topic'] = topic;
       const posts = await Post.find(query)
         .sort({ timestamp: -1 })
         .limit(parseInt(limit))
         .skip((parseInt(page) - 1) * parseInt(limit))
         .populate('user', 'username avatar');
-      return res.json({ posts, page: parseInt(page), limit: parseInt(limit) });
+      const totalPosts = await Post.countDocuments(query);
+      return res.json({ posts, page: parseInt(page), limit: parseInt(limit), totalPosts });
     } else {
       return res.status(400).json({ error: 'Invalid filter' });
     }
@@ -91,6 +98,26 @@ exports.createPost = async (req, res) => {
     await newPost.save();
     const populatedPost = await newPost.populate('user', 'username avatar');
 
+    // Emit WebSocket event for new post
+    const io = req.app.get('io');
+    if (io) {
+      // Emit to all feed rooms
+      io.to('feed:recent').emit('feed:new-posts', { 
+        posts: [populatedPost] 
+      });
+      
+      // If post has topics, emit to topic-specific rooms
+      if (topics && Array.isArray(topics)) {
+        topics.forEach(topicObj => {
+          if (topicObj.topic) {
+            io.to(`feed:topic:${topicObj.topic}`).emit('feed:new-posts', { 
+              posts: [populatedPost] 
+            });
+          }
+        });
+      }
+    }
+
     res.status(201).json(populatedPost);
   } catch (error) {
     console.error('Error creating post:', error);
@@ -131,9 +158,19 @@ exports.addComment = async (req, res) => {
     await newComment.save();
 
     // Increment comment count on the post
-    await Post.findByIdAndUpdate(postId, { $inc: { comments: 1 } });
+    const post = await Post.findByIdAndUpdate(
+      postId, 
+      { $inc: { comments: 1 } },
+      { new: true }
+    ).populate('user', 'username avatar');
 
     const populatedComment = await newComment.populate('user', 'username avatar');
+
+    // Emit WebSocket event for post update (real-time comment count)
+    const io = req.app.get('io');
+    if (io && post) {
+      io.emit('post:update', { post });
+    }
 
     res.status(201).json(populatedComment);
   } catch (error) {
@@ -221,6 +258,14 @@ exports.likePost = async (req, res) => {
 
     // Populate user details if authenticated
     await post.populate('user', 'username avatar');
+
+    // Emit WebSocket event for post update (real-time like count)
+    if (!hasLiked) {
+      const io = req.app.get('io');
+      if (io) {
+        io.emit('post:update', { post });
+      }
+    }
 
     res.json({
       post,
