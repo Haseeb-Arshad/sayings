@@ -5,77 +5,173 @@ const User = require('../models/User');
 const Comment = require('../models/Comment');
 const Topic = require('../models/Topic');
 
-// Get posts with optional filters
+// Helper function to decode cursor
+const decodeCursor = (cursor) => {
+  if (!cursor) return null;
+  try {
+    const decoded = JSON.parse(Buffer.from(cursor, 'base64').toString('utf-8'));
+    return decoded;
+  } catch (error) {
+    console.error('Error decoding cursor:', error);
+    return null;
+  }
+};
+
+// Helper function to encode cursor
+const encodeCursor = (post, filter) => {
+  const cursorData = {
+    id: post._id.toString(),
+    timestamp: post.timestamp || post.createdAt,
+  };
+
+  // For top posts, include likes for proper cursor-based pagination
+  if (filter === 'top') {
+    cursorData.likes = post.likes;
+  }
+
+  return Buffer.from(JSON.stringify(cursorData)).toString('base64');
+};
+
+// Get posts with cursor-based pagination
 exports.getPosts = async (req, res) => {
   try {
-    const { filter, page = 1, limit = 10, since } = req.query;
+    const { filter, cursor, limit = 20, since } = req.query;
+    const limitNum = parseInt(limit);
     let query = {};
+    let sort = {};
 
     // Support for polling - fetch posts newer than 'since' timestamp
     if (since) {
       query.timestamp = { $gt: new Date(since) };
     }
 
+    // Set up query and sort based on filter
     if (filter === 'top') {
-      // Define 'top' based on likes
-      const posts = await Post.find(query)
-        .sort({ likes: -1, timestamp: -1 })
-        .limit(parseInt(limit))
-        .skip((parseInt(page) - 1) * parseInt(limit))
-        .populate('user', 'username avatar');
-      const totalPosts = await Post.countDocuments(query);
-      return res.json({ posts, page: parseInt(page), limit: parseInt(limit), totalPosts });
+      sort = { likes: -1, timestamp: -1 };
     } else if (filter === 'recent' || !filter) {
-      const posts = await Post.find(query)
-        .sort({ timestamp: -1 })
-        .limit(parseInt(limit))
-        .skip((parseInt(page) - 1) * parseInt(limit))
-        .populate('user', 'username avatar');
-      const totalPosts = await Post.countDocuments(query);
-      return res.json({ posts, page: parseInt(page), limit: parseInt(limit), totalPosts });
+      sort = { timestamp: -1 };
     } else if (filter.startsWith('topic:')) {
       const topic = filter.split(':')[1];
       query['topics.topic'] = topic;
-      const posts = await Post.find(query)
-        .sort({ timestamp: -1 })
-        .limit(parseInt(limit))
-        .skip((parseInt(page) - 1) * parseInt(limit))
-        .populate('user', 'username avatar');
-      const totalPosts = await Post.countDocuments(query);
-      return res.json({ posts, page: parseInt(page), limit: parseInt(limit), totalPosts });
+      sort = { timestamp: -1 };
     } else {
       return res.status(400).json({ error: 'Invalid filter' });
     }
+
+    // Handle cursor-based pagination (only if not doing 'since' polling)
+    if (cursor && !since) {
+      const decodedCursor = decodeCursor(cursor);
+      if (decodedCursor) {
+        if (filter === 'top' && decodedCursor.likes !== undefined) {
+          // For top posts, we need to handle the composite sort on likes and timestamp
+          query.$or = [
+            { likes: { $lt: decodedCursor.likes } },
+            {
+              likes: decodedCursor.likes,
+              timestamp: { $lt: new Date(decodedCursor.timestamp) }
+            }
+          ];
+        } else {
+          query.timestamp = { $lt: new Date(decodedCursor.timestamp) };
+        }
+      }
+    }
+
+    // Fetch posts
+    const posts = await Post.find(query)
+      .sort(sort)
+      .limit(limitNum + 1) // Fetch one extra to determine if there are more
+      .populate('user', 'username avatar')
+      .populate('topics', 'name');
+
+    const hasMore = posts.length > limitNum;
+    const postsToReturn = hasMore ? posts.slice(0, limitNum) : posts;
+
+    // Generate cursor for next page
+    let nextCursor = null;
+    if (hasMore && postsToReturn.length > 0) {
+      nextCursor = encodeCursor(postsToReturn[postsToReturn.length - 1], filter);
+    }
+
+    // Generate prev cursor (for navigation)
+    let prevCursor = null;
+    if (cursor) {
+      const decodedCursor = decodeCursor(cursor);
+      if (decodedCursor && postsToReturn.length > 0) {
+        prevCursor = encodeCursor(postsToReturn[0], filter);
+      }
+    }
+
+    res.json({
+      posts: postsToReturn,
+      nextCursor,
+      prevCursor,
+      hasMore,
+      filter,
+      totalPosts: since ? postsToReturn.length : undefined // totalPosts is ambiguous with cursor pagination
+    });
   } catch (error) {
     console.error('Error fetching posts:', error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 };
 
-// Get posts by a specific user
+// Get posts by a specific user with cursor-based pagination
 exports.getUserPosts = async (req, res) => {
   try {
     const { userId } = req.params;
-    const { filter, page = 1, limit = 10 } = req.query;
+    const { filter, cursor, limit = 20 } = req.query;
+    const limitNum = parseInt(limit);
     let query = { user: userId };
+    let sort = {};
 
+    // Set up sort based on filter
     if (filter === 'top') {
-      // Fetch top posts by likes
-      const posts = await Post.find(query)
-        .sort({ likes: -1, timestamp: -1 })
-        .limit(parseInt(limit))
-        .skip((parseInt(page) - 1) * parseInt(limit))
-        .populate('user', 'username avatar');
-      return res.json({ posts, page: parseInt(page), limit: parseInt(limit) });
+      sort = { likes: -1, timestamp: -1 };
     } else {
-      // Default to recent posts
-      const posts = await Post.find(query)
-        .sort({ timestamp: -1 })
-        .limit(parseInt(limit))
-        .skip((parseInt(page) - 1) * parseInt(limit))
-        .populate('user', 'username avatar');
-      return res.json({ posts, page: parseInt(page), limit: parseInt(limit) });
+      sort = { timestamp: -1 }; // Default to recent
     }
+
+    // Handle cursor-based pagination
+    if (cursor) {
+      const decodedCursor = decodeCursor(cursor);
+      if (decodedCursor) {
+        if (filter === 'top' && decodedCursor.likes !== undefined) {
+          // For top posts, handle composite sort
+          query.$or = [
+            { likes: { $lt: decodedCursor.likes } },
+            {
+              likes: decodedCursor.likes,
+              timestamp: { $lt: new Date(decodedCursor.timestamp) }
+            }
+          ];
+        } else {
+          query.timestamp = { $lt: new Date(decodedCursor.timestamp) };
+        }
+      }
+    }
+
+    // Fetch posts with cursor-based pagination
+    const posts = await Post.find(query)
+      .sort(sort)
+      .limit(limitNum + 1) // Fetch one extra to determine if there are more
+      .populate('user', 'username avatar');
+
+    const hasMore = posts.length > limitNum;
+    const postsToReturn = hasMore ? posts.slice(0, limitNum) : posts;
+
+    // Generate cursor for next page
+    let nextCursor = null;
+    if (hasMore && postsToReturn.length > 0) {
+      nextCursor = encodeCursor(postsToReturn[postsToReturn.length - 1], filter);
+    }
+
+    res.json({
+      posts: postsToReturn,
+      nextCursor,
+      hasMore,
+      filter
+    });
   } catch (error) {
     console.error('Error fetching user posts:', error);
     res.status(500).json({ error: 'Internal Server Error' });
@@ -102,16 +198,16 @@ exports.createPost = async (req, res) => {
     const io = req.app.get('io');
     if (io) {
       // Emit to all feed rooms
-      io.to('feed:recent').emit('feed:new-posts', { 
-        posts: [populatedPost] 
+      io.to('feed:recent').emit('feed:new-posts', {
+        posts: [populatedPost]
       });
-      
+
       // If post has topics, emit to topic-specific rooms
       if (topics && Array.isArray(topics)) {
         topics.forEach(topicObj => {
           if (topicObj.topic) {
-            io.to(`feed:topic:${topicObj.topic}`).emit('feed:new-posts', { 
-              posts: [populatedPost] 
+            io.to(`feed:topic:${topicObj.topic}`).emit('feed:new-posts', {
+              posts: [populatedPost]
             });
           }
         });
@@ -159,7 +255,7 @@ exports.addComment = async (req, res) => {
 
     // Increment comment count on the post
     const post = await Post.findByIdAndUpdate(
-      postId, 
+      postId,
       { $inc: { comments: 1 } },
       { new: true }
     ).populate('user', 'username avatar');
@@ -198,30 +294,7 @@ exports.sharePost = async (req, res) => {
 };
 
 
-// controllers/postController.js
-exports.getPosts = async (req, res) => {
-  try {
-    const { filter } = req.query;
-
-    let sort = { createdAt: -1 }; // Default: Recent posts
-
-    if (filter === 'trending') {
-      sort = { likes: -1 }; // Sort by number of likes
-    } else if (filter === 'popular') {
-      sort = { views: -1 }; // Sort by number of views
-    }
-
-    const posts = await Post.find()
-      .sort(sort)
-      .populate('user', 'username avatar') // Populate user details
-      .populate('topics', 'name'); // Populate topic details
-
-    res.status(200).json({ posts });
-  } catch (error) {
-    console.error('Error fetching posts:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
-};
+// Duplicate getPosts function removed - using cursor-based version above
 
 
 

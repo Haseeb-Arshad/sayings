@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback, useRef } from 'react';
+import { useEffect, useState, useCallback, useRef, useMemo } from 'react';
 import axios, { isNetworkOffline } from '../utils/axiosInstance';
 import Post from '../component/post';
 import Navbar from '../component/navBar';
@@ -14,34 +14,52 @@ import useCurrentUser from '../hooks/useCurrentUser';
 import useRealtimeFeed from '../hooks/useRealtimeFeed';
 import { AnimatePresence, motion } from 'framer-motion';
 import RefreshContext from '../context/RefreshContext';
+import useInfinitePosts from '../hooks/useInfinitePosts';
+import useScrollPrefetch, { useScrollPersistence } from '../hooks/useScrollPrefetch';
 
 const Home = () => {
-  const [posts, setPosts] = useState([]);
-  const [error, setError] = useState('');
   const [filter, setFilter] = useState('recent'); // Default to 'recent'
-  const [loading, setLoading] = useState(true);
-
-  const [page, setPage] = useState(1); // Current page
-  const [hasMore, setHasMore] = useState(true); // Indicates if more posts are available
-  const [isFetching, setIsFetching] = useState(false); // Prevents duplicate fetches
-  const [abortController, setAbortController] = useState(null); // For request cancellation
-
-  const { user: currentUser, loading: userLoading } = useCurrentUser(); // Get current user
-
-  // New State Variables for New Posts
-  const [newPosts, setNewPosts] = useState([]);
   const [newPostsAvailable, setNewPostsAvailable] = useState(false);
-  const postsContainerRef = useRef(null);
-  const [isUserAtTop, setIsUserAtTop] = useState(true);
+  const [newPosts, setNewPosts] = useState([]);
   const [newPostsCount, setNewPostsCount] = useState(0);
+  const [isUserAtTop, setIsUserAtTop] = useState(true);
+  const postsContainerRef = useRef(null);
+
+  const { user: currentUser } = useCurrentUser();
+
+  // Use our infinite query hook
+  const {
+    data,
+    error,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    status,
+    refetch,
+  } = useInfinitePosts(filter, 20);
+
+  // Get all posts from all pages (memoized to avoid recalculation)
+  const allPosts = useMemo(() => {
+    return data?.pages?.flatMap(page => page.posts) || [];
+  }, [data?.pages]);
+
+  // Scroll detection and prefetch
+  const { isFetching: isPrefetching } = useScrollPrefetch(
+    filter,
+    data?.pages?.[data.pages.length - 1]?.nextCursor,
+    hasNextPage
+  );
+
+  // Scroll position persistence
+  const { saveScrollPosition, restoreScrollPosition } = useScrollPersistence('home-scroll');
 
   // Debounced filter setter
   const debouncedSetFilter = useCallback(
     debounce((newFilter) => {
       setFilter(newFilter);
-      setPage(1);
-      setPosts([]);
-      setHasMore(true);
+      setNewPostsAvailable(false);
+      setNewPosts([]);
+      setNewPostsCount(0);
     }, 300),
     []
   );
@@ -52,63 +70,20 @@ const Home = () => {
     }
   };
 
-  // Sorting function based on filter
-  const sortPosts = useCallback(
-    (postsArray) => {
-      if (filter === 'recent') {
-        return postsArray.sort(
-          (a, b) => new Date(b.timestamp) - new Date(a.timestamp)
-        );
-      } else if (filter.startsWith('topic:')) {
-        const topicName = filter.split(':')[1];
-        return postsArray.sort((a, b) => {
-          const aConfidence = getTopicConfidence(a, topicName);
-          const bConfidence = getTopicConfidence(b, topicName);
-
-          if (bConfidence !== aConfidence) {
-            return bConfidence - aConfidence;
-          }
-          return new Date(b.timestamp) - new Date(a.timestamp);
-        });
-      }
-      return postsArray.sort(
-        (a, b) => new Date(b.timestamp) - new Date(a.timestamp)
-      );
-    },
-    [filter]
-  );
-
-  // Helper function to get topic confidence
-  const getTopicConfidence = (post, topicName) => {
-    if (
-      post.iab_categories_result &&
-      post.iab_categories_result.summary &&
-      Array.isArray(post.iab_categories_result.summary)
-    ) {
-      const categoryObj = post.iab_categories_result.summary.find(
-        (cat) =>
-          cat.category.split('>').pop().toLowerCase() ===
-          topicName.toLowerCase()
-      );
-      return categoryObj ? categoryObj.confidence : 0;
-    }
-    return 0;
-  };
-
   // Callback when new posts are detected via real-time updates
   const handleNewPosts = useCallback((uniqueNewPosts) => {
     if (uniqueNewPosts.length > 0) {
       if (isUserAtTop) {
-        // User is at top, prepend new posts immediately
-        setPosts((prevPosts) => sortPosts([...uniqueNewPosts, ...prevPosts]));
+        // User is at top, refetch to get new posts immediately
+        refetch();
         setNewPostsCount(0);
         setNewPostsAvailable(false);
       } else {
         // User is scrolled down, show badge
         setNewPosts((prevNewPosts) => {
-          const allNewPosts = [...prevNewPosts, ...uniqueNewPosts];
+          const allNew = [...uniqueNewPosts, ...prevNewPosts];
           const uniqueIds = new Set();
-          const deduped = allNewPosts.filter(post => {
+          const deduped = allNew.filter(post => {
             if (uniqueIds.has(post._id)) return false;
             uniqueIds.add(post._id);
             return true;
@@ -119,163 +94,58 @@ const Home = () => {
         setNewPostsAvailable(true);
       }
     }
-  }, [isUserAtTop, sortPosts]);
+  }, [isUserAtTop, refetch]);
 
   // Callback when a post is updated (like, comment, etc.)
   const handlePostUpdate = useCallback((updatedPost) => {
-    setPosts((prevPosts) => 
-      prevPosts.map((post) => 
-        post._id === updatedPost._id ? { ...post, ...updatedPost } : post
-      )
-    );
-  }, []);
+    // This will be handled by React Query's cache eventually, 
+    // but for now we could manually update the query cache or just let it be stale
+    // Standard approach with React Query is to invalidate or update query data
+    refetch();
+  }, [refetch]);
 
-  // Use real-time feed hook for WebSocket/polling updates
+  // Use real-time feed hook
   const { isConnected, connectionType, forceCheck } = useRealtimeFeed({
-    posts,
+    posts: allPosts,
     onNewPosts: handleNewPosts,
     onPostUpdate: handlePostUpdate,
     filter,
-    enabled: !loading && posts.length > 0, // Only enable after initial load
+    enabled: status === 'success' && allPosts.length > 0,
   });
 
-  // Define the refresh function for manual refresh
+  // Manual refresh function
   const refreshPosts = useCallback(() => {
-    forceCheck();
-  }, [forceCheck]);
+    refetch();
+  }, [refetch]);
 
-  const fetchHomePosts = useCallback(
-    async (currentPage) => {
-      // Don't fetch if already fetching or offline on initial load (page 1)
-      if (isFetching || (currentPage === 1 && isNetworkOffline())) {
-        if (currentPage === 1 && isNetworkOffline()) {
-          setError('You are currently offline. Please check your connection to view posts.');
-          setLoading(false);
-        }
-        return;
-      }
-
-      setIsFetching(true);
-      setLoading(true);
-      setError('');
-
-      if (abortController) {
-        abortController.abort();
-      }
-
-      const controller = new AbortController();
-      setAbortController(controller);
-
-      const limit = 5; // Always load 5 posts per page
-
-      try {
-        const response = await axios.get('/posts', {
-          params: {
-            filter,
-            page: currentPage,
-            limit,
-          },
-          signal: controller.signal,
-        });
-
-        let fetchedPosts = response.data.posts || [];
-
-        fetchedPosts = sortPosts(fetchedPosts);
-
-        setPosts((prevPosts) => {
-          if (currentPage === 1) {
-            return fetchedPosts;
-          } else {
-            const existingIds = new Set(prevPosts.map((post) => post._id));
-            const newUniquePosts = fetchedPosts.filter(
-              (post) => !existingIds.has(post._id)
-            );
-            return [...prevPosts, ...newUniquePosts];
-          }
-        });
-
-        const totalPosts = response.data.totalPosts;
-        const totalPages = Math.ceil(totalPosts / limit);
-        if (currentPage >= totalPages) {
-          setHasMore(false);
-        }
-
-        // Clear any previous errors on successful fetch
-        setError('');
-      } catch (err) {
-        if (err.name === 'CanceledError' || err.code === 'ERR_CANCELED') {
-          console.log('Request canceled:', err.message);
-        } else if (err.response && err.response.status === 429) {
-          console.error('Too many requests:', err);
-          setError('You are sending requests too quickly. Please slow down.');
-        } else if (err.isOffline) {
-          console.log('Offline error when fetching posts');
-          setError('You appear to be offline. Connect to the internet to view new posts.');
-          // If we have existing posts, don't clear them - just show the offline message
-          if (currentPage === 1 && posts.length === 0) {
-            // Only set loading to false if we're on the first page and have no posts
-            setLoading(false);
-          }
-        } else {
-          console.error('Error fetching home posts:', err);
-          setError(
-            err.response?.data?.error ||
-            err.message ||
-            'Failed to fetch posts. Please try again later.'
-          );
-        }
-      } finally {
-        setLoading(false);
-        setIsFetching(false);
-      }
-    },
-    [abortController, filter, isFetching, sortPosts, posts.length]
-  );
-
-  const fetchMoreData = () => {
-    if (!hasMore || isFetching) return;
-    setPage((prevPage) => prevPage + 1);
-  };
-
-
-
-  // Handler to remove a post
-  const handleDeletePost = (postId) => {
-    setPosts((prevPosts) => prevPosts.filter((post) => post._id !== postId));
-  };
-
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      if (abortController) {
-        abortController.abort();
-      }
-    };
-  }, [abortController]);
-
-  // Detect if user is at the top of the posts container
+  // Handle scroll and persistence
   useEffect(() => {
     const handleScroll = () => {
       if (!postsContainerRef.current) return;
       const { scrollTop } = postsContainerRef.current;
-      const wasAtTop = isUserAtTop;
       const nowAtTop = scrollTop < 100;
-      
+
       setIsUserAtTop(nowAtTop);
-      
+
       // If user scrolled to top and there are new posts available, auto-load them
-      if (!wasAtTop && nowAtTop && newPostsAvailable) {
-        setPosts((prevPosts) => sortPosts([...newPosts, ...prevPosts]));
+      if (nowAtTop && newPostsAvailable) {
+        refetch();
         setNewPostsAvailable(false);
         setNewPosts([]);
         setNewPostsCount(0);
       }
+
+      // Save scroll position
+      saveScrollPosition({ top: scrollTop, timestamp: Date.now() });
     };
 
     const container = postsContainerRef.current;
     if (container) {
-      container.addEventListener('scroll', handleScroll);
+      container.addEventListener('scroll', handleScroll, { passive: true });
       handleScroll();
+
+      // Restore scroll position on mount
+      setTimeout(() => restoreScrollPosition(postsContainerRef), 100);
     }
 
     return () => {
@@ -283,12 +153,72 @@ const Home = () => {
         container.removeEventListener('scroll', handleScroll);
       }
     };
-  }, [isUserAtTop, newPostsAvailable, newPosts, sortPosts]);
+  }, [newPostsAvailable, refetch, saveScrollPosition, restoreScrollPosition]);
 
-  // Initial fetch and fetch on filter or page change
-  useEffect(() => {
-    fetchHomePosts(page);
-  }, [filter, page, fetchHomePosts]);
+  // Handler to remove a post
+  const handleDeletePost = (postId) => {
+    refetch();
+  };
+
+  // Loading and error states
+  if (status === 'loading') {
+    return (
+      <div className={styles.home}>
+        <Navbar />
+        <Sidebar setFilter={handleFilterChange} currentFilter={filter} />
+        <ProfileSidebar />
+        <SuggestionsSidebar />
+        <div className={styles.postsContainer}>
+          <div className={styles.loadingContainer}>
+            <div className={styles.skeletonLoader}>
+              {Array.from({ length: 5 }).map((_, i) => (
+                <div key={i} className={styles.skeletonPost}>
+                  <div className={styles.skeletonAvatar}></div>
+                  <div className={styles.skeletonContent}>
+                    <div className={styles.skeletonLine}></div>
+                    <div className={styles.skeletonLine}></div>
+                    <div className={styles.skeletonLine}></div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (status === 'error') {
+    return (
+      <RefreshContext.Provider value={refreshPosts}>
+        <div className={styles.home}>
+          <Navbar />
+          <Sidebar setFilter={handleFilterChange} currentFilter={filter} />
+          <ProfileSidebar />
+          <SuggestionsSidebar />
+          <div className={styles.postsContainer}>
+            <motion.div
+              className={styles.error}
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              <div className={styles.errorIcon}>⚠️</div>
+              <p>Failed to load posts. Please try again.</p>
+              <motion.button
+                className={styles.retryButton}
+                onClick={() => refetch()}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                Retry
+              </motion.button>
+            </motion.div>
+          </div>
+        </div>
+      </RefreshContext.Provider>
+    );
+  }
 
   return (
     <RefreshContext.Provider value={refreshPosts}>
@@ -311,9 +241,7 @@ const Home = () => {
                 exit={{ opacity: 0, y: -20 }}
                 transition={{ duration: 0.3 }}
                 onClick={() => {
-                  setPosts((prevPosts) =>
-                    sortPosts([...newPosts, ...prevPosts])
-                  );
+                  refetch();
                   setNewPostsAvailable(false);
                   setNewPosts([]);
                   setNewPostsCount(0);
@@ -325,7 +253,7 @@ const Home = () => {
                   }
                 }}
               >
-                {newPostsCount > 0 
+                {newPostsCount > 0
                   ? `${newPostsCount} new post${newPostsCount > 1 ? 's' : ''} available. Click to view.`
                   : 'New posts available. Click to view.'
                 }
@@ -349,35 +277,31 @@ const Home = () => {
             </motion.div>
           )}
 
-
-          {error && (
-            <motion.div
-              className={styles.error}
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3 }}
-            >
-              <div className={styles.errorIcon}>
-                {error.includes('offline') ? '📶' : '⚠️'}
-              </div>
-              <p>{error}</p>
-              {error.includes('offline') && (
-                <motion.button
-                  className={styles.retryButton}
-                  onClick={() => fetchHomePosts(1)}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  Retry
-                </motion.button>
-              )}
-            </motion.div>
-          )}
           <InfiniteScroll
-            dataLength={posts.length}
-            next={fetchMoreData}
-            hasMore={hasMore}
-            loader={<p className={styles.loadingText}>Loading more posts...</p>}
+            dataLength={allPosts.length}
+            next={fetchNextPage}
+            hasMore={hasNextPage}
+            loader={
+              <div className={styles.loadingContainer}>
+                {(isFetchingNextPage || isPrefetching) && (
+                  <div className={styles.skeletonLoader}>
+                    {Array.from({ length: 3 }).map((_, i) => (
+                      <div key={i} className={styles.skeletonPost}>
+                        <div className={styles.skeletonAvatar}></div>
+                        <div className={styles.skeletonContent}>
+                          <div className={styles.skeletonLine}></div>
+                          <div className={styles.skeletonLine}></div>
+                          <div className={styles.skeletonLine}></div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {!isFetchingNextPage && !isPrefetching && hasNextPage && (
+                  <p className={styles.loadingText}>Loading more posts...</p>
+                )}
+              </div>
+            }
             endMessage={
               <p className={styles.endMessage}>
                 <b>You have seen all the posts.</b>
@@ -386,7 +310,7 @@ const Home = () => {
             scrollableTarget="scrollableDiv"
           >
             <AnimatePresence>
-              {posts.length === 0 && !loading && !error && (
+              {allPosts.length === 0 && (
                 <motion.p
                   className={styles.noPosts}
                   initial={{ opacity: 0 }}
@@ -396,25 +320,29 @@ const Home = () => {
                   No posts available.
                 </motion.p>
               )}
-              {Array.isArray(posts) &&
-                posts.map((post) => {
-                  if (!post._id) {
-                    console.warn('Post missing _id:', post);
-                    return null;
-                  }
-                  return (
-                    <Post
-                      key={post._id}
-                      post={post}
-                      currentUserId={currentUser?._id}
-                      onDelete={handleDeletePost}
-                    />
-                  );
-                })}
+              {allPosts.map((post) => (
+                <Post
+                  key={post._id}
+                  post={post}
+                  currentUserId={currentUser?._id}
+                  onDelete={handleDeletePost}
+                />
+              ))}
             </AnimatePresence>
           </InfiniteScroll>
-          {loading && posts.length === 0 && (
-            <p className={styles.loadingText}>Loading posts...</p>
+
+          {/* Manual Load More button as fallback */}
+          {hasNextPage && !isFetchingNextPage && (
+            <div className={styles.loadMoreContainer}>
+              <motion.button
+                className={styles.loadMoreButton}
+                onClick={() => fetchNextPage()}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                Load More Posts
+              </motion.button>
+            </div>
           )}
         </div>
       </div>
