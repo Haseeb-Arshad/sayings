@@ -1,12 +1,7 @@
 'use client';
 
-import { useEffect, useState, useCallback, useRef, useMemo } from 'react';
+import { Suspense, lazy, useEffect, useState, useCallback, useRef, useMemo } from 'react';
 import axios, { isNetworkOffline } from '../utils/axiosInstance';
-import Post from '../component/post';
-import Navbar from '../component/navBar';
-import Sidebar from '../component/sidebar';
-import ProfileSidebar from '../component/ProfileSidebar';
-import SuggestionsSidebar from '../component/suggestionsBar';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import debounce from 'lodash.debounce';
 import styles from '../styles/Home.module.css';
@@ -16,6 +11,13 @@ import { AnimatePresence, motion } from 'framer-motion';
 import RefreshContext from '../context/RefreshContext';
 import useInfinitePosts from '../hooks/useInfinitePosts';
 import useScrollPrefetch, { useScrollPersistence } from '../hooks/useScrollPrefetch';
+import SkeletonPost from '../component/SkeletonPost';
+
+const Post = lazy(() => import('../component/post'));
+const Navbar = lazy(() => import('../component/navBar'));
+const Sidebar = lazy(() => import('../component/sidebar'));
+const ProfileSidebar = lazy(() => import('../component/ProfileSidebar'));
+const SuggestionsSidebar = lazy(() => import('../component/suggestionsBar'));
 
 const Home = () => {
   const [filter, setFilter] = useState('recent'); // Default to 'recent'
@@ -98,14 +100,12 @@ const Home = () => {
 
   // Callback when a post is updated (like, comment, etc.)
   const handlePostUpdate = useCallback((updatedPost) => {
-    // This will be handled by React Query's cache eventually, 
-    // but for now we could manually update the query cache or just let it be stale
-    // Standard approach with React Query is to invalidate or update query data
+    // This will be handled by React Query's cache eventually
     refetch();
   }, [refetch]);
 
   // Use real-time feed hook
-  const { isConnected, connectionType, forceCheck } = useRealtimeFeed({
+  const { isConnected, connectionType } = useRealtimeFeed({
     posts: allPosts,
     onNewPosts: handleNewPosts,
     onPostUpdate: handlePostUpdate,
@@ -164,22 +164,23 @@ const Home = () => {
   if (status === 'loading') {
     return (
       <div className={styles.home}>
-        <Navbar />
-        <Sidebar setFilter={handleFilterChange} currentFilter={filter} />
-        <ProfileSidebar />
-        <SuggestionsSidebar />
+        <Suspense fallback={null}>
+          <Navbar />
+        </Suspense>
+        <Suspense fallback={null}>
+          <Sidebar setFilter={handleFilterChange} currentFilter={filter} />
+        </Suspense>
+        <Suspense fallback={null}>
+          <ProfileSidebar />
+        </Suspense>
+        <Suspense fallback={null}>
+          <SuggestionsSidebar />
+        </Suspense>
         <div className={styles.postsContainer}>
           <div className={styles.loadingContainer}>
             <div className={styles.skeletonLoader}>
               {Array.from({ length: 5 }).map((_, i) => (
-                <div key={i} className={styles.skeletonPost}>
-                  <div className={styles.skeletonAvatar}></div>
-                  <div className={styles.skeletonContent}>
-                    <div className={styles.skeletonLine}></div>
-                    <div className={styles.skeletonLine}></div>
-                    <div className={styles.skeletonLine}></div>
-                  </div>
-                </div>
+                <SkeletonPost key={i} />
               ))}
             </div>
           </div>
@@ -192,10 +193,18 @@ const Home = () => {
     return (
       <RefreshContext.Provider value={refreshPosts}>
         <div className={styles.home}>
-          <Navbar />
-          <Sidebar setFilter={handleFilterChange} currentFilter={filter} />
-          <ProfileSidebar />
-          <SuggestionsSidebar />
+          <Suspense fallback={null}>
+            <Navbar />
+          </Suspense>
+          <Suspense fallback={null}>
+            <Sidebar setFilter={handleFilterChange} currentFilter={filter} />
+          </Suspense>
+          <Suspense fallback={null}>
+            <ProfileSidebar />
+          </Suspense>
+          <Suspense fallback={null}>
+            <SuggestionsSidebar />
+          </Suspense>
           <div className={styles.postsContainer}>
             <motion.div
               className={styles.error}
@@ -223,10 +232,18 @@ const Home = () => {
   return (
     <RefreshContext.Provider value={refreshPosts}>
       <div className={styles.home}>
-        <Navbar />
-        <Sidebar setFilter={handleFilterChange} currentFilter={filter} />
-        <ProfileSidebar />
-        <SuggestionsSidebar />
+        <Suspense fallback={null}>
+          <Navbar />
+        </Suspense>
+        <Suspense fallback={null}>
+          <Sidebar setFilter={handleFilterChange} currentFilter={filter} />
+        </Suspense>
+        <Suspense fallback={null}>
+          <ProfileSidebar />
+        </Suspense>
+        <Suspense fallback={null}>
+          <SuggestionsSidebar />
+        </Suspense>
         <div
           className={styles.postsContainer}
           ref={postsContainerRef}
@@ -268,12 +285,10 @@ const Home = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.5 }}
-              title={`Connected via ${connectionType === 'websocket' ? 'WebSocket' : 'Polling'}`}
+              title={`Connection active`}
             >
               <span className={styles.connectionDot}></span>
-              <span className={styles.connectionText}>
-                {connectionType === 'websocket' ? 'Live' : 'Auto-refresh'}
-              </span>
+              <span className={styles.connectionText}>Live</span>
             </motion.div>
           )}
 
@@ -286,14 +301,7 @@ const Home = () => {
                 {(isFetchingNextPage || isPrefetching) && (
                   <div className={styles.skeletonLoader}>
                     {Array.from({ length: 3 }).map((_, i) => (
-                      <div key={i} className={styles.skeletonPost}>
-                        <div className={styles.skeletonAvatar}></div>
-                        <div className={styles.skeletonContent}>
-                          <div className={styles.skeletonLine}></div>
-                          <div className={styles.skeletonLine}></div>
-                          <div className={styles.skeletonLine}></div>
-                        </div>
-                      </div>
+                      <SkeletonPost key={i} />
                     ))}
                   </div>
                 )}
@@ -309,26 +317,31 @@ const Home = () => {
             }
             scrollableTarget="scrollableDiv"
           >
-            <AnimatePresence>
-              {allPosts.length === 0 && (
-                <motion.p
-                  className={styles.noPosts}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                >
-                  No posts available.
-                </motion.p>
-              )}
-              {allPosts.map((post) => (
-                <Post
-                  key={post._id}
-                  post={post}
-                  currentUserId={currentUser?._id}
-                  onDelete={handleDeletePost}
-                />
-              ))}
-            </AnimatePresence>
+            <Suspense fallback={<SkeletonPost />}>
+              <AnimatePresence>
+                {allPosts.length === 0 && (
+                  <motion.p
+                    className={styles.noPosts}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                  >
+                    No posts available.
+                  </motion.p>
+                )}
+                {allPosts.map((post) => {
+                  if (!post._id) return null;
+                  return (
+                    <Post
+                      key={post._id}
+                      post={post}
+                      currentUserId={currentUser?._id}
+                      onDelete={handleDeletePost}
+                    />
+                  );
+                })}
+              </AnimatePresence>
+            </Suspense>
           </InfiniteScroll>
 
           {/* Manual Load More button as fallback */}

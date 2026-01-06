@@ -1,11 +1,8 @@
-// components/SuggestionsSidebar.js
-
 'use client';
 
 import { useEffect, useState } from 'react';
 import axios from '../utils/axiosInstance';
 import styles from '../styles/suggestionsBar.module.css';
-import { motion } from 'framer-motion';
 
 const SuggestionsSidebar = () => {
   const [suggestions, setSuggestions] = useState([]);
@@ -36,23 +33,14 @@ const SuggestionsSidebar = () => {
         {!loading &&
           !error &&
           suggestions.map((suggestion) => (
-            <motion.li
-              key={suggestion._id}
-              className={styles.suggestionItem}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-            >
+            <li key={suggestion._id} className={styles.suggestionItem}>
               <div className={styles.suggestionContent}>
-                <div className={styles.suggestionQuestion}>
-                  {suggestion.question}
-                </div>
+                <div className={styles.suggestionQuestion}>{suggestion.question}</div>
                 {suggestion.details && (
-                  <div className={styles.suggestionDetails}>
-                    {suggestion.details}
-                  </div>
+                  <div className={styles.suggestionDetails}>{suggestion.details}</div>
                 )}
               </div>
-            </motion.li>
+            </li>
           ))}
       </ul>
     </div>

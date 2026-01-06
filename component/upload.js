@@ -1,7 +1,7 @@
-// components/AnimatedAudioRecorder.js
-import React, { useState, useRef, useEffect } from 'react';
+'use client';
+
+import React, { useEffect, useRef, useState } from 'react';
 import { FaMicrophone, FaStop } from 'react-icons/fa';
-import { motion, AnimatePresence } from 'framer-motion';
 import styles from '../styles/AudioRecorder.module.css';
 import axios, { isNetworkOffline } from '../utils/axiosInstance';
 import recordingService from '../services/RecordingService.js';
@@ -34,6 +34,7 @@ const AnimatedAudioRecorder = ({ onNewPost, onClose }) => {
 
   useEffect(() => {
     setIsVisible(true);
+
     return () => {
       if (animationFrameRef.current) {
         cancelAnimationFrame(animationFrameRef.current);
@@ -94,7 +95,6 @@ const AnimatedAudioRecorder = ({ onNewPost, onClose }) => {
       mediaRecorder.ondataavailable = (e) => chunksRef.current.push(e.data);
       mediaRecorder.start();
       setRecording(true);
-
     } catch (err) {
       console.error('Error starting recording:', err);
       const categorized = err.categorized || recordingService.categorizeError(err);
@@ -151,6 +151,8 @@ const AnimatedAudioRecorder = ({ onNewPost, onClose }) => {
       if (streamRef.current) {
         recordingService.stopStream(streamRef.current);
         streamRef.current = null;
+      } else if (mediaRecorderRef.current?.stream) {
+        mediaRecorderRef.current.stream.getTracks().forEach((track) => track.stop());
       }
 
       setAudioLevel(0);
@@ -281,6 +283,8 @@ const AnimatedAudioRecorder = ({ onNewPost, onClose }) => {
     setRetryDelay(null);
   };
 
+  if (!isVisible) return null;
+
   return (
     <>
       <RecordingError
@@ -291,115 +295,91 @@ const AnimatedAudioRecorder = ({ onNewPost, onClose }) => {
         retryCount={retryCount}
         maxRetries={3}
       />
-      <AnimatePresence>
-        {isVisible && (
-          <motion.div
-            className={styles.container}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={onClose}
-          >
-            <motion.div
-              className={styles.recorderContainer}
-              onClick={(e) => e.stopPropagation()}
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.8, opacity: 0 }}
-              transition={{ type: "spring", damping: 20 }}
-              style={{
-                background: isProcessing
-                  ? "linear-gradient(135deg, rgba(147,51,234,0.9), rgba(192,38,211,0.8))"
-                  : `linear-gradient(135deg, rgba(59,130,246,${0.5 + audioLevel / 512}), rgba(37,99,235,${0.5 + audioLevel / 512}))`,
+      <div
+        className={styles.container}
+        onClick={() => {
+          setIsVisible(false);
+          if (onClose) onClose();
+        }}
+      >
+        <div
+          className={styles.recorderContainer}
+          onClick={(e) => e.stopPropagation()}
+          style={{
+            background: isProcessing
+              ? 'linear-gradient(135deg, rgba(147,51,234,0.9), rgba(192,38,211,0.8))'
+              : `linear-gradient(135deg, rgba(59,130,246,${0.5 + audioLevel / 512}), rgba(37,99,235,${0.5 + audioLevel / 512}))`,
+          }}
+        >
+          <div className={`${styles.innerContent} ${recording ? styles.innerPulsing : ''}`}>
+            <button
+              className={styles.closeButton}
+              onClick={() => {
+                setIsVisible(false);
+                if (onClose) onClose();
               }}
+              type="button"
+              aria-label="Close recorder"
             >
-              <motion.div
-                className={styles.innerContent}
-              >
+              &times;
+            </button>
+
+            <div className={styles.visualizer}>
+              <div className={`${styles.wave} ${recording ? styles.waveAnimating : ''}`} />
+            </div>
+
+            {recording && <div className={styles.timer}>{timeElapsed}s</div>}
+
+            <button
+              className={recording ? styles.stopButton : styles.recordButton}
+              onClick={recording ? stopRecording : startRecording}
+              type="button"
+            >
+              {recording ? <FaStop /> : <FaMicrophone />}
+              {recording ? 'Stop' : 'Start Recording'}
+            </button>
+
+            {isProcessing && (
+              <div className={styles.processingContainer}>
+                <div className={styles.processingSpinner} />
+                <p>{retryDelay || 'Processing your audio...'}</p>
+              </div>
+            )}
+
+            {error && !error.isRetryable && audioBlob && (
+              <div className="mt-4" style={{ textAlign: 'center' }}>
                 <button
-                  className={styles.closeButton}
-                  onClick={() => {
-                    setIsVisible(false);
-                    if (onClose) onClose();
+                  onClick={saveDraft}
+                  className={styles.draftButton}
+                  type="button"
+                  style={{
+                    background: 'linear-gradient(135deg, #fbbf24, #f59e0b)',
+                    color: '#fff',
+                    border: 'none',
+                    borderRadius: '6px',
+                    padding: '8px 16px',
+                    cursor: 'pointer',
+                    fontSize: '14px',
+                    fontWeight: 'bold'
                   }}
                 >
-                  &times;
+                  Save as Draft
                 </button>
+              </div>
+            )}
 
-                <div className={styles.visualizer}>
-                  <motion.div
-                    className={styles.wave}
-                    animate={{
-                      height: recording ? [20, 40, 20] : 20,
-                      opacity: recording ? [0.5, 1, 0.5] : 0.5
-                    }}
-                    transition={{ repeat: Infinity, duration: 1.5 }}
-                  />
-                </div>
+            {transcript && (
+              <div className={styles.transcriptContainer}>
+                <p>{transcript}</p>
+              </div>
+            )}
 
-                {recording && (
-                  <div className={styles.timer}>{timeElapsed}s</div>
-                )}
-
-                <motion.button
-                  className={recording ? styles.stopButton : styles.recordButton}
-                  onClick={recording ? stopRecording : startRecording}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  disabled={isProcessing}
-                >
-                  {recording ? <FaStop /> : <FaMicrophone />}
-                  {recording ? 'Stop' : 'Start Recording'}
-                </motion.button>
-
-                {isProcessing && (
-                  <div className={styles.processingContainer}>
-                    <div className={styles.processingSpinner} />
-                    <p>{retryDelay || 'Processing your audio...'}</p>
-                  </div>
-                )}
-
-                {error && !error.isRetryable && audioBlob && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="mt-4"
-                  >
-                    <motion.button
-                      onClick={saveDraft}
-                      className={styles.draftButton}
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      style={{
-                        background: 'linear-gradient(135deg, #fbbf24, #f59e0b)',
-                        color: '#fff',
-                        border: 'none',
-                        borderRadius: '6px',
-                        padding: '8px 16px',
-                        cursor: 'pointer',
-                        fontSize: '14px',
-                        fontWeight: 'bold'
-                      }}
-                    >
-                      Save as Draft
-                    </motion.button>
-                  </motion.div>
-                )}
-
-                {transcript && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className={styles.transcriptContainer}
-                  >
-                    <p>{transcript}</p>
-                  </motion.div>
-                )}
-              </motion.div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            {audioURL && (
+              <audio controls preload="none" src={audioURL} style={{ width: '100%', marginTop: '12px' }} />
+            )}
+          </div>
+        </div>
+      </div>
     </>
   );
 };

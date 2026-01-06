@@ -1,7 +1,13 @@
 'use client';
 
-import Explore from '../../component/explore';
+import React, { Suspense, lazy } from 'react';
+
+const Explore = lazy(() => import('@/component/explore'));
 
 export default function ExplorePage() {
-  return <Explore />;
+  return (
+    <Suspense fallback={null}>
+      <Explore />
+    </Suspense>
+  );
 }

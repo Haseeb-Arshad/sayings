@@ -1,12 +1,13 @@
-import Profile from '@/component/profile'
-import React from 'react'
+'use client';
 
-const page = () => {
+import React, { Suspense, lazy } from 'react';
+
+const Profile = lazy(() => import('@/component/profile'));
+
+export default function Page() {
   return (
-    <div>
-      <Profile/>
-    </div>
-  )
+    <Suspense fallback={null}>
+      <Profile />
+    </Suspense>
+  );
 }
-
-export default page

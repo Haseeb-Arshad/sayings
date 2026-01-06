@@ -10,6 +10,12 @@
   border-bottom: 1px solid var(--border);
   z-index: 90;
   transition: all var(--transition-base);
+  animation: navbarDrop 0.35s ease both;
+}
+
+@keyframes navbarDrop {
+  from { transform: translateY(-16px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
 }
 
 @media (max-width: 768px) {
@@ -396,6 +402,12 @@
   background: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(4px);
   z-index: 999;
+  animation: overlayFadeIn 0.3s ease both;
+}
+
+@keyframes overlayFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 .mobileNav {
@@ -413,6 +425,12 @@
   flex-direction: column;
   gap: 1.5rem;
   overflow-y: auto;
+  animation: drawerSlideIn 0.3s ease both;
+}
+
+@keyframes drawerSlideIn {
+  from { transform: translateX(24px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
 }
 
 .mobileNavHeader {
