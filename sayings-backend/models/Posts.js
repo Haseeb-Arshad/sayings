@@ -14,6 +14,8 @@ const EmotionSegmentSchema = require('./Emotion'); // Adjust the path as necessa
 // Define the Post schema
 const PostSchema = new mongoose.Schema({
   user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: false },
+  title: { type: String, default: 'Untitled' },
+  privacy: { type: String, enum: ['public', 'private'], default: 'public' },
   audioURL: { type: String, required: true },
   audioPinataURL: { type: String, required: true },
   ipfsHash: { type: String },
@@ -98,7 +100,7 @@ const PostSchema = new mongoose.Schema({
   // Fields for tracking likes
   likedByUsers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
   likedByIPs: [{ type: String }],
-}, { 
+}, {
   timestamps: true,
   toObject: { virtuals: true },
   toJSON: { virtuals: true },

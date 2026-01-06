@@ -283,11 +283,11 @@ export default function PostComposer({ isOpen, onClose, onPublished }) {
   const cleanupMedia = () => {
     try {
       mediaRecorderRef.current?.stop();
-    } catch {}
+    } catch { }
     mediaRecorderRef.current = null;
     try {
       mediaStreamRef.current?.getTracks().forEach((t) => t.stop());
-    } catch {}
+    } catch { }
     mediaStreamRef.current = null;
     chunksRef.current = [];
     if (audioURL) {
@@ -303,7 +303,7 @@ export default function PostComposer({ isOpen, onClose, onPublished }) {
     return `${m}:${s}`;
   }, [seconds]);
 
-const publish = async () => {
+  const publish = async () => {
     if (!blob) {
       setError('No audio captured.');
       return;
@@ -316,20 +316,19 @@ const publish = async () => {
     setError(null);
     setPhase(ComposerPhase.Publishing);
     try {
-      // Example multipart upload; adjust field names/endpoint to your API
+      // align with transcription backend: `/api/transcribe`
       const form = new FormData();
       form.append('title', title || 'Untitled');
       form.append('file', blob, 'recording.webm');
-      form.append('transcript', transcript || '');
-      form.append('topics', JSON.stringify(selectedTopics));
       form.append('privacy', privacy);
 
-      const res = await axios.post('/posts', form, {
+      // axios instance uses base URL '/api'
+      const res = await axios.post('/transcribe', form, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
 
       // Invalidate cached lists
-      try { refreshPosts && refreshPosts(); } catch {}
+      try { refreshPosts && refreshPosts(); } catch { }
 
       setPhase(ComposerPhase.Done);
       setIsSubmitting(false);
@@ -345,7 +344,7 @@ const publish = async () => {
   // Phase-specific content components to keep render small
   // Basic keyword extraction for topic suggestions
   const stopwords = new Set([
-    'the','be','to','of','and','a','in','that','have','i','it','for','not','on','with','he','as','you','do','at','this','but','his','by','from','they','we','say','her','she','or','an','will','my','one','all','would','there','their','what','so','up','out','if','about','who','get','which','go','me','when','make','can','like','time','no','just','him','know','take','person','into','year','your','good','some','could','them','see','other','than','then','now','look','only','come','its','over','think','also','back','after','use','two','how','our','work','first','well','way','even','new','want','because','any','these','give','day','most','us'
+    'the', 'be', 'to', 'of', 'and', 'a', 'in', 'that', 'have', 'i', 'it', 'for', 'not', 'on', 'with', 'he', 'as', 'you', 'do', 'at', 'this', 'but', 'his', 'by', 'from', 'they', 'we', 'say', 'her', 'she', 'or', 'an', 'will', 'my', 'one', 'all', 'would', 'there', 'their', 'what', 'so', 'up', 'out', 'if', 'about', 'who', 'get', 'which', 'go', 'me', 'when', 'make', 'can', 'like', 'time', 'no', 'just', 'him', 'know', 'take', 'person', 'into', 'year', 'your', 'good', 'some', 'could', 'them', 'see', 'other', 'than', 'then', 'now', 'look', 'only', 'come', 'its', 'over', 'think', 'also', 'back', 'after', 'use', 'two', 'how', 'our', 'work', 'first', 'well', 'way', 'even', 'new', 'want', 'because', 'any', 'these', 'give', 'day', 'most', 'us'
   ]);
   const topicSuggestions = useMemo(() => {
     const counts = new Map();
@@ -360,7 +359,7 @@ const publish = async () => {
         counts.set(w, (counts.get(w) || 0) + 1);
       });
     return Array.from(counts.entries())
-      .sort((a,b) => b[1] - a[1])
+      .sort((a, b) => b[1] - a[1])
       .slice(0, 8)
       .map(([w]) => w);
   }, [transcript]);
@@ -410,7 +409,7 @@ const publish = async () => {
     if (isPlaying) {
       el.pause();
     } else {
-      el.play().catch(() => {});
+      el.play().catch(() => { });
     }
   };
   const onTimeUpdate = () => {
@@ -874,4 +873,3 @@ function PhaseTransition({ phaseKey, reduce = false, children }) {
     </AnimatePresence>
   );
 }
-

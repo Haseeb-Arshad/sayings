@@ -109,7 +109,10 @@ exports.transcribeAudio = async (req, res) => {
   try {
     console.log('Request User:', req.user);
     console.log('File received:', req.file);
+    console.log('Body received:', req.body);
     const file = req.file;
+    const { title, privacy } = req.body;
+
     if (!file) {
       return res.status(400).json({ error: 'No file uploaded.' });
     }
@@ -263,24 +266,24 @@ exports.transcribeAudio = async (req, res) => {
      */
     const iabSummary = Array.isArray(responseData.iab_categories_result.summary)
       ? responseData.iab_categories_result.summary.map((cat, index) => {
-          if (
-            cat &&
-            typeof cat.category === 'string' &&
-            cat.category.trim() !== '' &&
-            typeof cat.confidence === 'number'
-          ) {
-            return {
-              category: cat.category.trim(),
-              confidence: cat.confidence,
-            };
-          } else {
-            console.warn(`Invalid IAB category at index ${index}:`, cat);
-            return {
-              category: 'Unknown',
-              confidence: 0,
-            };
-          }
-        })
+        if (
+          cat &&
+          typeof cat.category === 'string' &&
+          cat.category.trim() !== '' &&
+          typeof cat.confidence === 'number'
+        ) {
+          return {
+            category: cat.category.trim(),
+            confidence: cat.confidence,
+          };
+        } else {
+          console.warn(`Invalid IAB category at index ${index}:`, cat);
+          return {
+            category: 'Unknown',
+            confidence: 0,
+          };
+        }
+      })
       : [];
 
     console.log('IAB Summary:', iabSummary);
@@ -338,24 +341,24 @@ exports.transcribeAudio = async (req, res) => {
      */
     const iabResults = Array.isArray(responseData.iab_categories_result.results)
       ? responseData.iab_categories_result.results.map((result, index) => {
-          if (
-            result &&
-            typeof result.category === 'string' &&
-            result.category.trim() !== '' &&
-            typeof result.confidence === 'number'
-          ) {
-            return {
-              category: result.category.trim(),
-              confidence: result.confidence,
-            };
-          } else {
-            console.warn(`Invalid IAB result at index ${index}:`, result);
-            return {
-              category: 'Unknown',
-              confidence: 0,
-            };
-          }
-        })
+        if (
+          result &&
+          typeof result.category === 'string' &&
+          result.category.trim() !== '' &&
+          typeof result.confidence === 'number'
+        ) {
+          return {
+            category: result.category.trim(),
+            confidence: result.confidence,
+          };
+        } else {
+          console.warn(`Invalid IAB result at index ${index}:`, result);
+          return {
+            category: 'Unknown',
+            confidence: 0,
+          };
+        }
+      })
       : [];
 
     responseData.iab_categories_result.results = iabResults;
@@ -442,6 +445,8 @@ exports.transcribeAudio = async (req, res) => {
      */
     const newPost = new Post({
       user: req.user?.id || null,
+      title: title || 'Untitled',
+      privacy: privacy || 'public',
       audioURL: responseData.audioURL,
       ipfsHash: ipfsHash,
       audioPinataURL: ipfsHash,
