@@ -1,0 +1,339 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 16px;
+  z-index: 1000;
+}
+
+.modal {
+  width: 100%;
+  max-width: 760px;
+  background: var(--surface, #141418);
+  color: var(--text-primary, #fff);
+  border: 1px solid var(--border, rgba(255, 255, 255, 0.08));
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+}
+
+@media (max-width: 640px) {
+  .overlay {
+    padding: 0;
+    align-items: stretch;
+  }
+
+  .modal {
+    max-width: none;
+    height: 100vh;
+    border-radius: 0;
+  }
+}
+
+.header {
+  padding: 14px;
+  border-bottom: 1px solid var(--border, rgba(255, 255, 255, 0.08));
+  background: var(--bg, #0f0f12);
+}
+
+.searchRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.searchIcon {
+  flex: 0 0 auto;
+  color: var(--text-tertiary, rgba(255, 255, 255, 0.55));
+}
+
+.input {
+  width: 100%;
+  height: 42px;
+  border-radius: 12px;
+  border: 1px solid var(--border, rgba(255, 255, 255, 0.12));
+  background: var(--surface, #141418);
+  color: var(--text-primary, #fff);
+  padding: 0 12px;
+  outline: none;
+}
+
+.input::placeholder {
+  color: var(--text-tertiary, rgba(255, 255, 255, 0.55));
+}
+
+.closeButton {
+  flex: 0 0 auto;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  border: 1px solid var(--border, rgba(255, 255, 255, 0.12));
+  background: transparent;
+  color: var(--text-secondary, rgba(255, 255, 255, 0.75));
+  cursor: pointer;
+}
+
+.toolsRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+
+.filtersButton {
+  border-radius: 999px;
+  border: 1px solid var(--border, rgba(255, 255, 255, 0.12));
+  background: var(--surface, #141418);
+  color: var(--text-secondary, rgba(255, 255, 255, 0.85));
+  padding: 6px 10px;
+  cursor: pointer;
+  font-size: 0.875rem;
+}
+
+.chips {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.chip {
+  border-radius: 999px;
+  border: 1px solid var(--border, rgba(255, 255, 255, 0.12));
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-secondary, rgba(255, 255, 255, 0.85));
+  padding: 6px 10px;
+  cursor: pointer;
+  font-size: 0.8125rem;
+}
+
+.filtersPanel {
+  margin-top: 12px;
+  overflow: hidden;
+}
+
+.filtersGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+@media (max-width: 640px) {
+  .filtersGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.filterField {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.75rem;
+  color: var(--text-tertiary, rgba(255, 255, 255, 0.6));
+}
+
+.filterField input,
+.filterField select {
+  height: 38px;
+  border-radius: 10px;
+  border: 1px solid var(--border, rgba(255, 255, 255, 0.12));
+  background: var(--surface, #141418);
+  color: var(--text-primary, #fff);
+  padding: 0 10px;
+  outline: none;
+}
+
+.content {
+  padding: 14px;
+  max-height: calc(100vh - 160px);
+  overflow: auto;
+}
+
+@media (max-width: 640px) {
+  .content {
+    max-height: calc(100vh - 210px);
+  }
+}
+
+.section {
+  margin-top: 14px;
+}
+
+.sectionTitle {
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-tertiary, rgba(255, 255, 255, 0.55));
+  margin-bottom: 8px;
+}
+
+.list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.resultRow {
+  width: 100%;
+  text-align: left;
+  border-radius: 12px;
+  border: 1px solid var(--border, rgba(255, 255, 255, 0.08));
+  background: rgba(255, 255, 255, 0.04);
+  padding: 10px 12px;
+  cursor: pointer;
+  color: inherit;
+}
+
+.resultRow:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.userRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  object-fit: cover;
+  flex: 0 0 auto;
+}
+
+.resultMain {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.resultTitle {
+  font-size: 0.95rem;
+  color: var(--text-primary, #fff);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.resultSubtitle {
+  font-size: 0.85rem;
+  color: var(--text-secondary, rgba(255, 255, 255, 0.75));
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.pill {
+  border-radius: 999px;
+  border: 1px solid var(--border, rgba(255, 255, 255, 0.12));
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-secondary, rgba(255, 255, 255, 0.85));
+  padding: 6px 10px;
+  cursor: pointer;
+}
+
+.footerRow {
+  margin-top: 16px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.viewAll {
+  border-radius: 12px;
+  border: 1px solid var(--border, rgba(255, 255, 255, 0.12));
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-primary, #fff);
+  padding: 10px 12px;
+  cursor: pointer;
+}
+
+.loading {
+  color: var(--text-secondary, rgba(255, 255, 255, 0.75));
+}
+
+.error {
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 65, 54, 0.5);
+  background: rgba(255, 65, 54, 0.14);
+  color: #ffdfdf;
+}
+
+.muted {
+  color: var(--text-tertiary, rgba(255, 255, 255, 0.55));
+  font-size: 0.875rem;
+}
+
+.discovery {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.mark {
+  background: rgba(255, 215, 0, 0.22);
+  color: inherit;
+  padding: 0 2px;
+  border-radius: 4px;
+}
+
+/* Trigger styles */
+.triggerInput {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0.625rem 1rem;
+  border-radius: 12px;
+  border: 1px solid var(--border, rgba(255, 255, 255, 0.12));
+  background: var(--bg, #0f0f12);
+  color: var(--text-secondary, rgba(255, 255, 255, 0.85));
+  cursor: pointer;
+}
+
+.triggerIcon {
+  color: var(--text-tertiary, rgba(255, 255, 255, 0.6));
+}
+
+.triggerPlaceholder {
+  flex: 1;
+  text-align: left;
+  font-size: 0.875rem;
+  color: var(--text-tertiary, rgba(255, 255, 255, 0.7));
+}
+
+.triggerHint {
+  font-size: 0.75rem;
+  color: var(--text-tertiary, rgba(255, 255, 255, 0.6));
+  border: 1px solid var(--border, rgba(255, 255, 255, 0.12));
+  padding: 2px 6px;
+  border-radius: 8px;
+}
+
+.triggerButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  border: 1px solid var(--border, rgba(255, 255, 255, 0.12));
+  background: var(--bg, #0f0f12);
+  color: var(--text-secondary, rgba(255, 255, 255, 0.85));
+  cursor: pointer;
+}

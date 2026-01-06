@@ -20,7 +20,14 @@ const PostSchema = new mongoose.Schema({
   audioPinataURL: { type: String, required: true },
   ipfsHash: { type: String },
 
+  title: { type: String },
+  description: { type: String },
   transcript: { type: String },
+  summary: { type: String },
+
+  // Embeddings-ready: optional vector for future semantic search.
+  embedding: { type: [Number], default: undefined },
+
   topics: [{
     topic: { type: String, required: true },
     confidence: { type: Number, required: true },
@@ -33,7 +40,6 @@ const PostSchema = new mongoose.Schema({
     end: { type: Number, required: true },
     confidence: { type: Number, required: true },
   }],
-  summary: { type: String },
   entities: [{
     entity_type: { type: String, required: true },
     text: { type: String, required: true },
@@ -105,5 +111,31 @@ const PostSchema = new mongoose.Schema({
   toObject: { virtuals: true },
   toJSON: { virtuals: true },
 });
+
+PostSchema.index(
+  {
+    title: 'text',
+    description: 'text',
+    transcript: 'text',
+    summary: 'text',
+    'topics.topic': 'text',
+  },
+  {
+    name: 'post_full_text_search',
+    weights: {
+      title: 10,
+      transcript: 8,
+      'topics.topic': 6,
+      description: 5,
+      summary: 4,
+    },
+  }
+);
+
+PostSchema.index({ createdAt: -1 });
+PostSchema.index({ timestamp: -1 });
+PostSchema.index({ user: 1, createdAt: -1 });
+PostSchema.index({ 'topics.topic': 1 });
+PostSchema.index({ generalSentiment: 1 });
 
 module.exports = mongoose.model('Post', PostSchema);
