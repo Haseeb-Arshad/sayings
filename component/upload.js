@@ -3,7 +3,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import { FaMicrophone, FaStop } from 'react-icons/fa';
 import { motion, AnimatePresence } from 'framer-motion';
 import styles from '../styles/AudioRecorder.module.css';
-import axios from '../utils/axiosInstance';
+import axios, { isNetworkOffline } from '../utils/axiosInstance';
+import draftRecordingService from '../services/draftRecordingService';
 
 const AnimatedAudioRecorder = ({ onNewPost, onClose }) => {
   const [isVisible, setIsVisible] = useState(false);
@@ -13,6 +14,8 @@ const AnimatedAudioRecorder = ({ onNewPost, onClose }) => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [timeElapsed, setTimeElapsed] = useState(0);
   const [audioLevel, setAudioLevel] = useState(0);
+  const [audioBlob, setAudioBlob] = useState(null);
+  const [uploadError, setUploadError] = useState(null);
 
   const mediaRecorderRef = useRef(null);
   const chunksRef = useRef([]);
@@ -117,6 +120,7 @@ const AnimatedAudioRecorder = ({ onNewPost, onClose }) => {
       setIsProcessing(true);
 
       const blob = new Blob(chunksRef.current, { type: 'audio/wav' });
+      setAudioBlob(blob);
       setAudioURL(URL.createObjectURL(blob));
       chunksRef.current = [];
 
@@ -132,6 +136,7 @@ const AnimatedAudioRecorder = ({ onNewPost, onClose }) => {
 
   const uploadAudio = async (blob) => {
     setIsProcessing(true);
+    setUploadError(null);
     const formData = new FormData();
     formData.append('file', blob, 'recording.wav');
 
@@ -154,10 +159,33 @@ const AnimatedAudioRecorder = ({ onNewPost, onClose }) => {
       return post;
     } catch (error) {
       console.error('Error uploading audio:', error.response?.data || error.message);
-      alert('Error uploading audio for transcription.');
+      const errorMessage = error.isOffline 
+        ? 'You are offline. Save as draft instead?' 
+        : 'Error uploading audio for transcription. Save as draft instead?';
+      setUploadError(errorMessage);
       return null;
     } finally {
       setIsProcessing(false);
+    }
+  };
+
+  const saveDraft = async () => {
+    if (!audioBlob) return;
+    try {
+      await draftRecordingService.create(audioBlob, {
+        title: 'Untitled',
+        description: '',
+        topics: [],
+        transcript: transcript || '',
+        privacy: 'public',
+      });
+      setUploadError(null);
+      alert('Recording saved as draft. Go to Drafts to edit and publish.');
+      setIsVisible(false);
+      if (onClose) onClose();
+    } catch (error) {
+      console.error('Error saving draft:', error);
+      setUploadError('Failed to save draft.');
     }
   };
 
@@ -229,6 +257,42 @@ const AnimatedAudioRecorder = ({ onNewPost, onClose }) => {
                   <div className={styles.processingSpinner} />
                   <p>Processing your audio...</p>
                 </div>
+              )}
+
+              {uploadError && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className={styles.errorContainer}
+                  style={{
+                    background: 'rgba(239, 68, 68, 0.2)',
+                    border: '1px solid rgba(239, 68, 68, 0.5)',
+                    borderRadius: '8px',
+                    padding: '12px',
+                    marginTop: '12px',
+                    textAlign: 'center'
+                  }}
+                >
+                  <p style={{ marginBottom: '12px', color: '#ef4444' }}>{uploadError}</p>
+                  <motion.button
+                    onClick={saveDraft}
+                    className={styles.draftButton}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    style={{
+                      background: 'linear-gradient(135deg, #fbbf24, #f59e0b)',
+                      color: '#fff',
+                      border: 'none',
+                      borderRadius: '6px',
+                      padding: '8px 16px',
+                      cursor: 'pointer',
+                      fontSize: '14px',
+                      fontWeight: 'bold'
+                    }}
+                  >
+                    Save as Draft
+                  </motion.button>
+                </motion.div>
               )}
 
               {transcript && (

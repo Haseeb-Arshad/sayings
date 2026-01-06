@@ -4,9 +4,10 @@
 
 import React, { useCallback, useEffect, useMemo, useRef, useState, useContext } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
-import axios from '../utils/axiosInstance';
+import axios, { isNetworkOffline } from '../utils/axiosInstance';
 import { useAuth } from '../context/useAuth';
 import { RefreshContext } from './providers';
+import draftRecordingService from '../services/draftRecordingService';
 
 // Phases of the composer flow
 export const ComposerPhase = Object.freeze({
@@ -303,6 +304,32 @@ export default function PostComposer({ isOpen, onClose, onPublished }) {
     return `${m}:${s}`;
   }, [seconds]);
 
+  const saveAsDraft = async () => {
+    if (!blob) {
+      setError('No audio captured.');
+      return;
+    }
+    setIsSubmitting(true);
+    setError(null);
+    try {
+      await draftRecordingService.create(blob, {
+        title: title || 'Untitled',
+        description: '',
+        topics: selectedTopics,
+        transcript,
+        privacy,
+      });
+      setPhase(ComposerPhase.Done);
+      setIsSubmitting(false);
+      if (onPublished) onPublished({ savedAsDraft: true });
+    } catch (e) {
+      console.error(e);
+      setIsSubmitting(false);
+      setPhase(ComposerPhase.Review);
+      setError(e?.message || 'Failed to save draft.');
+    }
+  };
+
   const publish = async () => {
     if (!blob) {
       setError('No audio captured.');
@@ -320,6 +347,8 @@ export default function PostComposer({ isOpen, onClose, onPublished }) {
       const form = new FormData();
       form.append('title', title || 'Untitled');
       form.append('file', blob, 'recording.webm');
+      form.append('transcript', transcript || '');
+      form.append('topics', JSON.stringify(selectedTopics));
       form.append('privacy', privacy);
 
       // axios instance uses base URL '/api'
@@ -340,6 +369,8 @@ export default function PostComposer({ isOpen, onClose, onPublished }) {
       setError(e?.response?.data?.message || e?.message || 'Failed to publish.');
     }
   };
+
+
 
   // Phase-specific content components to keep render small
   // Basic keyword extraction for topic suggestions
@@ -720,11 +751,22 @@ export default function PostComposer({ isOpen, onClose, onPublished }) {
               <button
                 className="px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 onClick={publish}
-                disabled={isSubmitting}
+                disabled={isSubmitting || !user}
                 aria-label="Publish post"
+                title={!user ? 'Sign in to publish' : ''}
               >
                 {isSubmitting ? 'Publishing…' : 'Publish'}
               </button>
+              {isNetworkOffline() || !user ? (
+                <button
+                  className="px-4 py-2 rounded-md bg-yellow-600 text-white hover:bg-yellow-700 disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-yellow-500"
+                  onClick={saveAsDraft}
+                  disabled={isSubmitting}
+                  aria-label="Save as draft"
+                >
+                  {isSubmitting ? 'Saving…' : 'Save Draft'}
+                </button>
+              ) : null}
               <button
                 className="px-4 py-2 rounded-md bg-gray-100 text-gray-800 hover:bg-gray-200 disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-gray-400"
                 onClick={() => setPhase(ComposerPhase.Idle)}

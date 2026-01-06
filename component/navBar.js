@@ -11,7 +11,8 @@ import {
   FaMicrophone,
   FaBell,
   FaSearch,
-  FaHeadphones
+  FaHeadphones,
+  FaFileAlt
 } from 'react-icons/fa';
 import { motion, AnimatePresence } from 'framer-motion';
 import styles from '../styles/Navbar.module.css';
@@ -31,10 +32,11 @@ const Navbar = () => {
   const navItems = [
     { id: 'explore', label: 'Explore', path: '/explore', icon: FaCompass },
     { id: 'listen', label: 'Listen', path: '/listen', icon: FaHeadphones },
+    { id: 'drafts', label: 'Drafts', path: '/drafts', icon: FaFileAlt },
     { id: 'upload', label: 'Upload', path: '/upload', icon: FaMicrophone }
   ];
 
-  const mobileNavItems = user ? navItems : navItems.filter((item) => item.id !== 'listen');
+  const mobileNavItems = user ? navItems : navItems.filter((item) => item.id !== 'listen' && item.id !== 'drafts');
 
   const handleNavClick = (path) => {
     push(path);
@@ -116,9 +118,10 @@ const Navbar = () => {
                 {isActive('/explore') && 'Explore'}
                 {isActive('/profile') && 'Profile'}
                 {isActive('/listen') && 'Listen'}
+                {isActive('/drafts') && 'Drafts'}
                 {isActive('/upload') && 'Upload'}
                 {isActive('/settings') && 'Settings'}
-                {!isActive('/') && !isActive('/explore') && !isActive('/profile') && !isActive('/listen') && !isActive('/upload') && !isActive('/settings') && 'Sayings'}
+                {!isActive('/') && !isActive('/explore') && !isActive('/profile') && !isActive('/listen') && !isActive('/drafts') && !isActive('/upload') && !isActive('/settings') && 'Sayings'}
               </span>
             </motion.div>
           </div>
