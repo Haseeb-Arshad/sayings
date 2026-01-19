@@ -3,7 +3,7 @@
 .navbar {
   position: fixed;
   top: 0;
-  left: 280px;
+  left: 0;
   right: 0;
   height: 64px;
   background: var(--surface);
@@ -14,8 +14,15 @@
 }
 
 @keyframes navbarDrop {
-  from { transform: translateY(-16px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
+  from {
+    transform: translateY(-16px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
 @media (max-width: 768px) {
@@ -333,8 +340,8 @@
 
 .loginButton,
 .signupButton {
-  padding: 0.625rem 1.25rem;
-  border-radius: var(--radius-full);
+  padding: 0.5rem 1.25rem;
+  border-radius: var(--radius-md);
   font-weight: 600;
   font-size: 0.875rem;
   transition: all var(--transition-base);
@@ -350,19 +357,21 @@
   background: var(--surface-hover);
   border-color: var(--border-hover);
   color: var(--text-primary);
+  transform: translateY(-1px);
 }
 
 .signupButton {
   background: var(--accent);
   color: white;
   border: 1px solid var(--accent);
+  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
 }
 
 .signupButton:hover {
   background: var(--accent-hover);
   border-color: var(--accent-hover);
   transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
 }
 
 .signupButton:active {
@@ -406,8 +415,13 @@
 }
 
 @keyframes overlayFadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 .mobileNav {
@@ -429,8 +443,15 @@
 }
 
 @keyframes drawerSlideIn {
-  from { transform: translateX(24px); opacity: 0; }
-  to { transform: translateX(0); opacity: 1; }
+  from {
+    transform: translateX(24px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
 }
 
 .mobileNavHeader {
@@ -534,7 +555,7 @@
 .offlineIndicator {
   position: fixed;
   top: 64px;
-  left: 280px;
+  left: 0;
   right: 0;
   background: var(--error);
   color: white;

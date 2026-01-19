@@ -3,20 +3,71 @@
 .profileSidebar {
     position: fixed;
     top: 64px;
-    left: 280px;
-    width: 240px;
+    right: 0;
+    width: 320px;
     height: calc(100vh - 64px);
     background: var(--surface);
-    border-right: 1px solid var(--border);
+    border-left: 1px solid var(--border);
     overflow-y: auto;
     padding: 1.5rem 1rem;
     display: flex;
     flex-direction: column;
     gap: 1rem;
-    z-index: 50;
+    z-index: 80;
+    transition: transform var(--transition-base), width var(--transition-base);
 }
 
-@media (max-width: 1280px) {
+.profileSidebar.collapsed {
+    width: 60px;
+    padding: 1.5rem 0.5rem;
+    overflow: hidden;
+}
+
+.toggleButton {
+    position: absolute;
+    top: 1rem;
+    left: -12px;
+    width: 24px;
+    height: 24px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+    cursor: pointer;
+    z-index: 100;
+    box-shadow: var(--shadow-sm);
+}
+
+.toggleButton:hover {
+    background: var(--surface-hover);
+    color: var(--accent);
+}
+
+.collapsedContent {
+    display: none;
+}
+
+.collapsedIcon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    width: 100%;
+}
+
+.miniAvatar {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-full);
+    border: 2px solid var(--accent);
+    object-fit: cover;
+}
+
+
+@media (max-width: 1024px) {
     .profileSidebar {
         display: none;
     }

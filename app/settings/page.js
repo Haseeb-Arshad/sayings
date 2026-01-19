@@ -5,9 +5,6 @@ import { FiUser, FiLock, FiBell, FiGlobe, FiShield, FiHelpCircle } from 'react-i
 import styles from '@/styles/settings.module.css';
 import layoutStyles from '@/styles/Explore.module.css';
 
-const Navbar = lazy(() => import('@/component/navBar'));
-const Sidebar = lazy(() => import('@/component/sidebar'));
-
 export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState('account');
 
@@ -185,35 +182,26 @@ export default function SettingsPage() {
 
   return (
     <div className={layoutStyles.container}>
-      <Suspense fallback={null}>
-        <Navbar />
-      </Suspense>
-      <div className={layoutStyles.mainContent}>
-        <Suspense fallback={null}>
-          <Sidebar setFilter={() => {}} currentFilter="recent" />
-        </Suspense>
-        <div className={layoutStyles.exploreSection}>
-          <div className={styles.wrapper}>
-            <h1 className={styles.pageTitle}>Settings</h1>
-            <div className={styles.grid}>
-              <div className={styles.sidebar}>
-                <nav>
-                  {Object.entries(tabs).map(([key, { icon, title }]) => (
-                    <button
-                      key={key}
-                      onClick={() => setActiveTab(key)}
-                      className={`${styles.navButton} ${
-                        activeTab === key ? styles.active : ''
+      <div className={layoutStyles.exploreSection}>
+        <div className={styles.wrapper}>
+          <h1 className={styles.pageTitle}>Settings</h1>
+          <div className={styles.grid}>
+            <div className={styles.sidebar}>
+              <nav>
+                {Object.entries(tabs).map(([key, { icon, title }]) => (
+                  <button
+                    key={key}
+                    onClick={() => setActiveTab(key)}
+                    className={`${styles.navButton} ${activeTab === key ? styles.active : ''
                       }`}
-                    >
-                      {icon}
-                      <span>{title}</span>
-                    </button>
-                  ))}
-                </nav>
-              </div>
-              <div className={styles.content}>{tabs[activeTab].content}</div>
+                  >
+                    {icon}
+                    <span>{title}</span>
+                  </button>
+                ))}
+              </nav>
             </div>
+            <div className={styles.content}>{tabs[activeTab].content}</div>
           </div>
         </div>
       </div>

@@ -2,10 +2,10 @@
 
 .sidebar {
   position: fixed;
-  top: 0;
+  top: 64px;
   left: 0;
   width: 280px;
-  height: 100vh;
+  height: calc(100vh - 64px);
   background: var(--surface);
   border-right: 1px solid var(--border);
   z-index: 100;
@@ -15,9 +15,16 @@
   transition: all var(--transition-base);
 }
 
+@media (max-width: 1024px) {
+  .sidebar {
+    left: 0;
+  }
+}
+
 @media (max-width: 768px) {
   .sidebar {
     transform: translateX(-100%);
+    left: 0;
   }
 
   .sidebar.open {
@@ -161,13 +168,14 @@
 }
 
 .sectionTitle {
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.1em;
   color: var(--text-tertiary);
-  padding: 0.5rem 1rem 0.5rem;
-  margin-bottom: 0.25rem;
+  padding: 0.75rem 1rem 0.25rem;
+  margin-bottom: 0.5rem;
+  border-top: 1px solid var(--border);
 }
 
 .filterItem {
@@ -189,8 +197,8 @@
 }
 
 .filterItem:hover:not(:disabled) {
-  background: var(--surface-hover);
-  color: var(--text-primary);
+  background: var(--accent-light);
+  color: var(--accent);
 }
 
 .filterItem.active {

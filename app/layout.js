@@ -28,6 +28,8 @@ import UploadQueueInitializer from "@/component/UploadQueueInitializer";
 import UploadQueueStatus from "@/component/UploadQueueStatus";
 import ClientOverlays from "@/component/ClientOverlays";
 
+import ClientLayout from "@/component/ClientLayout";
+
 export default function RootLayout({ children }) {
   return (
     <html lang="en" suppressHydrationWarning={true}>
@@ -47,7 +49,9 @@ export default function RootLayout({ children }) {
               <MotionConfig reducedMotion="user">
                 <SRLiveRegion />
                 <UploadQueueInitializer />
-                {children}
+                <ClientLayout>
+                  {children}
+                </ClientLayout>
                 <ClientOverlays />
                 <UploadQueueStatus />
                 <ServiceWorkerRegistrar />

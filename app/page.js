@@ -14,10 +14,6 @@ import useScrollPrefetch, { useScrollPersistence } from '../hooks/useScrollPrefe
 import SkeletonPost from '../component/SkeletonPost';
 
 const Post = lazy(() => import('../component/post'));
-const Navbar = lazy(() => import('../component/navBar'));
-const Sidebar = lazy(() => import('../component/sidebar'));
-const ProfileSidebar = lazy(() => import('../component/ProfileSidebar'));
-const SuggestionsSidebar = lazy(() => import('../component/suggestionsBar'));
 
 const Home = () => {
   const [filter, setFilter] = useState('recent'); // Default to 'recent'
@@ -164,18 +160,6 @@ const Home = () => {
   if (status === 'loading') {
     return (
       <div className={styles.home}>
-        <Suspense fallback={null}>
-          <Navbar />
-        </Suspense>
-        <Suspense fallback={null}>
-          <Sidebar setFilter={handleFilterChange} currentFilter={filter} />
-        </Suspense>
-        <Suspense fallback={null}>
-          <ProfileSidebar />
-        </Suspense>
-        <Suspense fallback={null}>
-          <SuggestionsSidebar />
-        </Suspense>
         <div className={styles.postsContainer}>
           <div className={styles.loadingContainer}>
             <div className={styles.skeletonLoader}>
@@ -193,18 +177,6 @@ const Home = () => {
     return (
       <RefreshContext.Provider value={refreshPosts}>
         <div className={styles.home}>
-          <Suspense fallback={null}>
-            <Navbar />
-          </Suspense>
-          <Suspense fallback={null}>
-            <Sidebar setFilter={handleFilterChange} currentFilter={filter} />
-          </Suspense>
-          <Suspense fallback={null}>
-            <ProfileSidebar />
-          </Suspense>
-          <Suspense fallback={null}>
-            <SuggestionsSidebar />
-          </Suspense>
           <div className={styles.postsContainer}>
             <motion.div
               className={styles.error}
@@ -232,18 +204,6 @@ const Home = () => {
   return (
     <RefreshContext.Provider value={refreshPosts}>
       <div className={styles.home}>
-        <Suspense fallback={null}>
-          <Navbar />
-        </Suspense>
-        <Suspense fallback={null}>
-          <Sidebar setFilter={handleFilterChange} currentFilter={filter} />
-        </Suspense>
-        <Suspense fallback={null}>
-          <ProfileSidebar />
-        </Suspense>
-        <Suspense fallback={null}>
-          <SuggestionsSidebar />
-        </Suspense>
         <div
           className={styles.postsContainer}
           ref={postsContainerRef}

@@ -84,7 +84,7 @@ const Navbar = () => {
         <div className={styles.navContainer}>
           <div className={styles.leftSection}>
             <div className={styles.pageIndicator}>
-              <FaMicrophone className={styles.pageIcon} />
+
               <span className={styles.pageName}>
                 {isActive('/') && 'Home'}
                 {isActive('/explore') && 'Explore'}

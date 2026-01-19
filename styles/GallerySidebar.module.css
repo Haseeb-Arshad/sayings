@@ -1,0 +1,182 @@
+/* GallerySidebar.module.css */
+
+.sidebar {
+    width: 280px;
+    height: 100vh;
+    background-color: #1a1a1a;
+    color: #ffffff;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    border-right: 1px solid #333;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0.25rem 1rem 0.25rem;
+}
+
+.title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #fff;
+    letter-spacing: -0.02em;
+}
+
+.toggleBtn {
+    background: #333;
+    border: 1px solid #444;
+    border-radius: 6px;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #888;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.toggleBtn:hover {
+    background: #444;
+    color: #fff;
+}
+
+.divider {
+    border-top: 1px dashed #444;
+    margin-bottom: 1.25rem;
+}
+
+.navList {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    flex: 1;
+}
+
+.navItem {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.625rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    background: transparent;
+    border: none;
+    width: 100%;
+    text-align: left;
+}
+
+.navItem:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.iconBox {
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.label {
+    font-size: 0.9375rem;
+    font-weight: 500;
+    color: #e0e0e0;
+}
+
+.footerCard {
+    margin-top: auto;
+    background-color: #111111;
+    border-radius: 12px;
+    padding: 1.5rem;
+    border: 1px solid #222;
+}
+
+.footerTitle {
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 1rem;
+    color: #fff;
+}
+
+.footerText {
+    font-size: 0.8125rem;
+    color: #888;
+    line-height: 1.4;
+}
+
+.footerLink {
+    color: #aaa;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.footerLink:hover {
+    color: #fff;
+}
+
+/* Animations */
+.navItem {
+    animation: fadeIn 0.3s ease forwards;
+    opacity: 0;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Specific item icon colors */
+.iconAll {
+    background: #333333;
+}
+
+.iconStatic {
+    background: #0ea5e9;
+}
+
+.iconDropdown {
+    background: #059669;
+}
+
+.iconMega {
+    background: #db2777;
+}
+
+.iconSide {
+    background: #d97706;
+}
+
+.iconSearch {
+    background: #65a30d;
+}
+
+.iconAnnounce {
+    background: #16a34a;
+}
+
+.iconFull {
+    background: #3b82f6;
+}
+
+.iconBread {
+    background: #7c3aed;
+}

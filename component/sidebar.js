@@ -31,9 +31,9 @@ const Sidebar = ({ setFilter, currentFilter }) => {
   const filterOptions = [
     { id: 'recent', icon: FaFire, label: 'Recent', filter: 'recent' },
     { id: 'trending', icon: FaChartLine, label: 'Trending', filter: 'trending', disabled: true },
-    { id: 'technology', icon: FaHashtag, label: 'Technology', filter: 'topic:Technology' },
-    { id: 'sports', icon: FaHashtag, label: 'Sports', filter: 'topic:Sports' },
-    { id: 'entertainment', icon: FaHashtag, label: 'Entertainment', filter: 'topic:Entertainment' },
+    { id: 'technology', icon: FaCog, label: 'Technology', filter: 'topic:Technology' },
+    { id: 'sports', icon: FaFire, label: 'Sports', filter: 'topic:Sports' },
+    { id: 'entertainment', icon: FaChartLine, label: 'Entertainment', filter: 'topic:Entertainment' },
   ];
 
   const handleNavClick = (path) => {
@@ -54,17 +54,6 @@ const Sidebar = ({ setFilter, currentFilter }) => {
 
   return (
     <aside className={styles.sidebar}>
-      <div className={styles.profileSection}>
-        <div className={styles.profileHeader}>
-          <div className={styles.profileAvatar}>
-            <img src="/avatar-placeholder.png" alt="Profile" />
-          </div>
-          <div className={styles.profileInfo}>
-            <div className={styles.profileName}>tom</div>
-            <div className={styles.profilePronouns}>he/him</div>
-          </div>
-        </div>
-      </div>
 
       <nav className={styles.sidebarNav}>
         {navItems.map(({ id, icon: Icon, label, path, badge, disabled }) => {

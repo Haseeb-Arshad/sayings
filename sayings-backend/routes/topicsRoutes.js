@@ -10,4 +10,7 @@ router.get('/top', topicsController.getTopTopics);
 // GET /api/topics/search?q=searchQuery - Search for topics
 router.get('/search', topicsController.searchTopics);
 
+// GET /api/topics/suggestions - Get suggested topics
+router.get('/suggestions', topicsController.getSuggestedTopics);
+
 module.exports = router;

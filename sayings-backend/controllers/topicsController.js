@@ -39,3 +39,16 @@ exports.searchTopics = async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 };
+
+exports.getSuggestedTopics = async (req, res) => {
+  try {
+    const suggestions = await Topic.find()
+      .sort({ popularity: -1 })
+      .limit(10);
+
+    res.status(200).json({ suggestions });
+  } catch (error) {
+    console.error('Error fetching suggestions:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+};

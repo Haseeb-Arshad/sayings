@@ -8,8 +8,6 @@ import axios from '../utils/axiosInstance';
 import useCurrentUser from '../hooks/useCurrentUser';
 import SkeletonPost from './SkeletonPost';
 
-const Navbar = lazy(() => import('../component/navBar'));
-const Sidebar = lazy(() => import('../component/sidebar'));
 const Post = lazy(() => import('../component/post'));
 
 const Explore = () => {
@@ -125,58 +123,48 @@ const Explore = () => {
 
   return (
     <div className={styles.container}>
-      <Suspense fallback={null}>
-        <Navbar />
-      </Suspense>
-
-      <div className={styles.mainContent}>
-        <Suspense fallback={null}>
-          <Sidebar setFilter={handleFilterChange} currentFilter={filter} />
-        </Suspense>
-
-        <div id="scrollableExploreDiv" className={styles.exploreSection}>
-          {error && <p className={styles.error}>{error}</p>}
-          <InfiniteScroll
-            dataLength={posts.length}
-            next={fetchMoreData}
-            hasMore={hasMore}
-            loader={<p className={styles.loadingText}>Loading more posts...</p>}
-            endMessage={
-              <p className={styles.endMessage}>
-                <b>You have seen all the posts.</b>
-              </p>
+      <div id="scrollableExploreDiv" className={styles.exploreSection}>
+        {error && <p className={styles.error}>{error}</p>}
+        <InfiniteScroll
+          dataLength={posts.length}
+          next={fetchMoreData}
+          hasMore={hasMore}
+          loader={<p className={styles.loadingText}>Loading more posts...</p>}
+          endMessage={
+            <p className={styles.endMessage}>
+              <b>You have seen all the posts.</b>
+            </p>
+          }
+          scrollableTarget="scrollableExploreDiv"
+        >
+          <Suspense
+            fallback={
+              <>
+                <SkeletonPost />
+                <SkeletonPost />
+              </>
             }
-            scrollableTarget="scrollableExploreDiv"
           >
-            <Suspense
-              fallback={
-                <>
-                  <SkeletonPost />
-                  <SkeletonPost />
-                </>
-              }
-            >
-              {posts.length === 0 && !loading && !error && (
-                <p className={styles.noPosts}>No posts available.</p>
-              )}
-              {Array.isArray(posts) &&
-                posts.map((post) => {
-                  if (!post._id) {
-                    console.warn('Explore Post missing _id:', post);
-                    return null;
-                  }
-                  return (
-                    <Post
-                      key={post._id}
-                      post={post}
-                      currentUserId={currentUser?._id}
-                      onDelete={handleDeletePost}
-                    />
-                  );
-                })}
-            </Suspense>
-          </InfiniteScroll>
-        </div>
+            {posts.length === 0 && !loading && !error && (
+              <p className={styles.noPosts}>No posts available.</p>
+            )}
+            {Array.isArray(posts) &&
+              posts.map((post) => {
+                if (!post._id) {
+                  console.warn('Explore Post missing _id:', post);
+                  return null;
+                }
+                return (
+                  <Post
+                    key={post._id}
+                    post={post}
+                    currentUserId={currentUser?._id}
+                    onDelete={handleDeletePost}
+                  />
+                );
+              })}
+          </Suspense>
+        </InfiniteScroll>
       </div>
     </div>
   );

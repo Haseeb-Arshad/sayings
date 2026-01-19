@@ -9,8 +9,6 @@ import styles from '../../styles/Profile.module.css';
 import useCurrentUser from '../../hooks/useCurrentUser';
 import SkeletonPost from '../../component/SkeletonPost';
 
-const Navbar = lazy(() => import('../../component/navBar'));
-const Sidebar = lazy(() => import('../../component/sidebar'));
 const Post = lazy(() => import('../../component/post'));
 
 const UserProfile = () => {
@@ -105,72 +103,62 @@ const UserProfile = () => {
 
   return (
     <div className={styles.container}>
-      <Suspense fallback={null}>
-        <Navbar />
-      </Suspense>
+      <div className={styles.profileSection}>
+        {error && <p className={styles.error}>{error}</p>}
 
-      <div className={styles.mainContent}>
-        <Suspense fallback={null}>
-          <Sidebar setFilter={handleFilterChange} currentFilter={filter} />
-        </Suspense>
+        {profileUser ? (
+          <>
+            <div className={styles.profileInfo}>
+              <img
+                src={profileUser.avatar || '/images/profile/dp.webp'}
+                alt={`${profileUser.username}'s avatar`}
+                className={styles.avatar}
+              />
+              <h2 className={styles.username}>{profileUser.username}</h2>
+              <p className={styles.bio}>{profileUser.bio}</p>
+            </div>
 
-        <div className={styles.profileSection}>
-          {error && <p className={styles.error}>{error}</p>}
-
-          {profileUser ? (
-            <>
-              <div className={styles.profileInfo}>
-                <img
-                  src={profileUser.avatar || '/images/profile/dp.webp'}
-                  alt={`${profileUser.username}'s avatar`}
-                  className={styles.avatar}
-                />
-                <h2 className={styles.username}>{profileUser.username}</h2>
-                <p className={styles.bio}>{profileUser.bio}</p>
-              </div>
-
-              <div className={styles.postsSection}>
-                {isLoadingPosts ? (
-                  <p className={styles.loadingText}>Loading posts...</p>
-                ) : posts.length > 0 ? (
-                  <InfiniteScroll
-                    dataLength={posts.length}
-                    next={() => setPage((prev) => prev + 1)}
-                    hasMore={hasMore}
-                    loader={<p className={styles.loadingText}>Loading more posts...</p>}
-                    endMessage={
-                      <p className={styles.endMessage}>
-                        <b>You have seen all the posts.</b>
-                      </p>
+            <div className={styles.postsSection}>
+              {isLoadingPosts ? (
+                <p className={styles.loadingText}>Loading posts...</p>
+              ) : posts.length > 0 ? (
+                <InfiniteScroll
+                  dataLength={posts.length}
+                  next={() => setPage((prev) => prev + 1)}
+                  hasMore={hasMore}
+                  loader={<p className={styles.loadingText}>Loading more posts...</p>}
+                  endMessage={
+                    <p className={styles.endMessage}>
+                      <b>You have seen all the posts.</b>
+                    </p>
+                  }
+                >
+                  <Suspense
+                    fallback={
+                      <>
+                        <SkeletonPost />
+                        <SkeletonPost />
+                      </>
                     }
                   >
-                    <Suspense
-                      fallback={
-                        <>
-                          <SkeletonPost />
-                          <SkeletonPost />
-                        </>
-                      }
-                    >
-                      {posts.map((post) => (
-                        <Post
-                          key={post._id}
-                          post={post}
-                          currentUserId={currentUser?._id}
-                          onDelete={handleDeletePost}
-                        />
-                      ))}
-                    </Suspense>
-                  </InfiniteScroll>
-                ) : (
-                  <p className={styles.noPosts}>No posts available.</p>
-                )}
-              </div>
-            </>
-          ) : (
-            !isLoadingPosts && <p className={styles.noPosts}>User not found.</p>
-          )}
-        </div>
+                    {posts.map((post) => (
+                      <Post
+                        key={post._id}
+                        post={post}
+                        currentUserId={currentUser?._id}
+                        onDelete={handleDeletePost}
+                      />
+                    ))}
+                  </Suspense>
+                </InfiniteScroll>
+              ) : (
+                <p className={styles.noPosts}>No posts available.</p>
+              )}
+            </div>
+          </>
+        ) : (
+          !isLoadingPosts && <p className={styles.noPosts}>User not found.</p>
+        )}
       </div>
     </div>
   );
