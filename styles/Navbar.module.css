@@ -3,15 +3,20 @@
 .navbar {
   position: fixed;
   top: 0;
-  left: 0;
-  right: 0;
-  height: 64px;
-  background: var(--surface);
+  left: var(--left-sidebar-width, 260px);
+  right: var(--right-sidebar-width, 320px);
+  height: 72px;
+  /* Increased height for premium feel */
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--border);
-  z-index: 90;
+  z-index: 10000;
+  /* Above the search overlay (9999) */
   transition: all var(--transition-base);
-  animation: navbarDrop 0.35s ease both;
+  animation: navbarDrop 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
+
+
 
 @keyframes navbarDrop {
   from {
@@ -32,14 +37,14 @@
 }
 
 .navContainer {
-  max-width: 1920px;
+  max-width: 1400px;
   margin: 0 auto;
-  padding: 0 1.5rem;
+  padding: 0 2rem;
   height: 100%;
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: center;
-  gap: 2rem;
+  gap: 1.5rem;
 }
 
 /* ========================================
@@ -49,8 +54,9 @@
 .leftSection {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
-  flex: 0 0 auto;
+  gap: 1rem;
+  flex: 1;
+  min-width: 0;
 }
 
 .pageIndicator {
@@ -75,14 +81,7 @@
    CENTER SECTION - Navigation
    ======================================== */
 
-.centerSection {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 0.5rem;
-  flex: 1;
-  max-width: 600px;
-}
+/* Center Section Removed */
 
 @media (max-width: 768px) {
   .centerSection {
@@ -94,21 +93,24 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0.625rem 1rem;
-  border-radius: var(--radius-md);
+  padding: 0.75rem 1.25rem;
+  border-radius: var(--radius-full);
   cursor: pointer;
   position: relative;
   background: transparent;
   border: none;
   color: var(--text-secondary);
-  font-size: 0.875rem;
-  font-weight: 500;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  /* Bold as per image */
   transition: all var(--transition-base);
+  white-space: nowrap;
 }
 
 .navItem:hover {
   background: var(--surface-hover);
   color: var(--text-primary);
+  transform: translateY(-1px);
 }
 
 .navItem.active {
@@ -116,25 +118,13 @@
   background: var(--accent-light);
 }
 
-.navLink {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.icon {
-  display: flex;
-  align-items: center;
-  font-size: 1.25rem;
-}
-
 .activeIndicator {
   position: absolute;
-  bottom: 0;
+  bottom: -4px;
   left: 50%;
   transform: translateX(-50%);
-  width: 24px;
-  height: 3px;
+  width: 4px;
+  height: 4px;
   background: var(--accent);
   border-radius: var(--radius-full);
 }
@@ -154,7 +144,8 @@
 .searchContainer {
   position: relative;
   width: 100%;
-  max-width: 320px;
+  max-width: 600px;
+  /* Even wider for the hero feel */
 }
 
 @media (max-width: 1024px) {
@@ -180,56 +171,31 @@
   transition: color var(--transition-base);
 }
 
-.searchInput {
-  width: 100%;
-  padding: 0.625rem 1rem 0.625rem 2.5rem;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border);
-  background: var(--bg);
-  color: var(--text-primary);
-  font-size: 0.875rem;
-  transition: all var(--transition-base);
-  outline: none;
-}
-
-.searchInput:hover {
-  border-color: var(--border-hover);
-}
-
-.searchInput:focus {
-  border-color: var(--accent);
-  background: var(--surface);
-}
-
-.searchInput:focus+.searchIcon,
-.searchContainer:focus-within .searchIcon {
-  color: var(--accent);
-}
-
-.searchInput::placeholder {
-  color: var(--text-tertiary);
-}
-
-/* User Actions */
-.userActions {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
 .iconButton {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   width: 2.5rem;
   height: 2.5rem;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-full);
   border: 1px solid var(--border);
   background: var(--surface);
   color: var(--text-secondary);
   cursor: pointer;
   position: relative;
   transition: all var(--transition-base);
+}
+
+.searchInput {
+  width: 100%;
+  padding: 0.625rem 1rem 0.625rem 2.5rem;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border);
+  background: var(--bg-soft);
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  transition: all var(--transition-base);
+  outline: none;
 }
 
 .iconButton:hover {
@@ -340,41 +306,49 @@
 
 .loginButton,
 .signupButton {
-  padding: 0.5rem 1.25rem;
-  border-radius: var(--radius-md);
-  font-weight: 600;
+  padding: 0.625rem 1.625rem;
+  border-radius: var(--radius-full);
+  font-weight: 800;
+  /* Extra bold as per reference */
   font-size: 0.875rem;
   transition: all var(--transition-base);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  letter-spacing: -0.01em;
+  min-width: 110px;
+  /* Increased button width */
 }
 
 .loginButton {
-  background: transparent;
-  color: var(--text-secondary);
+  background: var(--surface-hover);
+  color: var(--text-primary);
   border: 1px solid var(--border);
 }
 
 .loginButton:hover {
-  background: var(--surface-hover);
+  background: var(--surface-active);
   border-color: var(--border-hover);
-  color: var(--text-primary);
   transform: translateY(-1px);
 }
 
 .signupButton {
   background: var(--accent);
   color: white;
-  border: 1px solid var(--accent);
-  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
+  border: none;
+  box-shadow: var(--shadow-md);
 }
 
 .signupButton:hover {
   background: var(--accent-hover);
   border-color: var(--accent-hover);
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  box-shadow: var(--shadow-md);
 }
 
-.signupButton:active {
+.signupButton:active,
+.loginButton:active {
   transform: translateY(0);
 }
 

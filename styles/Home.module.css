@@ -2,65 +2,45 @@
 
 /* CSS Variables for Dark Theme */
 .home {
-  --bg-dark: #121214;
-  --bg: var(--bg-dark);
-  --bg-card: #1e1e24;
-  --bg-input: rgba(255, 255, 255, 0.08);
-  --text-primary: #f5f5f7;
-  --text-secondary: #a0a0a5;
-  --text-tertiary: #666668;
-  --text: var(--text-primary);
-  /* Minimalistic Charcoal/Grey Accents */
-  --solid-accent-primary: #787880;
-  /* Mid-light grey for links, focus */
-  --solid-accent-primary-rgb: 120, 120, 128;
-  /* For shadows, glows */
-  --solid-accent-secondary: #505055;
-  /* Darker grey for hover/less prominent */
-  --button-background-gradient: linear-gradient(135deg, #3a3a40, #2c2c30);
-  /* Subtle dark grey gradient for buttons */
-
-  /* Main accent for interactive elements like buttons, remapped */
-  --accent-primary: var(--button-background-gradient);
-
-  /* Neutralizing other colorful accents for a consistent minimalistic theme */
-  --accent-secondary: linear-gradient(135deg, #434348, #333337);
-  /* Darker grey gradient */
-  --accent-tertiary: linear-gradient(135deg, #55555a, #45454a);
-  /* Another grey gradient */
-  --shadow-sm: 0 4px 6px rgba(0, 0, 0, 0.2);
-  --shadow-md: 0 8px 15px rgba(0, 0, 0, 0.3);
-  --shadow-lg: 0 12px 28px rgba(0, 0, 0, 0.4);
-  --border-radius-sm: 8px;
-  --border-radius-md: 12px;
-  --border-radius-lg: 20px;
-
   position: relative;
   min-height: 100%;
   background-color: var(--bg);
-  color: var(--text);
-  padding-top: 64px;
+  color: var(--text-primary);
   font-family: var(--font-geist-sans), system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
   scroll-behavior: smooth;
 }
 
+
 /* Posts Container */
 .postsContainer {
   position: relative;
-  height: calc(100vh - 64px);
+  height: 100vh;
   overflow-y: auto;
   overflow-x: hidden;
-  margin-left: 280px;
-  margin-right: 320px;
-  max-width: none;
-  padding: 1.5rem;
-  padding-top: 2rem;
-  transition: margin-right var(--transition-base);
+  margin-left: var(--left-sidebar-width, 260px);
+  margin-right: var(--right-sidebar-width, 320px);
+  padding: 2rem;
+  padding-top: calc(64px + 2rem);
+  display: grid;
+
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  grid-auto-rows: min-content;
+  gap: 1.5rem;
+  transition: all var(--transition-base);
+  background: var(--bg);
 }
 
-.fullWidth {
-  margin-right: 60px;
+
+/* Specific card sizes based on content could be added here if needed, 
+   but auto-fill with 1fr is a good modern start */
+@media (min-width: 1400px) {
+  .postsContainer {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
+
+
+
 
 .loadingText,
 .noPosts,
@@ -104,10 +84,10 @@
 .retryButton {
   margin-top: 0.75rem;
   padding: 8px 20px;
-  background: var(--accent-primary);
-  color: var(--text-primary);
+  background: var(--accent);
+  color: white;
   border: none;
-  border-radius: var(--border-radius-sm);
+  border-radius: var(--radius-sm);
   font-weight: 500;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -121,11 +101,11 @@
   width: 60px;
   height: 60px;
   border-radius: 50%;
-  background: var(--accent-primary);
+  background: var(--accent);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--text-primary);
+  color: white;
   font-size: 24px;
   box-shadow: var(--shadow-lg);
   border: none;
@@ -302,10 +282,9 @@
 }
 
 .skeletonAvatar {
-  width: 48px;
-  height: 48px;
+  background: var(--border);
   border-radius: 50%;
-  background: linear-gradient(90deg, #2c2c30 25%, #3a3a40 50%, #2c2c30 75%);
+  background: linear-gradient(90deg, var(--border) 25%, var(--surface-hover) 50%, var(--border) 75%);
   background-size: 200% 100%;
   animation: skeleton-shimmer 1.5s ease-in-out infinite;
 }
@@ -320,7 +299,7 @@
 .skeletonLine {
   height: 16px;
   border-radius: 4px;
-  background: linear-gradient(90deg, #2c2c30 25%, #3a3a40 50%, #2c2c30 75%);
+  background: linear-gradient(90deg, var(--border) 25%, var(--surface-hover) 50%, var(--border) 75%);
   background-size: 200% 100%;
   animation: skeleton-shimmer 1.5s ease-in-out infinite;
 }
@@ -373,10 +352,10 @@
 
 .loadMoreButton {
   padding: 12px 24px;
-  background: var(--accent-primary);
-  color: var(--text-primary);
+  background: var(--accent);
+  color: white;
   border: none;
-  border-radius: var(--border-radius-md);
+  border-radius: var(--radius-md);
   font-weight: 500;
   cursor: pointer;
   transition: all 0.3s ease;

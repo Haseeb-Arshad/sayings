@@ -2,39 +2,20 @@
 
 const express = require('express');
 const router = express.Router();
-const jwt = require('jsonwebtoken');
-const User = require('../models/User'); // Replace with your actual User model
+const authController = require('../controllers/authControllers');
 const authMiddleware = require('../middleware/authMiddleware');
 
-const JWT_SECRET = process.env.JWT_SECRET || 'h7F!yN8$wLpX@x9&c2ZvQk3*oT5#aEg4rJ6^pBmN!A'; // Ensure this matches your environment variable
+// Register route
+router.post('/register', authController.registerUser);
 
 // Login route
-router.post('/login', async (req, res) => {
-  const { email, password } = req.body;
+router.post('/login', authController.loginUser);
 
-  // Authenticate user (Replace with your actual authentication logic)
-  const user = await User.findOne({ email });
-  if (!user || !user.isValidPassword(password)) { // Assume isValidPassword is a method on User model
-    return res.status(401).json({ error: 'Invalid credentials' });
-  }
+// Logout route
+router.post('/logout', authController.logoutUser);
 
-  // Create JWT token
-  const token = jwt.sign({ id: user._id, email: user.email }, JWT_SECRET, {
-    expiresIn: '1d',
-  });
-
-  res.json({ message: 'Logged in successfully', token, user: { id: user._id, email: user.email } });
-});
-
-// Logout route (Optional: If implementing token blacklisting)
-router.post('/logout', (req, res) => {
-  // Implement token blacklisting if necessary
-  res.json({ message: 'Logged out successfully' });
-});
-
-// Protected route example
-router.get('/me', authMiddleware, (req, res) => {
-  res.json({ user: req.user });
-});
+// Get current user (Protected)
+router.get('/me', authMiddleware, authController.getCurrentUser);
 
 module.exports = router;
+

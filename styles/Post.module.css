@@ -1,617 +1,107 @@
-/* Modern Post Styling */
+/* Post.module.css - Modern Minimalist Post Cards (White/Light Theme) */
 
-.postContainer,
 .post {
-  --post-bg: #1e1e24;
-  --post-bg-hover: #2a2a30;
-  --post-border: rgba(255, 255, 255, 0.1);
-  --post-text: #f5f5f7;
-  --post-text-muted: #a0a0a5;
-  --post-accent: #787880;
-  --post-accent-hover: #8a8a95;
-  --post-success: #10b981;
-  --post-danger: #f43f5e;
-  --post-shadow: rgba(0, 0, 0, 0.25);
-  --post-radius: 16px;
-  --post-radius-sm: 8px;
-  --post-spacing: 16px;
-  
-  background: var(--post-bg);
-  border: 1px solid var(--post-border);
-  border-radius: 12px;
-  padding: 12px;
-  margin-bottom: 16px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  transition: all 0.2s ease;
-  font-family: inherit;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  transition: all var(--transition-base);
+  box-shadow: var(--shadow-sm);
+  height: 100%;
   position: relative;
+  overflow: hidden;
 }
 
-.postContainer:hover,
-.post:hover { background: var(--post-bg-hover); box-shadow: 0 6px 20px rgba(0,0,0,0.25); transform: translateY(-2px); }
+.post:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+  border-color: var(--border-hover);
+}
 
 .postHeader {
   display: flex;
-  align-items: flex-start;
-  margin-bottom: 12px;
+  align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  margin-bottom: 1rem;
 }
 
 .userInfo {
   display: flex;
   align-items: center;
   gap: 12px;
-  flex: 1;
 }
 
 .avatar {
-  width: 48px;
-  height: 48px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid var(--post-accent);
-  background: linear-gradient(135deg, var(--post-accent), var(--post-accent-hover));
-  box-shadow: 0 4px 12px rgba(29, 155, 240, 0.2);
-  transition: all 0.3s ease;
-}
-
-.avatar:hover {
-  transform: scale(1.05);
-  box-shadow: 0 6px 16px rgba(29, 155, 240, 0.3);
-}
-
-.userDetails {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
+  border: 1px solid var(--border);
 }
 
 .username {
+  font-size: 0.875rem;
   font-weight: 600;
-  color: var(--post-text);
-  font-size: 16px;
-  line-height: 1.2;
-  margin: 0;
-  transition: color 0.2s ease;
-}
-
-.username:hover {
-  color: var(--post-accent);
+  color: var(--text-primary);
 }
 
 .timestamp {
-  font-size: 13px;
-  color: var(--post-text-muted);
-  font-weight: 400;
-  line-height: 1.2;
+  font-size: 0.75rem;
+  color: var(--text-tertiary);
 }
 
-.rightHeader {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  position: relative;
-}
-
-.menuContainer {
-  position: relative;
-}
-
-.menuButton {
-  background: none;
-  border: none;
-  color: #657786;
-  cursor: pointer;
-  padding: 0.5rem;
-  border-radius: 50%;
-  transition: all 0.2s ease;
-  background: none;
-  border: none;
-  color: #657786;
-  font-size: 20px;
-  cursor: pointer;
-  padding: 5px;
-  transition: color 0.3s ease;
-}
-
-.menuButton:hover { background-color: rgba(255,255,255,0.05); color: var(--post-accent); }
-
-.emotions {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  position: relative;
-  flex-wrap: nowrap;
-  overflow: hidden;
-  margin-right: auto;
-}
-
-.emotionBadge {
-  padding: 4px 8px;
-  border-radius: 12px;
-  font-size: 12px;
-  font-weight: 500;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-
-.overflowBadge {
-  padding: 4px 8px;
-  border-radius: 12px;
-  font-size: 12px;
-  font-weight: 500;
-  background-color: var(--post-accent);
-  color: #ffffff;
-  cursor: pointer;
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.tooltip {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  background-color: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 8px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-  z-index: 10;
-  white-space: nowrap;
-  margin-top: 6px;
-}
-
-.tooltip::before {
-  content: '';
-  position: absolute;
-  top: -6px;
-  left: 10px;
-  border-width: 6px;
-  border-style: solid;
-  border-color: transparent transparent #e0e0e0 transparent;
-}
-
-.tooltipContent {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-
-.tooltip .emotionBadge {
-  margin-bottom: 4px;
-}
-
-.dropdownMenu {
-  position: absolute;
-  top: 100%;
-  right: 0;
-  background-color: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-  z-index: 100;
-  overflow: hidden;
-  transform: translateY(10px);
-}
-
-.dropdownItem {
-  display: flex;
-  align-items: center;
-  padding: 12px 20px;
-  width: 180px;
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 16px;
-  color: var(--post-text);
-  transition: background-color 0.2s ease;
-}
-
-.dropdownItem:hover { background-color: rgba(255,255,255,0.06); }
-
-.dropdownIcon {
-  margin-right: 10px;
-  color: #ff4d4f;
-}
-
-/* Content Area */
 .contentArea {
-  margin-bottom: 12px;
+  margin-bottom: 1rem;
+  flex: 1;
 }
 
 .summary {
-  font-size: 15px;
-  color: var(--post-text);
+  font-size: 0.9375rem;
+  color: var(--text-secondary);
   line-height: 1.5;
-  font-weight: 400;
-  margin-bottom: 12px;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
-.transcript {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid var(--post-border);
-  border-radius: var(--post-radius-sm);
-  padding: 16px;
-  color: var(--post-text);
-  line-height: 1.6;
-  max-height: 200px;
-  overflow-y: auto;
-  transition: all 0.3s ease;
-  font-size: 15px;
-  backdrop-filter: blur(4px);
-}
-
-.transcript:hover {
-  background: rgba(255, 255, 255, 0.05);
-  border-color: rgba(255, 255, 255, 0.12);
-}
-
-/* Custom Scrollbar */
-.transcript::-webkit-scrollbar {
-  width: 6px;
-}
-
-.transcript::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 3px;
-}
-
-.transcript::-webkit-scrollbar-thumb {
-  background: var(--post-accent);
-  border-radius: 3px;
-}
-
-.transcript::-webkit-scrollbar-thumb:hover {
-  background: var(--post-accent-hover);
-}
-
-.word {
-  display: inline;
-  padding: 2px 4px;
-  margin: 0 1px;
-  border-radius: 4px;
-  transition: all 0.2s ease;
-  cursor: pointer;
-}
-
-.word:hover {
-  background: rgba(29, 155, 240, 0.1);
-  color: var(--post-accent);
-}
-
-.highlighted {
-  background: linear-gradient(135deg, var(--post-accent), var(--post-accent-hover));
-  color: white;
-  font-weight: 500;
-  box-shadow: 0 2px 8px rgba(29, 155, 240, 0.3);
-}
-
-/* Categories */
 .categories {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  margin-bottom: 16px;
+  margin-bottom: 1rem;
 }
 
 .categoryBadge {
-  background: linear-gradient(135deg, rgba(29, 155, 240, 0.1), rgba(29, 155, 240, 0.05));
-  border: 1px solid color-mix(in oklab, var(--post-accent) 35%, transparent);
-  color: var(--post-accent);
-  padding: 6px 12px;
-  border-radius: 20px;
-  font-size: 12px;
+  background: var(--accent-light);
+  color: var(--accent);
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.75rem;
   font-weight: 500;
-  transition: all 0.2s ease;
-  backdrop-filter: blur(4px);
 }
 
-.categoryBadge:hover {
-  background: linear-gradient(135deg, rgba(29, 155, 240, 0.2), rgba(29, 155, 240, 0.1));
-  border-color: rgba(29, 155, 240, 0.4);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(29, 155, 240, 0.15);
-}
-
-/* Compact Audio Player */
 .audioPlayer {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid var(--post-border);
-  border-radius: 8px;
-  padding: 8px;
-  margin: 12px 0;
-}
-
-/* Audio Controls Row */
-.audioControls {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 8px;
-}
-
-/* Compact Play/Pause Button */
-.playPauseButton {
-  background: var(--post-accent);
-  color: white;
-  border: none;
-  border-radius: 50%;
-  width: 36px;
-  height: 36px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s ease;
-  flex-shrink: 0;
-}
-
-.playPauseButton:hover {
-  background: var(--post-accent-hover);
-}
-
-.playPauseButton:disabled {
-  background: var(--post-text-muted);
-  cursor: not-allowed;
-}
-
-/* Compact Icon Buttons */
-.iconButton {
-  background: rgba(255, 255, 255, 0.05);
-  border: none;
-  color: var(--post-text-muted);
-  border-radius: 6px;
-  padding: 6px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 12px;
-  transition: all 0.2s ease;
-  min-width: 24px;
-  height: 24px;
-}
-
-.iconButton:hover {
-  background: rgba(29, 155, 240, 0.1);
-  color: var(--post-accent);
-}
-
-.iconButton:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-
-/* Compact Waveform Container */
-.progressBarContainer {
-  flex: 1;
-  position: relative;
-  margin: 0 8px;
-}
-
-.waveform {
-  height: 36px;
-  border-radius: 4px;
-  overflow: hidden;
-  background: rgba(255, 255, 255, 0.05);
-}
-
-/* Remove Listen Along Button - unnecessary */
-.listenAlongButton {
-  display: none;
-}
-
-/* Compact Time Display */
-.timeInfo {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 11px;
-  color: var(--post-text-muted);
-  font-variant-numeric: tabular-nums;
-  margin-top: 4px;
-  padding: 0 4px;
-}
-
-/* Compact Volume Control */
-.volumeSlider {
-  -webkit-appearance: none;
-  appearance: none;
-  background: transparent;
-  cursor: pointer;
-  height: 20px;
-  width: 60px;
-  flex-shrink: 0;
-}
-
-.volumeSlider::-webkit-slider-track {
-  background: rgba(255, 255, 255, 0.1);
-  height: 2px;
-  border-radius: 1px;
-}
-
-.volumeSlider::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  background: var(--post-accent);
-  height: 12px;
-  width: 12px;
-  border-radius: 50%;
-  border: none;
-  transition: all 0.2s ease;
-}
-
-.volumeSlider::-webkit-slider-thumb:hover {
-  background: var(--post-accent-hover);
-}
-
-.volumeSlider::-moz-range-track {
-  background: rgba(255, 255, 255, 0.1);
-  height: 2px;
-  border-radius: 1px;
-  border: none;
-}
-
-.volumeSlider::-moz-range-thumb {
-  background: var(--post-accent);
-  height: 12px;
-  width: 12px;
-  border-radius: 50%;
-  border: none;
-  cursor: pointer;
-}
-
-/* Loading States */
-.spin {
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
-.waveformShimmer {
-  position: absolute;
-  inset: 0;
-  border-radius: 8px;
-  background: linear-gradient(
-    90deg,
-    rgba(240, 240, 240, 0.12) 0%,
-    rgba(240, 240, 240, 0.2) 50%,
-    rgba(240, 240, 240, 0.12) 100%
-  );
-  background-size: 200% 100%;
-  animation: shimmer 1.2s ease-in-out infinite;
-  pointer-events: none;
-}
-
-.waveformSkeleton {
-  height: 84px;
-  border-radius: 8px;
-  background: linear-gradient(
-    90deg,
-    rgba(240, 240, 240, 0.12) 0%,
-    rgba(240, 240, 240, 0.2) 50%,
-    rgba(240, 240, 240, 0.12) 100%
-  );
-  background-size: 200% 100%;
-  animation: shimmer 1.2s ease-in-out infinite;
-}
-
-@keyframes shimmer {
-  0% { background-position: 0% 0%; }
-  100% { background-position: 100% 0%; }
-}
-
-.listenAlongFloat {
-  animation: floatY 2.5s ease-in-out infinite;
-}
-
-@keyframes floatY {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-2px); }
-}
-
-.fadeIn {
-  animation: fadeIn 0.2s ease both;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-.fadeSlideIn {
-  animation: fadeSlideIn 0.18s ease both;
-}
-
-@keyframes fadeSlideIn {
-  from { opacity: 0; transform: translateY(-6px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.popIn {
-  animation: popIn 0.18s ease both;
-}
-
-@keyframes popIn {
-  from { opacity: 0; transform: scale(0.96); }
-  to { opacity: 1; transform: scale(1); }
-}
-
-.postDeleting {
-  opacity: 0.35;
-  transform: translateY(-8px);
-  pointer-events: none;
+  background: var(--surface-hover);
+  border-radius: var(--radius-md);
+  padding: 10px;
+  margin-bottom: 1rem;
 }
 
 .audioNative {
   width: 100%;
+  height: 32px;
 }
 
-.openPostButton {
-  margin-top: 8px;
-  width: 100%;
-  background: rgba(29, 155, 240, 0.1);
-  border: 1px solid rgba(29, 155, 240, 0.2);
-  color: var(--post-accent);
-  padding: 10px 12px;
-  border-radius: 10px;
-  cursor: pointer;
-  font-weight: 600;
-  transition: all 0.2s ease;
-}
-
-.openPostButton:hover {
-  background: rgba(29, 155, 240, 0.14);
-  border-color: rgba(29, 155, 240, 0.28);
-  transform: translateY(-1px);
-}
-
-.openPostButton:active {
-  transform: translateY(0);
-}
-
-/* Toggle Transcript */
-.toggleTranscript {
-  display: flex;
-  justify-content: flex-end;
-  margin-bottom: 16px;
-}
-
-.toggleTranscript button {
-  background: rgba(29, 155, 240, 0.1);
-  border: 1px solid rgba(29, 155, 240, 0.2);
-  color: var(--post-accent);
-  font-size: 14px;
-  font-weight: 500;
-  padding: 8px 16px;
-  border-radius: 20px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  backdrop-filter: blur(4px);
-}
-
-.toggleTranscript button:hover {
-  background: rgba(29, 155, 240, 0.15);
-  border-color: rgba(29, 155, 240, 0.3);
-  transform: translateY(-1px);
-}
-
-/* Post Footer */
 .postFooter {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding-top: 16px;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+  margin-top: auto;
 }
 
 .reactions {
@@ -620,472 +110,77 @@
   gap: 16px;
 }
 
-.interactions {
-  display: flex;
-  justify-content: space-around;
-  padding-top: 15px;
-  border-top: 1px solid #E1E8ED;
-}
-
-/* Interaction Buttons */
-.interactionButton {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  color: var(--post-text-muted);
-  padding: 10px 16px;
-  border-radius: 12px;
-  cursor: pointer;
+.iconButton {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 14px;
-  font-weight: 500;
-  transition: all 0.2s ease;
-  backdrop-filter: blur(4px);
+  gap: 6px;
+  font-size: 0.8125rem;
+  color: var(--text-tertiary);
+  transition: all var(--transition-fast);
 }
 
-.interactionButton:hover {
-  background: rgba(29, 155, 240, 0.1);
-  border-color: rgba(29, 155, 240, 0.2);
-  color: var(--post-accent);
-  transform: translateY(-1px);
+.iconButton:hover {
+  color: var(--accent);
 }
 
-.interactionButton span {
-  font-variant-numeric: tabular-nums;
-}
-
-/* Liked State */
 .likedButton {
-  background: rgba(244, 33, 46, 0.1);
-  border-color: rgba(244, 33, 46, 0.2);
-  color: var(--post-danger);
+  color: var(--error);
 }
 
-.likedButton:hover {
-  background: rgba(244, 33, 46, 0.15);
-  border-color: rgba(244, 33, 46, 0.3);
-  color: var(--post-danger);
-}
-
-/* Menu Button */
-.menuButton {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  color: var(--post-text-muted);
-  padding: 8px;
+.openPostButton {
+  background: var(--surface-hover);
+  color: var(--text-primary);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  padding: 6px 12px;
   border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  backdrop-filter: blur(4px);
+  transition: all var(--transition-fast);
 }
 
-.menuButton:hover {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.12);
-  color: var(--post-text);
+.openPostButton:hover {
+  background: var(--surface-active);
 }
 
-/* Confirmation Modal Styles */
+/* Modal and Overlays */
 .modalOverlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0,0,0,0.5);
-  z-index: 1000;
-}
-
-.modalContentBack
-{
-  position: absolute;
-  height: 100vh;
-  width: 100vw;
-  z-index: 9999999999999999;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .modalContent {
-  position: relative;
+  background: var(--surface);
+  padding: 2rem;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xl);
+  max-width: 400px;
   width: 90%;
-  max-width: 450px;
-  background-color: #14171A;
-  border-radius: 12px;
-  padding: 25px;
-  z-index: 1001;
-  transform: translate(-50%, -50%);
-  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-  box-sizing: border-box;
-}
-
-.modalHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
-.modalHeader h2 {
-  margin: 0;
-  font-size: 20px;
-  color: #ffffff;
-}
-
-.closeButton {
-  background: none;
-  border: none;
-  color: #657786;
-  font-size: 22px;
-  cursor: pointer;
-  transition: color 0.3s ease;
-}
-
-.closeButton:hover {
-  color: #ff4d4f;
-}
-
-.modalBody {
-  font-size: 16px;
-  color: #14171A;
-  margin-bottom: 25px;
+  text-align: center;
 }
 
 .modalFooter {
   display: flex;
-  justify-content: flex-end;
-  gap: 15px;
-}
-
-.cancelButton,
-.confirmButton {
-  padding: 10px 20px;
-  border: none;
-  border-radius: 8px;
-  font-size: 16px;
-  cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-}
-
-.cancelButton {
-  background-color: #e0e0e0;
-  color: #14171A;
-}
-
-.cancelButton:hover {
-  background-color: #d5d5d5;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
 }
 
 .confirmButton {
-  background-color: #ff4d4f;
-  color: #ffffff;
+  background: var(--error);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-md);
 }
 
-.confirmButton:hover {
-  background-color: #ff7875;
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-  .postContainer,
-  .post {
-    margin-bottom: 16px;
-    border-radius: 12px;
-    padding: 14px;
-  }
-  
-  .postHeader {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
-    margin-bottom: 16px;
-  }
-  
-  .userInfo {
-    width: 100%;
-  }
-  
-  .rightHeader {
-    width: 100%;
-    justify-content: space-between;
-    margin-top: 0;
-  }
-  
-  .emotions {
-    flex-wrap: wrap;
-    max-width: none;
-  }
-  
-  .audioPlayer {
-    padding: 16px;
-    border-radius: 12px;
-  }
-  
-  .audioControls {
-    flex-wrap: wrap;
-    gap: 8px;
-  }
-  
-  .playPauseButton {
-    width: 48px;
-    height: 48px;
-  }
-  
-  .iconButton {
-    padding: 8px;
-    font-size: 13px;
-    min-width: 36px;
-  }
-  
-  .progressBarContainer {
-    padding: 12px;
-  }
-  
-  .waveform {
-    height: 60px;
-  }
-  
-  .volumeSlider {
-    width: 100px;
-    height: 28px;
-  }
-  
-  .reactions {
-    flex-wrap: wrap;
-    gap: 12px;
-  }
-  
-  .interactionButton {
-    padding: 8px 12px;
-    font-size: 13px;
-  }
-  
-  .categoryBadge {
-    font-size: 11px;
-    padding: 4px 10px;
-  }
-  
-  .summary {
-    font-size: 15px;
-  }
-  
-  .transcript {
-    font-size: 14px;
-    padding: 12px;
-    max-height: 150px;
-  }
-}
-
-@media (max-width: 480px) {
-  .postContainer,
-  .post {
-    padding: 12px;
-    border-radius: 8px;
-  }
-  
-  .avatar {
-    width: 40px;
-    height: 40px;
-  }
-  
-  .username {
-    font-size: 15px;
-  }
-  
-  .timestamp {
-    font-size: 12px;
-  }
-  
-  .audioPlayer {
-    padding: 12px;
-  }
-  
-  .audioControls {
-    justify-content: center;
-  }
-  
-  .playPauseButton {
-    width: 44px;
-    height: 44px;
-  }
-  
-  .iconButton {
-    padding: 6px;
-    font-size: 12px;
-    min-width: 32px;
-  }
-  
-  .progressBarContainer {
-    padding: 10px;
-  }
-  
-  .waveform {
-    height: 50px;
-  }
-  
-  .listenAlongButton {
-    font-size: 11px;
-    padding: 6px 12px;
-  }
-  
-  .timeInfo {
-    font-size: 12px;
-  }
-  
-  .reactions {
-    justify-content: space-between;
-    width: 100%;
-  }
-  
-  .interactionButton {
-    padding: 6px 10px;
-    font-size: 12px;
-  }
-  
-  .categoryBadge {
-    font-size: 10px;
-    padding: 3px 8px;
-  }
-  
-  .summary {
-    font-size: 14px;
-  }
-  
-  .transcript {
-    font-size: 13px;
-    padding: 10px;
-    max-height: 120px;
-  }
-  
-  .toggleTranscript button {
-    font-size: 12px;
-    padding: 6px 12px;
-  }
-}
-
-@media (max-width: 320px) {
-  .postContainer,
-  .post {
-    padding: 8px;
-    margin-bottom: 12px;
-  }
-  
-  .audioControls {
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-  }
-  
-  .reactions {
-    flex-direction: column;
-    gap: 8px;
-    align-items: stretch;
-  }
-  
-  .interactionButton {
-    justify-content: center;
-  }
-}
-
-/* Tablet Landscape */
-@media (min-width: 768px) and (max-width: 1024px) {
-  .audioControls {
-    gap: 10px;
-  }
-  
-  .iconButton {
-    padding: 10px;
-  }
-  
-  .reactions {
-    gap: 14px;
-  }
-}
-
-/* Large Desktop */
-@media (min-width: 1200px) {
-  .postContainer,
-  .post {
-    max-width: 680px;
-    margin-left: auto;
-    margin-right: auto;
-  }
-  
-  .audioPlayer {
-    padding: 24px;
-  }
-  
-  .waveform {
-    height: 100px;
-  }
-}
-
-/* High DPI Displays */
-@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
-  .avatar {
-    image-rendering: -webkit-optimize-contrast;
-    image-rendering: crisp-edges;
-  }
-}
-
-/* Hover-capable devices only */
-@media (hover: hover) and (pointer: fine) {
-  .interactionButton:hover {
-    box-shadow: 0 4px 12px rgba(29, 155, 240, 0.15);
-  }
-  
-  .categoryBadge:hover {
-    cursor: pointer;
-  }
-  
-  .word:hover {
-    transform: translateY(-1px);
-  }
-}
-
-/* Touch devices */
-@media (hover: none) and (pointer: coarse) {
-  .interactionButton {
-    min-height: 44px;
-  }
-  
-  .iconButton {
-    min-height: 44px;
-    min-width: 44px;
-  }
-  
-  .playPauseButton {
-    min-height: 56px;
-    min-width: 56px;
-  }
-  
-  .toggleTranscript button {
-    min-height: 44px;
-  }
-}
-
-/* Reduce motion for accessibility */
-@media (prefers-reduced-motion: reduce) {
-  .postContainer,
-  .post,
-  .avatar,
-  .username,
-  .interactionButton,
-  .iconButton,
-  .playPauseButton,
-  .categoryBadge,
-  .word,
-  .listenAlongButton,
-  .toggleTranscript button {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
-  
-  .audioPlayer::before {
-    animation: none !important;
-  }
-  
-  .spin {
-    animation: none !important;
-  }
+.postDeleting {
+  opacity: 0.5;
+  pointer-events: none;
 }

@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import debounce from 'lodash.debounce';
 
 import axios from '../utils/axiosInstance';
-import Navbar from './navBar';
+
 import styles from '../styles/SearchPage.module.css';
 
 function escapeRegExp(input) {
@@ -205,7 +205,7 @@ export default function SearchPage() {
 
   return (
     <div className={styles.page}>
-      <Navbar />
+
 
       <div className={styles.container}>
         <div className={styles.toolbar}>

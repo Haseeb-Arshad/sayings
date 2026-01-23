@@ -1,16 +1,10 @@
-// controllers/authController.js
-
+const jwt = require('jsonwebtoken'); // Changed from SignJWT for consistency
 const User = require('../models/User');
-const { SignJWT } = require('jose');
 const dotenv = require('dotenv');
 
 dotenv.config();
 
-const JWT_SECRET = 'h7F!yN8$wLpX@x9&c2ZvQk3*oT5#aEg4rJ6^pBmN!A'; // Should be stored securely
-
-const encoder = new TextEncoder();
-const jwtSecret = encoder.encode(JWT_SECRET);
-
+const JWT_SECRET = process.env.JWT_SECRET || 'h7F!yN8$wLpX@x9&c2ZvQk3*oT5#aEg4rJ6^pBmN!A';
 const JWT_EXPIRES_IN = '7d';
 
 // Register a new user
@@ -18,12 +12,10 @@ exports.registerUser = async (req, res) => {
   try {
     let { username, email, password, bio } = req.body;
 
-    // Validate input
     if (!username || !email || !password) {
       return res.status(400).json({ error: 'Username, email, and password are required.' });
     }
 
-    // Convert username and email to lowercase
     username = username.toLowerCase();
     email = email.toLowerCase();
 
@@ -42,22 +34,23 @@ exports.registerUser = async (req, res) => {
 
     await user.save();
 
-    // Sign JWT using jose
-    const jwt = await new SignJWT({ id: user._id })
-      .setProtectedHeader({ alg: 'HS256' })
-      .setIssuedAt()
-      .setExpirationTime(JWT_EXPIRES_IN)
-      .sign(jwtSecret);
+    // Sign JWT using jsonwebtoken
+    const token = jwt.sign({ id: user._id, email: user.email }, JWT_SECRET, {
+      expiresIn: JWT_EXPIRES_IN,
+    });
 
-    res.cookie('token', jwt, {
+    // Also set cookie for compatibility
+    res.cookie('token', token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production', // true in production
+      secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-      path: '/', // Ensure cookie is sent for all routes
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+      path: '/',
     });
 
     res.status(201).json({
+      message: 'Registered successfully',
+      token, // Return token in body
       user: {
         id: user._id,
         username: user.username,
@@ -75,18 +68,15 @@ exports.registerUser = async (req, res) => {
 // Login a user
 exports.loginUser = async (req, res) => {
   try {
-    const { identifier, password } = req.body; // 'identifier' can be username or email
-
-    // console.log('Login request:', req.body);
+    const { identifier, password } = req.body;
 
     if (!identifier || !password) {
       return res.status(400).json({ error: 'Please provide both identifier and password.' });
     }
 
-    // Determine if the identifier is an email using regex
     const isEmail = /\S+@\S+\.\S+/.test(identifier);
-    const query = isEmail 
-      ? { email: identifier.toLowerCase() } 
+    const query = isEmail
+      ? { email: identifier.toLowerCase() }
       : { username: identifier.toLowerCase() };
 
     const user = await User.findOne(query);
@@ -99,22 +89,23 @@ exports.loginUser = async (req, res) => {
       return res.status(400).json({ error: 'Invalid credentials.' });
     }
 
-    // Sign JWT using jose
-    const jwt = await new SignJWT({ id: user._id })
-      .setProtectedHeader({ alg: 'HS256' })
-      .setIssuedAt()
-      .setExpirationTime(JWT_EXPIRES_IN)
-      .sign(jwtSecret);
+    // Sign JWT using jsonwebtoken
+    const token = jwt.sign({ id: user._id, email: user.email }, JWT_SECRET, {
+      expiresIn: JWT_EXPIRES_IN,
+    });
 
-    res.cookie('token', jwt, {
+    // Also set cookie
+    res.cookie('token', token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production', // true in production
+      secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-      path: '/', // Ensure cookie is sent for all routes
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+      path: '/',
     });
 
     res.status(200).json({
+      message: 'Logged in successfully',
+      token, // Return token in body
       user: {
         id: user._id,
         username: user.username,
@@ -128,6 +119,7 @@ exports.loginUser = async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 };
+
 
 // Get current user
 exports.getCurrentUser = async (req, res) => {

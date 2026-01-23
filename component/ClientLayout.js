@@ -15,28 +15,41 @@ const ClientLayout = ({ children }) => {
     // Pages where we don't want the full layout (e.g., login, register)
     const isAuthPage = pathname === '/login' || pathname === '/register';
 
-    if (isAuthPage) {
-        return <>{children}</>;
-    }
+    const content = (
+        <div
+            className={styles.home}
+            style={!isAuthPage ? {
+                '--right-sidebar-width': isProfileExpanded ? '320px' : '60px',
+                '--left-sidebar-width': '260px'
+            } : {}}
+        >
+            {/* Animated Background System */}
+            <div className="animated-bg" />
+            <div className="blur-shape" style={{ top: '20%', left: '10%', opacity: 0.4 }} />
+            <div className="blur-shape" style={{ top: '80%', left: '90%', animationDelay: '-5s', opacity: 0.3 }} />
 
-    return (
-        <div className={styles.home}>
-            <Navbar />
+            {!isAuthPage && (
+                <>
+                    <Navbar />
+                    <Sidebar />
+                    <ProfileSidebar
+                        isExpanded={isProfileExpanded}
+                        onToggle={() => setIsProfileExpanded(!isProfileExpanded)}
+                    />
+                </>
+            )}
 
-            {/* Navigation Sidebar (Left) */}
-            <Sidebar />
-
-            {/* Profile & Suggestions Sidebar (Right) */}
-            <ProfileSidebar
-                isExpanded={isProfileExpanded}
-                onToggle={() => setIsProfileExpanded(!isProfileExpanded)}
-            />
-
-            <main className={`${styles.postsContainer} ${!isProfileExpanded ? styles.fullWidth : ''}`}>
+            <main className={!isAuthPage ? styles.postsContainer : ''}>
                 {children}
             </main>
         </div>
     );
+
+    return content;
+
+
+
+
 };
 
 export default ClientLayout;

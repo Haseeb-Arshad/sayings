@@ -36,7 +36,7 @@ export default function RootLayout({ children }) {
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
         <link rel="manifest" href="/manifest.webmanifest" />
-        <meta name="theme-color" content="#121214" />
+        <meta name="theme-color" content="#F8FAFC" />
 
         <link rel="preconnect" href="https://sayings-backend.onrender.com" />
         <link rel="preconnect" href="https://gateway.pinata.cloud" />

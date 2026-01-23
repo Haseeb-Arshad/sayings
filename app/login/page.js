@@ -51,7 +51,14 @@ const Login = () => {
 
     try {
       const response = await axios.post('/auth/login', formData);
-      setUser(response.data.user);
+      const { token, user } = response.data;
+
+      // Crucial: Store token in localStorage
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('token', token);
+      }
+
+      setUser(user);
 
       if (typeof document !== 'undefined') {
         const sr = document.getElementById('sr-announce');
@@ -59,6 +66,7 @@ const Login = () => {
       }
 
       router.push('/profile');
+
     } catch (err) {
       console.error(err);
       setServerError(err.response?.data?.error || 'Login failed.');
@@ -71,88 +79,78 @@ const Login = () => {
 
   return (
     <div className={styles.container}>
+      {/* Left Pane - Vibrant Illustration */}
       <div className={styles.leftPane}>
-        <div className={styles.decorCircle1} />
-        <div className={styles.decorCircle2} />
-
+        <img
+          src="/images/illustration/signup.webp"
+          alt="Illustration"
+          className={styles.illustrationBg}
+        />
         <div className={styles.brand}>
           <h1>Sayings.</h1>
-          <div>YourVoice</div>
+          <span>YourVoice</span>
         </div>
-
-        <p className={styles.tagline}>Connect through voices. Share your thoughts with the world.</p>
-
-        <Image
-          src="/images/illustration/login.png"
-          alt="Illustration"
-          width={900}
-          height={500}
-          className={styles.illustration}
-          priority
-        />
+        <p className={styles.tagline}>Join us and let your voice be heard by the world.</p>
       </div>
 
+      {/* Right Pane - Form */}
       <div className={styles.rightPane}>
-        <form onSubmit={handleSubmit} className={styles.form}>
-          <h2 className={styles.title}>Welcome Back</h2>
+        <div className={styles.formContainer}>
+          <h2 className={styles.formTitle}>Welcome Back</h2>
 
-          {serverError && <p className={styles.error}>{serverError}</p>}
+          {serverError && <div className={styles.serverError}>{serverError}</div>}
 
-          <div className={styles.inputContainer}>
-            <input
-              id="login-identifier"
-              type="text"
-              name="identifier"
-              value={identifier}
-              onChange={handleChange}
-              required
-              className={`${styles.input} ${identifier ? styles.inputFilled : ''} ${
-                errors.identifier ? styles.inputError : ''
-              }`}
-            />
-            <label htmlFor="login-identifier" className={styles.inputLabel}>
-              Email or Username
-            </label>
-            {errors.identifier && (
-              <span className={styles.errorMessage}>{errors.identifier}</span>
-            )}
-          </div>
+          <form onSubmit={handleSubmit} className={styles.form}>
+            <div className={styles.inputGroup}>
+              <label className={styles.label}>Email or Username</label>
+              <input
+                id="login-identifier"
+                type="text"
+                name="identifier"
+                value={identifier}
+                onChange={handleChange}
+                required
+                className={`${styles.input} ${errors.identifier ? styles.inputError : ''}`}
+              />
+              {errors.identifier && (
+                <span className={styles.errorMessage}>{errors.identifier}</span>
+              )}
+            </div>
 
-          <div className={styles.inputContainer}>
-            <input
-              id="login-password"
-              type="password"
-              name="password"
-              value={password}
-              onChange={handleChange}
-              required
-              className={`${styles.input} ${password ? styles.inputFilled : ''} ${
-                errors.password ? styles.inputError : ''
-              }`}
-            />
-            <label htmlFor="login-password" className={styles.inputLabel}>
-              Password
-            </label>
-            {errors.password && (
-              <span className={styles.errorMessage}>{errors.password}</span>
-            )}
-          </div>
+            <div className={styles.inputGroup}>
+              <label className={styles.label}>Password</label>
+              <input
+                id="login-password"
+                type="password"
+                name="password"
+                value={password}
+                onChange={handleChange}
+                required
+                className={`${styles.input} ${errors.password ? styles.inputError : ''}`}
+              />
+              {errors.password && (
+                <span className={styles.errorMessage}>{errors.password}</span>
+              )}
+            </div>
 
-          <button type="submit" className={styles.button}>
-            Login
-          </button>
+            <button type="submit" className={styles.button}>
+              Login
+            </button>
 
-          <p className={styles.switchText}>
-            Don&apos;t have an account?{' '}
-            <Link href="/register" className={styles.link}>
-              Register here
-            </Link>
-            .
-          </p>
-        </form>
+            <div className={styles.footer}>
+              Don&apos;t have an account?{' '}
+              <Link href="/register" className={styles.link}>
+                Register here
+              </Link>
+            </div>
+          </form>
+        </div>
       </div>
+      <div id="sr-announce" className="sr-only" aria-live="polite"></div>
     </div>
   );
+
+
 };
 
 export default Login;

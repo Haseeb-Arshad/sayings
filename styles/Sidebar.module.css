@@ -1,112 +1,78 @@
-/* Sidebar.module.css - Compact, Clean Design */
+/* Sidebar.module.css - Minimalist, Hero-style Design */
 
 .sidebar {
   position: fixed;
-  top: 64px;
+  top: 0;
   left: 0;
-  width: 280px;
-  height: calc(100vh - 64px);
+  width: 260px;
+  height: 100vh;
   background: var(--surface);
   border-right: 1px solid var(--border);
-  z-index: 100;
+  z-index: 10000;
   display: flex;
   flex-direction: column;
-  overflow-y: auto;
   transition: all var(--transition-base);
+  box-shadow: var(--shadow-sm);
 }
 
-@media (max-width: 1024px) {
-  .sidebar {
-    left: 0;
-  }
+.sidebarHeader {
+  padding: 1.5rem 1.5rem 1rem;
 }
 
-@media (max-width: 768px) {
-  .sidebar {
-    transform: translateX(-100%);
-    left: 0;
-  }
-
-  .sidebar.open {
-    transform: translateX(0);
-  }
-}
-
-/* ========================================
-   PROFILE SECTION (Top)
-   ======================================== */
-
-.profileSection {
-  padding: 1.5rem 1rem;
-  border-bottom: 1px solid var(--border);
-}
-
-.profileHeader {
+.logo {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-}
-
-.profileAvatar {
-  width: 3rem;
-  height: 3rem;
-  border-radius: var(--radius-full);
-  overflow: hidden;
-  border: 2px solid var(--border);
-  flex-shrink: 0;
-}
-
-.profileAvatar img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.profileInfo {
-  flex: 1;
-  min-width: 0;
-}
-
-.profileName {
-  font-size: 1rem;
+  gap: 0.5rem;
+  font-size: 1.25rem;
   font-weight: 700;
   color: var(--text-primary);
-  line-height: 1.2;
+  letter-spacing: -0.02em;
 }
 
-.profilePronouns {
-  font-size: 0.8125rem;
+.logoIcon {
+  color: var(--text-primary);
+  font-size: 1.5rem;
+}
+
+.sideScrollArea {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 0.75rem;
+}
+
+.navSection {
+  margin-bottom: 1.5rem;
+}
+
+.sectionTitle {
+  font-size: 0.75rem;
+  font-weight: 600;
   color: var(--text-tertiary);
-  line-height: 1.2;
+  padding: 0 0.75rem;
+  margin-bottom: 0.5rem;
 }
-
-/* ========================================
-   NAVIGATION
-   ======================================== */
 
 .sidebarNav {
   display: flex;
   flex-direction: column;
-  padding: 1rem;
-  gap: 0.25rem;
+  gap: 0.125rem;
 }
 
 .navItem {
   display: flex;
   align-items: center;
-  gap: 0.875rem;
-  padding: 0.75rem 1rem;
-  border-radius: var(--radius-md);
+  gap: 0.75rem;
+  padding: 0.625rem 1rem;
+  border-radius: var(--radius-full);
   cursor: pointer;
-  position: relative;
   background: transparent;
   border: none;
   color: var(--text-secondary);
-  font-size: 0.9375rem;
+  font-size: 0.875rem;
   font-weight: 500;
   text-align: left;
   width: 100%;
-  transition: all var(--transition-base);
+  transition: all var(--transition-fast);
   outline: none;
 }
 
@@ -116,74 +82,50 @@
 }
 
 .navItem.active {
-  background: var(--accent-light);
+  background: var(--surface-hover);
   color: var(--accent);
   font-weight: 600;
 }
 
 .navItem:disabled {
-  opacity: 0.5;
+  opacity: 0.4;
   cursor: not-allowed;
 }
 
 .navIcon {
-  font-size: 1.25rem;
+  font-size: 1rem;
   flex-shrink: 0;
+  color: var(--text-tertiary);
+}
+
+.active .navIcon {
+  color: var(--accent);
 }
 
 .navLabel {
   flex: 1;
 }
 
-/* Notification Dot */
 .notificationDot {
-  position: absolute;
-  top: 0.625rem;
-  left: 1.875rem;
-  width: 0.5rem;
-  height: 0.5rem;
+  width: 0.375rem;
+  height: 0.375rem;
   background: var(--error);
   border-radius: var(--radius-full);
-  border: 2px solid var(--surface);
 }
 
-/* Divider */
-.navDivider {
-  height: 1px;
-  background: var(--border);
-  margin: 0.5rem 1rem;
-}
-
-/* ========================================
-   FILTERS SECTION
-   ======================================== */
-
+/* Filters Section (Topics) */
 .filtersSection {
   display: flex;
   flex-direction: column;
-  padding: 0 1rem 1rem;
-  gap: 0.25rem;
-  flex: 1;
-  overflow-y: auto;
-}
-
-.sectionTitle {
-  font-size: 0.7rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: var(--text-tertiary);
-  padding: 0.75rem 1rem 0.25rem;
-  margin-bottom: 0.5rem;
-  border-top: 1px solid var(--border);
+  gap: 0.125rem;
 }
 
 .filterItem {
   display: flex;
   align-items: center;
-  gap: 0.875rem;
+  gap: 0.75rem;
   padding: 0.625rem 1rem;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-full);
   cursor: pointer;
   background: transparent;
   border: none;
@@ -192,41 +134,40 @@
   font-weight: 500;
   text-align: left;
   width: 100%;
-  transition: all var(--transition-base);
-  outline: none;
+  transition: all var(--transition-fast);
 }
 
 .filterItem:hover:not(:disabled) {
-  background: var(--accent-light);
-  color: var(--accent);
+  background: var(--surface-hover);
+  color: var(--text-primary);
 }
 
 .filterItem.active {
-  background: var(--accent-light);
+  background: var(--surface-hover);
   color: var(--accent);
   font-weight: 600;
 }
 
-.filterItem:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
 .filterIcon {
-  font-size: 1rem;
+  font-size: 0.875rem;
   flex-shrink: 0;
+  color: var(--text-tertiary);
 }
 
-.filterLabel {
-  flex: 1;
+.active .filterIcon {
+  color: var(--accent);
 }
 
-/* ========================================
-   CREATE BUTTON
-   ======================================== */
+.sidebarFooter {
+  padding: 1rem;
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: flex-end;
+}
 
 .createButtonContainer {
-  padding: 1rem;
+  padding: 1rem 0.75rem;
+  margin-top: 0.5rem;
   border-top: 1px solid var(--border);
 }
 
@@ -239,12 +180,14 @@
   padding: 0.875rem 1rem;
   background: var(--accent);
   color: white;
-  border-radius: var(--radius-md);
-  font-weight: 600;
+  border-radius: var(--radius-full);
+  font-weight: 800;
+  /* Bold as per reference */
   font-size: 0.9375rem;
   cursor: pointer;
   transition: all var(--transition-base);
   border: none;
+  box-shadow: var(--shadow-sm);
 }
 
 .createButton:hover {
@@ -257,43 +200,37 @@
   transform: translateY(0);
 }
 
-.createButton svg {
-  font-size: 1rem;
-}
-
-/* ========================================
-   THEME SWITCHER
-   ======================================== */
-
-.themeSwitcherContainer {
-  padding: 0 1rem 1rem;
-}
-
 .themeSwitcher {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: 2.5rem;
+
+  padding: 0.5rem;
   border-radius: var(--radius-md);
-  background: var(--surface-hover);
-  border: 1px solid var(--border);
-  cursor: pointer;
-  font-size: 1.25rem;
+  color: var(--text-secondary);
   transition: all var(--transition-base);
 }
 
 .themeSwitcher:hover {
-  background: var(--surface-active);
-  border-color: var(--border-hover);
+  background: var(--surface-hover);
+  color: var(--text-primary);
 }
 
-/* ========================================
-   SCROLLBAR
-   ======================================== */
+@media (max-width: 1024px) {
+  .sidebar {
+    width: 240px;
+  }
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    transform: translateX(-100%);
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+  }
+}
 
 .sidebar::-webkit-scrollbar {
-  width: 6px;
+  width: 4px;
 }
 
 .sidebar::-webkit-scrollbar-track {
@@ -301,23 +238,6 @@
 }
 
 .sidebar::-webkit-scrollbar-thumb {
-  background: var(--border);
-  border-radius: var(--radius-full);
-}
-
-.sidebar::-webkit-scrollbar-thumb:hover {
-  background: var(--border-hover);
-}
-
-.filtersSection::-webkit-scrollbar {
-  width: 4px;
-}
-
-.filtersSection::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.filtersSection::-webkit-scrollbar-thumb {
   background: var(--border);
   border-radius: var(--radius-full);
 }

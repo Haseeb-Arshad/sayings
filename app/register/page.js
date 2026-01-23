@@ -63,7 +63,13 @@ const Register = () => {
     }
 
     try {
-      await axios.post('/auth/register', formData);
+      const response = await axios.post('/auth/register', formData);
+      const { token } = response.data;
+
+      // Crucial: Store token in localStorage
+      if (typeof window !== 'undefined' && token) {
+        localStorage.setItem('token', token);
+      }
 
       if (typeof document !== 'undefined') {
         const sr = document.getElementById('sr-announce');
@@ -71,6 +77,7 @@ const Register = () => {
       }
 
       router.push('/profile');
+
     } catch (err) {
       console.error(err);
       setServerError(err.response?.data?.error || 'Registration failed.');
@@ -83,115 +90,105 @@ const Register = () => {
 
   return (
     <div className={styles.container}>
+      {/* Left Pane - Vibrant Illustration */}
       <div className={styles.leftPane}>
-        <div className={styles.decorCircle1} />
-        <div className={styles.decorCircle2} />
-
-        <div className={styles.brand}>
-          <h1>Sayings.</h1>
-          <div>YourVoice</div>
-        </div>
-
-        <p className={styles.tagline}>Join us and let your voice be heard by the world.</p>
-
-        <Image
+        <img
           src="/images/illustration/signup.webp"
           alt="Illustration"
-          width={500}
-          height={500}
-          className={styles.illustration}
-          priority
+          className={styles.illustrationBg}
         />
+        <div className={styles.brand}>
+          <h1>Sayings.</h1>
+          <span>YourVoice</span>
+        </div>
+        <p className={styles.tagline}>Join us and let your voice be heard by the world.</p>
       </div>
 
+      {/* Right Pane - Form */}
       <div className={styles.rightPane}>
-        <form onSubmit={handleSubmit} className={styles.form}>
-          <h2 className={styles.title}>Create Account</h2>
+        <div className={styles.formContainer}>
+          <h2 className={styles.formTitle}>Create Account</h2>
 
-          {serverError && <p className={styles.error}>{serverError}</p>}
+          {serverError && <div className={styles.serverError}>{serverError}</div>}
 
-          <div className={styles.inputContainer}>
-            <input
-              id="register-username"
-              type="text"
-              name="username"
-              value={username}
-              onChange={handleChange}
-              required
-              className={`${styles.input} ${username ? styles.inputFilled : ''} ${
-                errors.username ? styles.inputError : ''
-              }`}
-            />
-            <label htmlFor="register-username" className={styles.inputLabel}>
-              Username
-            </label>
-            {errors.username && <span className={styles.errorMessage}>{errors.username}</span>}
-          </div>
+          <form onSubmit={handleSubmit} className={styles.form}>
+            <div className={styles.inputGroup}>
+              <label className={styles.label}>Username</label>
+              <input
+                id="register-username"
+                type="text"
+                name="username"
+                value={username}
+                onChange={handleChange}
+                required
+                className={`${styles.input} ${errors.username ? styles.inputError : ''}`}
+              />
+              {errors.username && (
+                <span className={styles.errorMessage}>{errors.username}</span>
+              )}
+            </div>
 
-          <div className={styles.inputContainer}>
-            <input
-              id="register-email"
-              type="email"
-              name="email"
-              value={email}
-              onChange={handleChange}
-              required
-              className={`${styles.input} ${email ? styles.inputFilled : ''} ${
-                errors.email ? styles.inputError : ''
-              }`}
-            />
-            <label htmlFor="register-email" className={styles.inputLabel}>
-              Email
-            </label>
-            {errors.email && <span className={styles.errorMessage}>{errors.email}</span>}
-          </div>
+            <div className={styles.inputGroup}>
+              <label className={styles.label}>Email Address</label>
+              <input
+                id="register-email"
+                type="email"
+                name="email"
+                value={email}
+                onChange={handleChange}
+                required
+                className={`${styles.input} ${errors.email ? styles.inputError : ''}`}
+              />
+              {errors.email && (
+                <span className={styles.errorMessage}>{errors.email}</span>
+              )}
+            </div>
 
-          <div className={styles.inputContainer}>
-            <input
-              id="register-password"
-              type="password"
-              name="password"
-              value={password}
-              onChange={handleChange}
-              required
-              className={`${styles.input} ${password ? styles.inputFilled : ''} ${
-                errors.password ? styles.inputError : ''
-              }`}
-            />
-            <label htmlFor="register-password" className={styles.inputLabel}>
-              Password
-            </label>
-            {errors.password && <span className={styles.errorMessage}>{errors.password}</span>}
-          </div>
+            <div className={styles.inputGroup}>
+              <label className={styles.label}>Password</label>
+              <input
+                id="register-password"
+                type="password"
+                name="password"
+                value={password}
+                onChange={handleChange}
+                required
+                className={`${styles.input} ${errors.password ? styles.inputError : ''}`}
+              />
+              {errors.password && (
+                <span className={styles.errorMessage}>{errors.password}</span>
+              )}
+            </div>
 
-          <div className={styles.inputContainer}>
-            <textarea
-              id="register-bio"
-              name="bio"
-              value={bio}
-              onChange={handleChange}
-              className={`${styles.textarea} ${bio ? styles.textareaFilled : ''}`}
-            />
-            <label htmlFor="register-bio" className={styles.inputLabel}>
-              Bio (optional)
-            </label>
-          </div>
+            <div className={styles.inputGroup}>
+              <label className={styles.label}>Bio (optional)</label>
+              <textarea
+                id="register-bio"
+                name="bio"
+                value={bio}
+                onChange={handleChange}
+                className={styles.textarea}
+              />
+            </div>
 
-          <button type="submit" className={styles.button}>
-            Register
-          </button>
+            <button type="submit" className={styles.button}>
+              Create Account
+            </button>
 
-          <p className={styles.switchText}>
-            Already have an account?{' '}
-            <Link href="/login" className={styles.link}>
-              Login here
-            </Link>
-            .
-          </p>
-        </form>
+            <div className={styles.footer}>
+              Already have an account?{' '}
+              <Link href="/login" className={styles.link}>
+                Login here
+              </Link>
+            </div>
+          </form>
+        </div>
       </div>
+      <div id="sr-announce" className="sr-only" aria-live="polite"></div>
     </div>
   );
+
+
 };
 
 export default Register;

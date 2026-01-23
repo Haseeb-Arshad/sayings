@@ -2,10 +2,6 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import Navbar from '../../component/navBar';
-import Sidebar from '../../component/sidebar';
-import ProfileSidebar from '../../component/ProfileSidebar';
-import SuggestionsSidebar from '../../component/suggestionsBar';
 import DraftWaveformPreview from '../../component/DraftWaveformPreview';
 import DraftEditModal from '../../component/DraftEditModal';
 import useDrafts from '../../hooks/useDrafts';
@@ -109,17 +105,12 @@ export default function DraftsPage() {
     if (hours < 1) return 'Just now';
     if (hours < 24) return `${hours}h ago`;
     if (days < 7) return `${days}d ago`;
-    
+
     return date.toLocaleDateString();
   };
 
   return (
     <div className={styles.home}>
-      <Navbar />
-      <Sidebar />
-      <ProfileSidebar />
-      <SuggestionsSidebar />
-
       <div className={styles.postsContainer} id="scrollableDiv">
         {/* Header */}
         <motion.div

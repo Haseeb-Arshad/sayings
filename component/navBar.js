@@ -83,22 +83,6 @@ const Navbar = () => {
 
         <div className={styles.navContainer}>
           <div className={styles.leftSection}>
-            <div className={styles.pageIndicator}>
-
-              <span className={styles.pageName}>
-                {isActive('/') && 'Home'}
-                {isActive('/explore') && 'Explore'}
-                {isActive('/profile') && 'Profile'}
-                {isActive('/listen') && 'Listen'}
-                {isActive('/drafts') && 'Drafts'}
-                {isActive('/upload') && 'Upload'}
-                {isActive('/settings') && 'Settings'}
-                {!isActive('/') && !isActive('/explore') && !isActive('/profile') && !isActive('/listen') && !isActive('/drafts') && !isActive('/upload') && !isActive('/settings') && 'Sayings'}
-              </span>
-            </div>
-          </div>
-
-          <div className={styles.centerSection}>
             {navItems.map((item) => (
               <button
                 key={item.id}
@@ -152,21 +136,20 @@ const Navbar = () => {
                 </>
               ) : (
                 <div className={styles.authButtons}>
-                  <button
-                    type="button"
+                  <Link
+                    href="/login"
                     className={styles.loginButton}
-                    onClick={() => push('/login')}
                   >
                     Log In
-                  </button>
-                  <button
-                    type="button"
+                  </Link>
+                  <Link
+                    href="/register"
                     className={styles.signupButton}
-                    onClick={() => push('/register')}
                   >
                     Sign Up
-                  </button>
+                  </Link>
                 </div>
+
               )}
             </div>
 

@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { FaSearch, FaTimes } from 'react-icons/fa';
 import { useRouter } from 'next/navigation';
@@ -92,9 +93,15 @@ export default function SearchModal({ triggerClassName, triggerVariant = 'input'
 
   const [history, setHistory] = useState([]);
   const [trendingTopics, setTrendingTopics] = useState([]);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const router = useRouter();
   const inputRef = useRef(null);
+  const modalRef = useRef(null);
 
   useEffect(() => {
     setHistory(getHistory());
@@ -129,14 +136,21 @@ export default function SearchModal({ triggerClassName, triggerVariant = 'input'
     };
 
     const onOpenEvent = () => setOpen(true);
+    const onMouseDown = (e) => {
+      if (open && modalRef.current && !modalRef.current.contains(e.target)) {
+        setOpen(false);
+      }
+    };
 
     document.addEventListener('keydown', onKeyDown);
     document.addEventListener('search:open', onOpenEvent);
+    document.addEventListener('mousedown', onMouseDown);
     return () => {
       document.removeEventListener('keydown', onKeyDown);
       document.removeEventListener('search:open', onOpenEvent);
+      document.removeEventListener('mousedown', onMouseDown);
     };
-  }, []);
+  }, [open]);
 
   useEffect(() => {
     if (open) {
@@ -297,284 +311,285 @@ export default function SearchModal({ triggerClassName, triggerVariant = 'input'
         </button>
       )}
 
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            className={styles.overlay}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.15 }}
-            onMouseDown={(e) => {
-              if (e.target === e.currentTarget) setOpen(false);
-            }}
-          >
+      {mounted && createPortal(
+        <AnimatePresence>
+          {open && (
             <motion.div
-              className={styles.modal}
-              role="dialog"
-              aria-modal="true"
-              initial={{ opacity: 0, y: 10, scale: 0.99 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 10, scale: 0.99 }}
-              transition={{ duration: 0.18 }}
+              className={styles.overlay}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.15 }}
             >
-              <div className={styles.header}>
-                <div className={styles.searchRow}>
-                  <FaSearch className={styles.searchIcon} />
-                  <input
-                    ref={inputRef}
-                    className={styles.input}
-                    value={query}
-                    onChange={(e) => setQuery(e.target.value)}
-                    placeholder="Search transcripts, topics, creators…"
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
-                        e.preventDefault();
-                        const q = String(query || '').trim();
-                        if (q) goToSearchPage(q);
-                      }
-                    }}
-                  />
-                  <button
-                    type="button"
-                    className={styles.closeButton}
-                    onClick={() => setOpen(false)}
-                    aria-label="Close search"
-                  >
-                    <FaTimes />
-                  </button>
-                </div>
-
-                <div className={styles.toolsRow}>
-                  <button
-                    type="button"
-                    className={styles.filtersButton}
-                    onClick={() => setFiltersOpen((v) => !v)}
-                  >
-                    Filters
-                  </button>
-
-                  {activeChips.length > 0 && (
-                    <div className={styles.chips}>
-                      {activeChips.map((chip) => (
-                        <button
-                          type="button"
-                          key={chip.key}
-                          className={styles.chip}
-                          onClick={() => clearChip(chip.key)}
-                          aria-label={`Remove filter ${chip.label}`}
-                        >
-                          {chip.label} <span aria-hidden="true">×</span>
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-
-                <AnimatePresence>
-                  {filtersOpen && (
-                    <motion.div
-                      className={styles.filtersPanel}
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: 'auto', opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.18 }}
+              <motion.div
+                ref={modalRef}
+                className={styles.modal}
+                role="dialog"
+                aria-modal="true"
+                initial={{ opacity: 0, y: 10, scale: 0.99 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 10, scale: 0.99 }}
+                transition={{ duration: 0.18 }}
+              >
+                <div className={styles.header}>
+                  <div className={styles.searchRow}>
+                    <FaSearch className={styles.searchIcon} />
+                    <input
+                      ref={inputRef}
+                      className={styles.input}
+                      value={query}
+                      onChange={(e) => setQuery(e.target.value)}
+                      placeholder="Search transcripts, topics, creators…"
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          const q = String(query || '').trim();
+                          if (q) goToSearchPage(q);
+                        }
+                      }}
+                    />
+                    <button
+                      type="button"
+                      className={styles.closeButton}
+                      onClick={() => setOpen(false)}
+                      aria-label="Close search"
                     >
-                      <div className={styles.filtersGrid}>
-                        <label className={styles.filterField}>
-                          <span>Topic</span>
-                          <input
-                            value={topic}
-                            onChange={(e) => setTopic(e.target.value)}
-                            placeholder="e.g. Technology"
-                          />
-                        </label>
+                      <FaTimes />
+                    </button>
+                  </div>
 
-                        <label className={styles.filterField}>
-                          <span>Emotion</span>
-                          <select value={emotion} onChange={(e) => setEmotion(e.target.value)}>
-                            <option value="">Any</option>
-                            <option value="POSITIVE">POSITIVE</option>
-                            <option value="NEGATIVE">NEGATIVE</option>
-                            <option value="NEUTRAL">NEUTRAL</option>
-                          </select>
-                        </label>
+                  <div className={styles.toolsRow}>
+                    <button
+                      type="button"
+                      className={styles.filtersButton}
+                      onClick={() => setFiltersOpen((v) => !v)}
+                    >
+                      Filters
+                    </button>
 
-                        <label className={styles.filterField}>
-                          <span>Creator</span>
-                          <input
-                            value={creator}
-                            onChange={(e) => setCreator(e.target.value)}
-                            placeholder="username"
-                          />
-                        </label>
-
-                        <label className={styles.filterField}>
-                          <span>From</span>
-                          <input type="date" value={from} onChange={(e) => setFrom(e.target.value)} />
-                        </label>
-
-                        <label className={styles.filterField}>
-                          <span>To</span>
-                          <input type="date" value={to} onChange={(e) => setTo(e.target.value)} />
-                        </label>
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-
-              <div className={styles.content}>
-                {error && <div className={styles.error}>{error}</div>}
-
-                {!query.trim() ? (
-                  <div className={styles.discovery}>
-                    {history.length > 0 && (
-                      <div className={styles.section}>
-                        <div className={styles.sectionTitle}>Recent</div>
-                        <div className={styles.pills}>
-                          {history.map((h) => (
-                            <button
-                              key={h}
-                              type="button"
-                              className={styles.pill}
-                              onClick={() => setQuery(h)}
-                            >
-                              {h}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-
-                    <div className={styles.section}>
-                      <div className={styles.sectionTitle}>Trending topics</div>
-                      <div className={styles.pills}>
-                        {trendingTopics.map((t) => (
+                    {activeChips.length > 0 && (
+                      <div className={styles.chips}>
+                        {activeChips.map((chip) => (
                           <button
-                            key={t.id || t.name}
                             type="button"
-                            className={styles.pill}
-                            onClick={() => {
-                              setTopic(t.name);
-                              setQuery(t.name);
-                            }}
+                            key={chip.key}
+                            className={styles.chip}
+                            onClick={() => clearChip(chip.key)}
+                            aria-label={`Remove filter ${chip.label}`}
                           >
-                            #{t.name}
+                            {chip.label} <span aria-hidden="true">×</span>
                           </button>
                         ))}
-                        {trendingTopics.length === 0 && <div className={styles.muted}>No trending topics yet.</div>}
+                      </div>
+                    )}
+                  </div>
+
+                  <AnimatePresence>
+                    {filtersOpen && (
+                      <motion.div
+                        className={styles.filtersPanel}
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.18 }}
+                      >
+                        <div className={styles.filtersGrid}>
+                          <label className={styles.filterField}>
+                            <span>Topic</span>
+                            <input
+                              value={topic}
+                              onChange={(e) => setTopic(e.target.value)}
+                              placeholder="e.g. Technology"
+                            />
+                          </label>
+
+                          <label className={styles.filterField}>
+                            <span>Emotion</span>
+                            <select value={emotion} onChange={(e) => setEmotion(e.target.value)}>
+                              <option value="">Any</option>
+                              <option value="POSITIVE">POSITIVE</option>
+                              <option value="NEGATIVE">NEGATIVE</option>
+                              <option value="NEUTRAL">NEUTRAL</option>
+                            </select>
+                          </label>
+
+                          <label className={styles.filterField}>
+                            <span>Creator</span>
+                            <input
+                              value={creator}
+                              onChange={(e) => setCreator(e.target.value)}
+                              placeholder="username"
+                            />
+                          </label>
+
+                          <label className={styles.filterField}>
+                            <span>From</span>
+                            <input type="date" value={from} onChange={(e) => setFrom(e.target.value)} />
+                          </label>
+
+                          <label className={styles.filterField}>
+                            <span>To</span>
+                            <input type="date" value={to} onChange={(e) => setTo(e.target.value)} />
+                          </label>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+
+                <div className={styles.content}>
+                  {error && <div className={styles.error}>{error}</div>}
+
+                  {!query.trim() ? (
+                    <div className={styles.discovery}>
+                      {history.length > 0 && (
+                        <div className={styles.section}>
+                          <div className={styles.sectionTitle}>Recent</div>
+                          <div className={styles.pills}>
+                            {history.map((h) => (
+                              <button
+                                key={h}
+                                type="button"
+                                className={styles.pill}
+                                onClick={() => setQuery(h)}
+                              >
+                                {h}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      <div className={styles.section}>
+                        <div className={styles.sectionTitle}>Trending topics</div>
+                        <div className={styles.pills}>
+                          {trendingTopics.map((t) => (
+                            <button
+                              key={t.id || t.name}
+                              type="button"
+                              className={styles.pill}
+                              onClick={() => {
+                                setTopic(t.name);
+                                setQuery(t.name);
+                              }}
+                            >
+                              #{t.name}
+                            </button>
+                          ))}
+                          {trendingTopics.length === 0 && <div className={styles.muted}>No trending topics yet.</div>}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ) : (
-                  <>
-                    {loading ? (
-                      <div className={styles.loading}>Searching…</div>
-                    ) : (
-                      <>
-                        <div className={styles.section}>
-                          <div className={styles.sectionTitle}>Posts</div>
-                          {results.posts.length === 0 ? (
-                            <div className={styles.muted}>No matching posts.</div>
-                          ) : (
-                            <ul className={styles.list}>
-                              {results.posts.map((p, idx) => (
-                                <li key={p.id}>
-                                  <button
-                                    type="button"
-                                    className={styles.resultRow}
-                                    onClick={() => onResultClick(p, 'post', idx)}
-                                  >
-                                    <div className={styles.resultMain}>
-                                      <div className={styles.resultTitle}>
-                                        <HighlightedText text={p.title || p.user?.username || 'Post'} query={query} />
-                                      </div>
-                                      <div className={styles.resultSubtitle}>
-                                        <HighlightedText text={p.snippet || ''} query={query} />
-                                      </div>
-                                    </div>
-                                  </button>
-                                </li>
-                              ))}
-                            </ul>
-                          )}
-                        </div>
-
-                        <div className={styles.section}>
-                          <div className={styles.sectionTitle}>Creators</div>
-                          {results.users.length === 0 ? (
-                            <div className={styles.muted}>No matching creators.</div>
-                          ) : (
-                            <ul className={styles.list}>
-                              {results.users.map((u, idx) => (
-                                <li key={u.id}>
-                                  <button
-                                    type="button"
-                                    className={styles.resultRow}
-                                    onClick={() => onResultClick(u, 'user', idx)}
-                                  >
-                                    <div className={styles.userRow}>
-                                      <img
-                                        src={u.avatar || '/placeholder-avatar.png'}
-                                        alt=""
-                                        className={styles.avatar}
-                                      />
+                  ) : (
+                    <>
+                      {loading ? (
+                        <div className={styles.loading}>Searching…</div>
+                      ) : (
+                        <>
+                          <div className={styles.section}>
+                            <div className={styles.sectionTitle}>Posts</div>
+                            {results.posts.length === 0 ? (
+                              <div className={styles.muted}>No matching posts.</div>
+                            ) : (
+                              <ul className={styles.list}>
+                                {results.posts.map((p, idx) => (
+                                  <li key={p.id}>
+                                    <button
+                                      type="button"
+                                      className={styles.resultRow}
+                                      onClick={() => onResultClick(p, 'post', idx)}
+                                    >
                                       <div className={styles.resultMain}>
                                         <div className={styles.resultTitle}>
-                                          <HighlightedText text={`@${u.username}`} query={query} />
+                                          <HighlightedText text={p.title || p.user?.username || 'Post'} query={query} />
                                         </div>
-                                        {u.bio && <div className={styles.resultSubtitle}><HighlightedText text={u.bio} query={query} /></div>}
+                                        <div className={styles.resultSubtitle}>
+                                          <HighlightedText text={p.snippet || ''} query={query} />
+                                        </div>
                                       </div>
-                                    </div>
+                                    </button>
+                                  </li>
+                                ))}
+                              </ul>
+                            )}
+                          </div>
+
+                          <div className={styles.section}>
+                            <div className={styles.sectionTitle}>Creators</div>
+                            {results.users.length === 0 ? (
+                              <div className={styles.muted}>No matching creators.</div>
+                            ) : (
+                              <ul className={styles.list}>
+                                {results.users.map((u, idx) => (
+                                  <li key={u.id}>
+                                    <button
+                                      type="button"
+                                      className={styles.resultRow}
+                                      onClick={() => onResultClick(u, 'user', idx)}
+                                    >
+                                      <div className={styles.userRow}>
+                                        <img
+                                          src={u.avatar || '/placeholder-avatar.png'}
+                                          alt=""
+                                          className={styles.avatar}
+                                        />
+                                        <div className={styles.resultMain}>
+                                          <div className={styles.resultTitle}>
+                                            <HighlightedText text={`@${u.username}`} query={query} />
+                                          </div>
+                                          {u.bio && <div className={styles.resultSubtitle}><HighlightedText text={u.bio} query={query} /></div>}
+                                        </div>
+                                      </div>
+                                    </button>
+                                  </li>
+                                ))}
+                              </ul>
+                            )}
+                          </div>
+
+                          <div className={styles.section}>
+                            <div className={styles.sectionTitle}>Topics</div>
+                            {results.topics.length === 0 ? (
+                              <div className={styles.muted}>No matching topics.</div>
+                            ) : (
+                              <div className={styles.pills}>
+                                {results.topics.map((t, idx) => (
+                                  <button
+                                    key={t.id || t.name}
+                                    type="button"
+                                    className={styles.pill}
+                                    onClick={() => onResultClick(t, 'topic', idx)}
+                                  >
+                                    #<HighlightedText text={t.name} query={query} />
                                   </button>
-                                </li>
-                              ))}
-                            </ul>
-                          )}
-                        </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
 
-                        <div className={styles.section}>
-                          <div className={styles.sectionTitle}>Topics</div>
-                          {results.topics.length === 0 ? (
-                            <div className={styles.muted}>No matching topics.</div>
-                          ) : (
-                            <div className={styles.pills}>
-                              {results.topics.map((t, idx) => (
-                                <button
-                                  key={t.id || t.name}
-                                  type="button"
-                                  className={styles.pill}
-                                  onClick={() => onResultClick(t, 'topic', idx)}
-                                >
-                                  #<HighlightedText text={t.name} query={query} />
-                                </button>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-
-                        <div className={styles.footerRow}>
-                          <button
-                            type="button"
-                            className={styles.viewAll}
-                            onClick={() => {
-                              const q = String(query || '').trim();
-                              if (q) goToSearchPage(q);
-                            }}
-                          >
-                            View all results{nextCursor ? ' (more)' : ''}
-                          </button>
-                        </div>
-                      </>
-                    )}
-                  </>
-                )}
-              </div>
+                          <div className={styles.footerRow}>
+                            <button
+                              type="button"
+                              className={styles.viewAll}
+                              onClick={() => {
+                                const q = String(query || '').trim();
+                                if (q) goToSearchPage(q);
+                              }}
+                            >
+                              View all results{nextCursor ? ' (more)' : ''}
+                            </button>
+                          </div>
+                        </>
+                      )}
+                    </>
+                  )}
+                </div>
+              </motion.div>
             </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
     </>
   );
 }

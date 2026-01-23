@@ -25,8 +25,8 @@ const allowedOrigins = [
   'https://sayings.me',
   'https://www.sayings.me',
   'http://www.sayings.me',
-  'http://www.sayings.me',
   'http://localhost:3000',
+  'http://localhost:3001',
 ];
 // Define allowed origins
 // Middleware
@@ -74,7 +74,7 @@ const JWT_SECRET = process.env.JWT_SECRET || "h7F!yN8$wLpX@x9&c2ZvQk3*oT5#aEg4rJ
 // Socket.IO Authentication Middleware
 io.use((socket, next) => {
   const token = socket.handshake.auth.token;
-  
+
   if (!token) {
     return next(new Error('Authentication error: No token provided'));
   }
@@ -98,14 +98,14 @@ io.on('connection', (socket) => {
   socket.on('subscribe:feed', (data) => {
     const { filter } = data || {};
     const room = filter ? `feed:${filter}` : 'feed:recent';
-    
+
     // Leave previous rooms
     socket.rooms.forEach(room => {
       if (room !== socket.id && room.startsWith('feed:')) {
         socket.leave(room);
       }
     });
-    
+
     // Join new room
     socket.join(room);
     console.log(`User ${socket.userId} subscribed to ${room}`);
@@ -134,7 +134,7 @@ mongoose
   });
 
 
-  // In your backend routes
+// In your backend routes
 app.use((req, res, next) => {
   console.log('Incoming request:', {
     method: req.method,

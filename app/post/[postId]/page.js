@@ -5,8 +5,6 @@ import { useParams } from 'next/navigation';
 import axios from '@/utils/axiosInstance';
 import styles from '@/styles/Explore.module.css';
 
-const Navbar = lazy(() => import('@/component/navBar'));
-const Sidebar = lazy(() => import('@/component/sidebar'));
 const Post = lazy(() => import('@/component/post'));
 
 const PostPage = () => {
@@ -35,26 +33,17 @@ const PostPage = () => {
 
   return (
     <div className={styles.container}>
-      <Suspense fallback={null}>
-        <Navbar />
-      </Suspense>
-
-      <div className={styles.mainContent}>
-        <Suspense fallback={null}>
-          <Sidebar setFilter={() => {}} currentFilter="recent" />
-        </Suspense>
-
-        <div className={styles.exploreSection}>
-          {loading && <p className={styles.loadingText}>Loading post...</p>}
-          {error && <p className={styles.error}>{error}</p>}
-          {!loading && post && (
-            <Suspense fallback={<p className={styles.loadingText}>Loading player...</p>}>
-              <Post key={post._id} post={post} enableWaveform />
-            </Suspense>
-          )}
-        </div>
+      <div className={styles.exploreSection}>
+        {loading && <p className={styles.loadingText}>Loading post...</p>}
+        {error && <p className={styles.error}>{error}</p>}
+        {!loading && post && (
+          <Suspense fallback={<p className={styles.loadingText}>Loading player...</p>}>
+            <Post key={post._id} post={post} enableWaveform />
+          </Suspense>
+        )}
       </div>
     </div>
+    </div >
   );
 };
 

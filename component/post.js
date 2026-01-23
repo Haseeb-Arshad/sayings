@@ -231,233 +231,116 @@ const Post = React.memo(function Post({
   };
 
   return (
-    <>
-      <div
-        className={`${styles.post} ${isDeleting ? styles.postDeleting : ''}`}
-        tabIndex={0}
-        ref={postRef}
-      >
-        <div className={styles.postHeader}>
-          <div className={styles.userInfo}>
-            <img src={avatarUrl} alt={username} className={styles.avatar} />
-            <div>
-              <div className={styles.username}>{username}</div>
-              <div className={styles.timestamp}>{timestamp}</div>
-            </div>
+    <div
+      className={`${styles.post} ${isDeleting ? styles.postDeleting : ''} fadeIn`}
+      ref={postRef}
+    >
+      <div className={styles.postHeader}>
+        <div className={styles.userInfo}>
+          <img src={avatarUrl} alt={username} className={styles.avatar} />
+          <div>
+            <div className={styles.username}>{username}</div>
+            <div className={styles.timestamp}>{timestamp}</div>
           </div>
+        </div>
 
-          <div className={styles.rightHeader}>
-            {topEmotions.displayed.length > 0 && (
-              <div className={styles.emotions}>
-                {topEmotions.displayed.map((emotion, index) => {
-                  const emotionName =
-                    emotion.name.charAt(0).toUpperCase() + emotion.name.slice(1);
-                  return (
-                    <span
-                      key={index}
-                      className={styles.emotionBadge}
-                      style={{ backgroundColor: '#e0e0e0', color: '#000' }}
-                    >
-                      {emotionName}
-                    </span>
-                  );
-                })}
-
-                {topEmotions.remaining > 0 && (
-                  <div
-                    className={styles.overflowBadge}
-                    onClick={() => setIsTooltipVisible((prev) => !prev)}
-                    ref={overflowRef}
-                    role="button"
-                    tabIndex={0}
-                    aria-label="Show more emotions"
-                  >
-                    +{topEmotions.remaining}
-                    {isTooltipVisible && (
-                      <div className={`${styles.tooltip} ${styles.fadeSlideIn}`}>{renderOverflowTooltip()}</div>
-                    )}
-                  </div>
-                )}
-              </div>
-            )}
-
-            {isOwner && (
-              <div className={styles.menuContainer} ref={menuRef}>
+        {isOwner && (
+          <div className={styles.menuContainer} ref={menuRef}>
+            <button
+              className={styles.menuButton}
+              onClick={() => setIsMenuOpen((prev) => !prev)}
+              aria-label="More options"
+              type="button"
+            >
+              <FaEllipsisH />
+            </button>
+            {isMenuOpen && (
+              <div className={styles.dropdownMenu}>
                 <button
-                  className={styles.menuButton}
-                  onClick={() => setIsMenuOpen((prev) => !prev)}
-                  aria-label="More options"
+                  className={styles.dropdownItem}
+                  onClick={() => {
+                    setIsModalOpen(true);
+                    setIsMenuOpen(false);
+                  }}
                   type="button"
                 >
-                  <FaEllipsisH />
+                  <FaTrash className={styles.dropdownIcon} />
+                  Delete
                 </button>
-                {isMenuOpen && (
-                  <div className={`${styles.dropdownMenu} ${styles.fadeSlideIn}`}>
-                    <button
-                      className={styles.dropdownItem}
-                      onClick={() => {
-                        setIsModalOpen(true);
-                        setIsMenuOpen(false);
-                      }}
-                      type="button"
-                    >
-                      <FaTrash className={styles.dropdownIcon} />
-                      Delete
-                    </button>
-                  </div>
-                )}
               </div>
             )}
           </div>
-        </div>
-
-        <div className={styles.contentArea}>
-          {!showTranscript ? (
-            <div className={styles.fadeIn}>
-              <div className={styles.summary}>{post.summary}</div>
-            </div>
-          ) : (
-            <div className={styles.fadeIn}>
-              <div className={styles.transcript}>
-                {post.words && post.words.length > 0 ? (
-                  post.words.map((word, index) => {
-                    const isHighlighted = index === highlightedWordIndex;
-                    return (
-                      <span
-                        key={index}
-                        className={`${styles.word} ${isHighlighted ? styles.highlighted : ''}`}
-                        onClick={() => handleWordClick(index)}
-                        role={enableWaveform ? 'button' : undefined}
-                        tabIndex={enableWaveform ? 0 : undefined}
-                      >
-                        {word.text}{' '}
-                      </span>
-                    );
-                  })
-                ) : (
-                  <p>{post.transcript}</p>
-                )}
-              </div>
-            </div>
-          )}
-        </div>
-
-        <div className={styles.categories}>
-          {topIABCategories.map((categoryObj, index) => (
-            <span key={index} className={styles.categoryBadge}>
-              {categoryObj.category.split('>').pop()}
-            </span>
-          ))}
-        </div>
-
-        {enableWaveform ? (
-          <Suspense fallback={<WaveformSkeleton />}>
-            <WaveformPlayer
-              ref={playerRef}
-              audioPinataURL={post.audioPinataURL}
-              words={post.words}
-              onHighlightChange={setHighlightedWordIndex}
-            />
-          </Suspense>
-        ) : (
-          <div className={styles.audioPlayer}>
-            {audioSrc ? (
-              <audio
-                className={styles.audioNative}
-                controls
-                preload="none"
-                src={audioSrc}
-              />
-            ) : null}
-            <button
-              type="button"
-              className={styles.openPostButton}
-              onClick={() => router.push(`/post/${post._id}`)}
-            >
-              Open waveform
-            </button>
-          </div>
         )}
+      </div>
 
-        <div className={styles.toggleTranscript}>
-          <button type="button" onClick={toggleTranscript}>
-            {showTranscript ? 'Hide Transcript' : 'Show Transcript'}
+      <div className={styles.contentArea}>
+        <div className={styles.summary}>{post.summary}</div>
+      </div>
+
+      <div className={styles.categories}>
+        {topIABCategories.map((categoryObj, index) => (
+          <span key={index} className={styles.categoryBadge}>
+            {categoryObj.category.split('>').pop()}
+          </span>
+        ))}
+      </div>
+
+      <div className={styles.audioPlayer}>
+        {audioSrc && (
+          <audio
+            className={styles.audioNative}
+            controls
+            preload="none"
+            src={audioSrc}
+          />
+        )}
+      </div>
+
+      <div className={styles.postFooter}>
+        <div className={styles.reactions}>
+          <button
+            type="button"
+            className={`${styles.iconButton} ${hasLiked ? styles.likedButton : ''}`}
+            onClick={handleLike}
+          >
+            <FaHeart />
+            <span>{likes}</span>
+          </button>
+
+          <button
+            type="button"
+            className={styles.iconButton}
+            onClick={() => router.push(`/post/${post._id}`)}
+          >
+            <FaComment />
+            <span>{post.comments ? post.comments.length : 0}</span>
           </button>
         </div>
 
-        <div className={styles.postFooter}>
-          <div className={styles.reactions}>
-            <button
-              type="button"
-              className={`${styles.iconButton} ${hasLiked ? styles.likedButton : ''}`}
-              onClick={handleLike}
-            >
-              <FaHeart />
-              <span>{likes}</span>
-            </button>
+        <button
+          type="button"
+          className={styles.openPostButton}
+          onClick={() => router.push(`/post/${post._id}`)}
+        >
+          View Details
+        </button>
+      </div>
 
-            <button
-              type="button"
-              className={styles.iconButton}
-              onClick={() => router.push(`/post/${post._id}`)}
-            >
-              <FaComment />
-              <span>{post.comments ? post.comments.length : 0}</span>
-            </button>
-
-            <button type="button" className={styles.iconButton}>
-              <FaShareAlt />
-              <span>Share</span>
-            </button>
+      {isModalOpen && (
+        <div className={styles.modalOverlay}>
+          <div className={styles.modalContent}>
+            <h3>Delete Post?</h3>
+            <p>This action cannot be undone.</p>
+            <div className={styles.modalFooter}>
+              <button onClick={() => setIsModalOpen(false)}>Cancel</button>
+              <button className={styles.confirmButton} onClick={handleDelete}>Delete</button>
+            </div>
           </div>
         </div>
-
-        {isModalOpen && (
-          <>
-            <div
-              className={styles.modalOverlay}
-              onClick={() => setIsModalOpen(false)}
-            />
-
-            <div className={styles.modalContentBack}>
-              <div className={`${styles.modalContent} ${styles.popIn}`}>
-                <div className={styles.modalHeader}>
-                  <h2>Confirm Deletion</h2>
-                  <button
-                    className={styles.closeButton}
-                    onClick={() => setIsModalOpen(false)}
-                    aria-label="Close"
-                    type="button"
-                  >
-                    <FaTimes />
-                  </button>
-                </div>
-                <div className={styles.modalBody}>
-                  <p>Are you sure you want to delete this post?</p>
-                </div>
-                <div className={styles.modalFooter}>
-                  <button
-                    className={styles.cancelButton}
-                    onClick={() => setIsModalOpen(false)}
-                    type="button"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    className={styles.confirmButton}
-                    onClick={handleDelete}
-                    type="button"
-                  >
-                    Delete
-                  </button>
-                </div>
-              </div>
-            </div>
-          </>
-        )}
-      </div>
-    </>
+      )}
+    </div>
   );
+
 });
 
 export default Post;

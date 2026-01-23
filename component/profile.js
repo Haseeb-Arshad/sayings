@@ -9,8 +9,6 @@ import { useRouter } from 'next/navigation';
 import useCurrentUser from '../hooks/useCurrentUser';
 import SkeletonPost from './SkeletonPost';
 
-const Navbar = lazy(() => import('../component/navBar'));
-const Sidebar = lazy(() => import('../component/sidebar'));
 const Post = lazy(() => import('../component/post'));
 
 const Profile = () => {
@@ -140,141 +138,132 @@ const Profile = () => {
 
   return (
     <div className={styles.container}>
-      <Suspense fallback={null}>
-        <Navbar />
-      </Suspense>
+      <div id="scrollableProfileDiv" className={styles.profileSection}>
+        {error && <p className={styles.error}>{error}</p>}
 
-      <div className={styles.mainContent}>
-        <Suspense fallback={null}>
-          <Sidebar setFilter={handleFilterChange} currentFilter={filter} />
-        </Suspense>
+        {user ? (
+          <>
+            <div className={styles.profileInfo}>
+              <img
+                src={user.avatar || '/images/profile/dp.webp'}
+                alt="User Avatar"
+                className={styles.avatar}
+              />
+              <div className={styles.userDetails}>
+                <h2 className={styles.username}>{user.username}</h2>
+                <p className={styles.bio}>{user.bio}</p>
 
-        <div id="scrollableProfileDiv" className={styles.profileSection}>
-          {error && <p className={styles.error}>{error}</p>}
-
-          {user ? (
-            <>
-              <div className={styles.profileInfo}>
-                <img
-                  src={user.avatar || '/images/profile/dp.webp'}
-                  alt="User Avatar"
-                  className={styles.avatar}
-                />
-                <div className={styles.userDetails}>
-                  <h2 className={styles.username}>{user.username}</h2>
-                  <p className={styles.bio}>{user.bio}</p>
-
-                  <div className={styles.userStats}>
-                    <div className={styles.statItem}>
-                      <div>
-                        <span className={styles.statNumber}>{posts.length}</span>
-                        <span className={styles.statLabel}>Posts</span>
-                      </div>
+                <div className={styles.userStats}>
+                  <div className={styles.statItem}>
+                    <div>
+                      <span className={styles.statNumber}>{posts.length}</span>
+                      <span className={styles.statLabel}>Posts</span>
                     </div>
-                    <div className={styles.statItem}>
-                      <div>
-                        <span className={styles.statNumber}>{calculateTotalLikes()}</span>
-                        <span className={styles.statLabel}>Total Likes</span>
-                      </div>
+                  </div>
+                  <div className={styles.statItem}>
+                    <div>
+                      <span className={styles.statNumber}>{calculateTotalLikes()}</span>
+                      <span className={styles.statLabel}>Total Likes</span>
                     </div>
-                    <div className={styles.statItem}>
-                      <div>
-                        <span className={styles.statNumber}>{formatDate(user.createdAt)}</span>
-                        <span className={styles.statLabel}>Joined</span>
-                      </div>
+                  </div>
+                  <div className={styles.statItem}>
+                    <div>
+                      <span className={styles.statNumber}>{formatDate(user.createdAt)}</span>
+                      <span className={styles.statLabel}>Joined</span>
                     </div>
                   </div>
                 </div>
               </div>
+            </div>
 
-              <div className={styles.personalityAndReview}>
-                <div className={styles.personalitySection}>
-                  <div className={styles.sectionTitle}>Personality Traits</div>
-                  <div className={styles.personalityDescriptors}>
-                    {personalityDescriptors.map((descriptor, index) => (
-                      <span key={index} className={styles.descriptorBadge}>
-                        {descriptor}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-
-                <div className={styles.profileReviewSection}>
-                  <div className={styles.sectionTitle}>Profile Review</div>
-                  <p className={styles.profileReviewText}>
-                    {user.profileReview || 'No review available.'}
-                  </p>
+            <div className={styles.personalityAndReview}>
+              <div className={styles.personalitySection}>
+                <div className={styles.sectionTitle}>Personality Traits</div>
+                <div className={styles.personalityDescriptors}>
+                  {personalityDescriptors.map((descriptor, index) => (
+                    <span key={index} className={styles.descriptorBadge}>
+                      {descriptor}
+                    </span>
+                  ))}
                 </div>
               </div>
 
-              <div className={styles.postsSection}>
-                <div className={styles.profileHeader}>
-                  <h2>Your Sayings</h2>
-                  <div className={styles.filterOptions}>
-                    <button
-                      className={`${styles.filterButton} ${filter === 'recent' ? styles.active : ''}`}
-                      onClick={() => handleFilterChange('recent')}
-                      type="button"
-                    >
-                      Recent
-                    </button>
-                    <button
-                      className={`${styles.filterButton} ${filter === 'top' ? styles.active : ''}`}
-                      onClick={() => handleFilterChange('top')}
-                      type="button"
-                    >
-                      Top
-                    </button>
-                  </div>
-                </div>
+              <div className={styles.profileReviewSection}>
+                <div className={styles.sectionTitle}>Profile Review</div>
+                <p className={styles.profileReviewText}>
+                  {user.profileReview || 'No review available.'}
+                </p>
+              </div>
+            </div>
 
-                {isLoadingPosts && page === 1 ? (
-                  <p className={styles.loadingText}>Loading posts...</p>
-                ) : (
-                  <InfiniteScroll
-                    dataLength={posts.length}
-                    next={fetchMoreData}
-                    hasMore={hasMore}
-                    loader={<p className={styles.loadingText}>Loading more posts...</p>}
-                    endMessage={
-                      <p className={styles.endMessage}>
-                        <b>You have seen all the posts.</b>
-                      </p>
-                    }
-                    scrollableTarget="scrollableProfileDiv"
+            <div className={styles.postsSection}>
+              <div className={styles.profileHeader}>
+                <h2>Your Sayings</h2>
+                <div className={styles.filterOptions}>
+                  <button
+                    className={`${styles.filterButton} ${filter === 'recent' ? styles.active : ''}`}
+                    onClick={() => handleFilterChange('recent')}
+                    type="button"
                   >
-                    <Suspense
-                      fallback={
-                        <>
-                          <SkeletonPost />
-                          <SkeletonPost />
-                        </>
-                      }
-                    >
-                      {posts.length > 0 ? (
-                        posts.map((post) => (
-                          <div key={post._id} className={styles.postCard}>
-                            <Post
-                              post={post}
-                              currentUserId={user._id}
-                              onDelete={handleDeletePost}
-                            />
-                          </div>
-                        ))
-                      ) : (
-                        !isLoadingPosts && <p className={styles.noPosts}>No posts available.</p>
-                      )}
-                    </Suspense>
-                  </InfiniteScroll>
-                )}
+                    Recent
+                  </button>
+                  <button
+                    className={`${styles.filterButton} ${filter === 'top' ? styles.active : ''}`}
+                    onClick={() => handleFilterChange('top')}
+                    type="button"
+                  >
+                    Top
+                  </button>
+                </div>
               </div>
-            </>
-          ) : (
-            !isLoadingPosts && <p className={styles.noPosts}>User not found.</p>
-          )}
-        </div>
+
+              {isLoadingPosts && page === 1 ? (
+                <p className={styles.loadingText}>Loading posts...</p>
+              ) : (
+                <InfiniteScroll
+                  dataLength={posts.length}
+                  next={fetchMoreData}
+                  hasMore={hasMore}
+                  loader={<p className={styles.loadingText}>Loading more posts...</p>}
+                  endMessage={
+                    <p className={styles.endMessage}>
+                      <b>You have seen all the posts.</b>
+                    </p>
+                  }
+                  scrollableTarget="scrollableProfileDiv"
+                >
+                  <Suspense
+                    fallback={
+                      <>
+                        <SkeletonPost />
+                        <SkeletonPost />
+                      </>
+                    }
+                  >
+                    {posts.length > 0 ? (
+                      posts.map((post) => (
+                        <div key={post._id} className={styles.postCard}>
+                          <Post
+                            post={post}
+                            currentUserId={user._id}
+                            onDelete={handleDeletePost}
+                          />
+                        </div>
+                      ))
+                    ) : (
+                      !isLoadingPosts && <p className={styles.noPosts}>No posts available.</p>
+                    )}
+                  </Suspense>
+                </InfiniteScroll>
+              )}
+            </div>
+          </>
+        ) : (
+          !isLoadingPosts && <p className={styles.noPosts}>User not found.</p>
+        )}
       </div>
     </div>
+    </div >
   );
 };
 

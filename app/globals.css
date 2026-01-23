@@ -14,47 +14,146 @@
   --surface: #FFFFFF;
   --surface-hover: #F1F5F9;
   --surface-active: #E2E8F0;
-  
+
   /* Border Colors */
   --border: #E2E8F0;
   --border-hover: #CBD5E1;
-  
+
   /* Text Colors */
   --text-primary: #0F172A;
   --text-secondary: #475569;
   --text-tertiary: #94A3B8;
   --text-muted: #CBD5E1;
-  
-  /* Accent Colors */
-  --accent: #3B82F6;
-  --accent-hover: #2563EB;
-  --accent-light: #DBEAFE;
+
+  /* Accent Colors - FROM SAYINGS-NEXT */
+  --accent: #4d99ef;
+  --accent-hover: #3b80c9;
+  --accent-light: rgba(77, 153, 239, 0.15);
   --accent-dark: #1E40AF;
-  
+
   /* Status Colors */
   --success: #10B981;
   --warning: #F59E0B;
   --error: #EF4444;
-  --info: #3B82F6;
-  
-  /* Shadows */
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --info: #4d99ef;
+
+  /* Shadows - FROM SAYINGS-NEXT */
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 12px rgba(77, 153, 239, 0.2);
+  --shadow-lg: 0 6px 18px rgba(77, 153, 239, 0.5);
   --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-  
-  /* Border Radius */
+
+  /* Border Radius - FROM SAYINGS-NEXT */
   --radius-sm: 0.375rem;
   --radius-md: 0.5rem;
   --radius-lg: 0.75rem;
   --radius-xl: 1rem;
-  --radius-full: 9999px;
-  
+  --radius-full: 28px;
+
   /* Transitions */
   --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
   --transition-base: 200ms cubic-bezier(0.4, 0, 0.2, 1);
   --transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
 }
+
+/* Base Overrides for SF Pro Look */
+html,
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Icons", "Helvetica Neue", sans-serif;
+  background: var(--bg);
+  color: var(--text-primary);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  scroll-behavior: smooth;
+}
+
+/* Animations from sayings-next */
+@keyframes complexBackgroundMove {
+  0% {
+    background-position: 0% 0%;
+  }
+
+  25% {
+    background-position: 100% 0%;
+  }
+
+  50% {
+    background-position: 100% 100%;
+  }
+
+  75% {
+    background-position: 0% 100%;
+  }
+
+  100% {
+    background-position: 0% 0%;
+  }
+}
+
+@keyframes complexFloat {
+
+  0%,
+  100% {
+    transform: translate(-50%, -50%) scale(1) rotate(0deg);
+    opacity: 0.9;
+  }
+
+  25% {
+    transform: translate(-52%, -52%) scale(1.03) rotate(10deg);
+    opacity: 1;
+  }
+
+  50% {
+    transform: translate(-48%, -48%) scale(1.06) rotate(30deg);
+    opacity: 0.8;
+  }
+
+  75% {
+    transform: translate(-52%, -48%) scale(1.03) rotate(10deg);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animated-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at center, #e0e5ec, #e6eaf2, #f0f3f7, #f5f7fa);
+  background-size: 200% 200%;
+  animation: complexBackgroundMove 40s linear infinite;
+  z-index: -2;
+}
+
+.blur-shape {
+  position: absolute;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle at center, var(--accent), var(--accent-light), transparent);
+  filter: blur(100px);
+  opacity: 0.6;
+  z-index: -1;
+  pointer-events: none;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  animation: complexFloat 18s cubic-bezier(0.645, 0.045, 0.355, 1) infinite;
+}
+
 
 /* Dark Theme */
 html.dark-theme {
@@ -62,20 +161,20 @@ html.dark-theme {
   --surface: #1E293B;
   --surface-hover: #334155;
   --surface-active: #475569;
-  
+
   --border: #334155;
   --border-hover: #475569;
-  
+
   --text-primary: #F1F5F9;
   --text-secondary: #CBD5E1;
   --text-tertiary: #94A3B8;
   --text-muted: #64748B;
-  
+
   --accent: #60A5FA;
   --accent-hover: #3B82F6;
   --accent-light: #1E3A8A;
   --accent-dark: #93C5FD;
-  
+
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
@@ -244,6 +343,7 @@ html.dark-theme .glass {
 
 /* Respect user motion preferences */
 @media (prefers-reduced-motion: reduce) {
+
   *,
   *::before,
   *::after {
@@ -259,7 +359,7 @@ html.dark-theme .glass {
   * {
     forced-color-adjust: none;
   }
-  
+
   :focus-visible {
     outline: 2px solid Highlight !important;
   }
